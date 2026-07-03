@@ -260,18 +260,6 @@ li + li {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.metric p {
-  margin: 4px 0 3px;
-  font-size: 2.1rem;
-  font-weight: 800;
-  color: #4e3d74;
-  line-height: 1.08;
-}
-
-.metric small {
-  display: block;
-}
-
 blockquote {
   margin: 0;
   padding: 16px 18px;
@@ -365,25 +353,56 @@ blockquote {
   font-size: 0.88rem;
 }
 
-.life-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 12px;
+.matrix-scale {
+  margin: 0 0 10px;
 }
 
-.life-grid p {
+.matrix-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.matrix-group {
+  border: 1px solid rgba(141, 113, 183, 0.2);
+  border-radius: 14px;
+  padding: 12px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(217, 206, 255, 0.12));
+}
+
+.matrix-group h4 {
+  margin-bottom: 8px;
+}
+
+.matrix-group p {
   margin: 0;
   display: flex;
   justify-content: space-between;
   gap: 10px;
   border: 1px solid rgba(141, 113, 183, 0.16);
   border-radius: 10px;
-  padding: 9px 11px;
-  background: rgba(255, 255, 255, 0.7);
+  padding: 8px 9px;
+  background: rgba(255, 255, 255, 0.74);
 }
 
-.life-grid strong {
+.matrix-group p + p {
+  margin-top: 8px;
+}
+
+.matrix-group strong {
   white-space: nowrap;
+}
+
+.matrix-group-strong {
+  border-color: rgba(119, 203, 184, 0.4);
+}
+
+.matrix-group-stable {
+  border-color: rgba(127, 106, 230, 0.35);
+}
+
+.matrix-group-growth {
+  border-color: rgba(230, 111, 176, 0.33);
 }
 
 .aspect-list {
@@ -403,9 +422,9 @@ blockquote {
 }
 
 @media (max-width: 920px) {
+  .matrix-columns,
   .glance-grid,
-  .stats-row,
-  .life-grid {
+  .stats-row {
     grid-template-columns: 1fr;
   }
 }
@@ -495,10 +514,6 @@ blockquote {
 
   h4 {
     font-size: 0.95rem;
-  }
-
-  .metric p {
-    font-size: 1.65rem;
   }
 
   ul,
