@@ -21,6 +21,7 @@ body {
   margin: 0;
   color: var(--text);
   font-family: "Manrope", system-ui, -apple-system, Segoe UI, sans-serif;
+  overflow-x: hidden;
   background:
     radial-gradient(900px 520px at 8% -12%, rgba(248, 114, 184, 0.2), transparent 66%),
     radial-gradient(940px 560px at 92% -10%, rgba(143, 125, 255, 0.23), transparent 66%),
@@ -172,6 +173,7 @@ li,
 small {
   color: var(--muted);
   line-height: 1.62;
+  overflow-wrap: anywhere;
 }
 
 strong {
@@ -196,6 +198,8 @@ li + li {
 }
 
 .score {
+  width: 100%;
+  max-width: 182px;
   min-height: 182px;
   border-radius: 999px;
   border: 1px solid rgba(177, 135, 214, 0.35);
@@ -293,5 +297,77 @@ blockquote {
 
   .hero {
     padding: 22px;
+  }
+
+  .score {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .page {
+    width: 94vw;
+    margin: 16px auto 28px;
+    gap: 12px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.65rem, 8vw, 2.2rem);
+    line-height: 1.12;
+  }
+
+  .pill {
+    font-size: 0.72rem;
+    padding: 6px 10px;
+  }
+
+  .score {
+    min-height: 150px;
+    max-width: 150px;
+  }
+
+  .score-number {
+    font-size: 2rem;
+  }
+
+  .score-label {
+    font-size: 0.72rem;
+  }
+
+  h2 {
+    font-size: 1.34rem;
+  }
+
+  h3 {
+    font-size: 1.08rem;
+  }
+
+  h4 {
+    font-size: 0.95rem;
+  }
+
+  .metric p {
+    font-size: 1.65rem;
+  }
+
+  ul,
+  ol {
+    padding-left: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-tags span {
+    width: 100%;
+    text-align: center;
+  }
+
+  .top-profile p {
+    font-size: 0.86rem;
   }
 }
