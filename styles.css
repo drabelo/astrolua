@@ -1,12 +1,14 @@
 :root {
-  --bg: #0f1025;
-  --bg-soft: #191b3a;
+  --bg: #0d0e22;
+  --bg-soft: #1b1e44;
   --card: rgba(255, 255, 255, 0.08);
-  --text: #f7f8ff;
-  --muted: #d2d5ff;
-  --pink: #ff72b6;
-  --purple: #a075ff;
-  --line: rgba(255, 255, 255, 0.18);
+  --card-strong: rgba(255, 255, 255, 0.13);
+  --text: #f9faff;
+  --muted: #d3d8ff;
+  --pink: #ff6eb8;
+  --rose: #ff97cd;
+  --purple: #956eff;
+  --line: rgba(255, 255, 255, 0.2);
 }
 
 *,
@@ -20,17 +22,18 @@ body {
   min-height: 100vh;
   font-family: "Manrope", system-ui, -apple-system, Segoe UI, sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at top, #2a2565 0%, var(--bg) 55%);
+  background: radial-gradient(circle at top, #2b2b7a 0%, var(--bg) 56%);
 }
 
 .orb {
   position: fixed;
-  width: 300px;
-  height: 300px;
+  width: 380px;
+  height: 380px;
   border-radius: 999px;
-  filter: blur(65px);
+  filter: blur(78px);
   pointer-events: none;
-  opacity: 0.55;
+  opacity: 0.5;
+  z-index: -2;
 }
 
 .orb-1 {
@@ -40,44 +43,60 @@ body {
 }
 
 .orb-2 {
-  background: #8f7aff;
+  background: #776dff;
   bottom: -80px;
   right: -70px;
 }
 
+.stars {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 12% 22%, rgba(255, 255, 255, 0.35) 1px, transparent 2px),
+    radial-gradient(circle at 74% 18%, rgba(255, 255, 255, 0.28) 1px, transparent 2px),
+    radial-gradient(circle at 86% 58%, rgba(255, 255, 255, 0.3) 1px, transparent 2px),
+    radial-gradient(circle at 24% 72%, rgba(255, 255, 255, 0.2) 1px, transparent 2px);
+}
+
 .app {
-  width: min(960px, 92vw);
-  margin: 40px auto;
+  width: min(1024px, 92vw);
+  margin: 30px auto 40px;
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
 .card {
   border: 1px solid var(--line);
   background: var(--card);
   backdrop-filter: blur(14px);
-  border-radius: 20px;
+  border-radius: 22px;
   padding: 22px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
 }
 
 .hero h1 {
-  margin: 10px 0 8px;
-  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  margin: 10px 0 6px;
+  font-size: clamp(1.6rem, 3.2vw, 2.45rem);
+  line-height: 1.18;
 }
 
 .subtitle {
   margin: 0;
   color: var(--muted);
+  max-width: 66ch;
 }
 
 .pill {
   display: inline-block;
   margin: 0;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.15);
+  background: linear-gradient(140deg, rgba(255, 110, 184, 0.35), rgba(149, 110, 255, 0.35));
   font-weight: 700;
   font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.24);
 }
 
 .input-grid {
@@ -127,22 +146,26 @@ input:focus {
 button {
   border: none;
   border-radius: 999px;
-  padding: 12px 24px;
+  padding: 13px 28px;
   font: inherit;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--pink), var(--purple));
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg, var(--pink), var(--purple) 60%, #7a7fff);
   color: white;
   cursor: pointer;
-  transition: transform 0.12s ease;
+  box-shadow: 0 10px 22px rgba(149, 110, 255, 0.35);
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
 }
 
 button:hover {
   transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 14px 28px rgba(255, 110, 184, 0.35);
 }
 
 .result-card {
   display: grid;
   gap: 14px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.05));
 }
 
 .top-line {
@@ -159,13 +182,24 @@ button:hover {
 .score-wrap {
   display: grid;
   justify-items: center;
-  min-width: 86px;
+  min-width: 96px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  padding: 8px 10px;
 }
 
 .score {
-  font-size: 2rem;
+  font-size: 2.15rem;
   font-weight: 800;
   line-height: 1;
+  color: #fff7fd;
+}
+
+.score-caption {
+  margin: -4px 0 0;
+  color: #ffe6f5;
+  font-weight: 700;
 }
 
 .chips {
@@ -178,12 +212,14 @@ button:hover {
   padding: 8px 12px;
   border-radius: 999px;
   font-size: 0.85rem;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .reading {
-  margin: 0;
+  margin: 0 0 4px;
   color: #fcf4ff;
+  line-height: 1.55;
 }
 
 .highlights {
@@ -193,10 +229,10 @@ button:hover {
 }
 
 .highlights article {
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 14px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .highlights h3 {
@@ -208,16 +244,123 @@ button:hover {
   margin: 0;
   color: var(--muted);
   font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.pillars {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.pillars h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.pillar-item + .pillar-item {
+  margin-top: 10px;
+}
+
+.pillar-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.bar {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--rose), var(--purple));
+  transition: width 0.35s ease;
+}
+
+.detail-sections {
+  display: grid;
+  gap: 12px;
+}
+
+.detail-sections article {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 14px;
+}
+
+.detail-sections h3 {
+  margin: 0 0 7px;
+  font-size: 0.98rem;
+}
+
+.detail-sections p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.accuracy-card h3,
+.sources-card h3 {
+  margin: 0 0 10px;
+}
+
+.accuracy-card ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #f1f3ff;
+  line-height: 1.55;
+}
+
+.accuracy-note {
+  margin: 10px 0 0;
+  color: var(--muted);
+}
+
+.sources-card p {
+  margin: 0 0 10px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.source-links {
+  display: grid;
+  gap: 8px;
+}
+
+.source-links a {
+  color: #ffd8ee;
+  text-decoration-color: rgba(255, 216, 238, 0.45);
+}
+
+.source-links a:hover {
+  color: #fff2fa;
 }
 
 @media (max-width: 760px) {
   .input-grid,
-  .highlights {
+  .highlights,
+  .row {
     grid-template-columns: 1fr;
   }
 
   .top-line {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .app {
+    margin-top: 22px;
   }
 }

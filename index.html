@@ -15,18 +15,19 @@
   <body>
     <div class="orb orb-1" aria-hidden="true"></div>
     <div class="orb orb-2" aria-hidden="true"></div>
+    <div class="stars" aria-hidden="true"></div>
     <main class="app">
       <header class="hero card">
-        <p class="pill">✨ Astrolua</p>
-        <h1>Cute cosmic compatibility for two hearts</h1>
+        <p class="pill">✨ Astrolua • Love Edition</p>
+        <h1>A romantic compatibility reading for your relationship</h1>
         <p class="subtitle">
-          A modern and romantic compatibility reading with your birth details.
+          Soft, modern, and centered on what astrology actually prioritizes in relationship matching.
         </p>
       </header>
 
       <section class="input-grid">
         <article class="card person-card">
-          <h2>Person 1</h2>
+          <h2>Person 1 💗</h2>
           <label>
             Full name
             <input id="p1-name" type="text" value="Dailton Ferandes Rabelo Junior" />
@@ -48,7 +49,7 @@
         </article>
 
         <article class="card person-card">
-          <h2>Person 2</h2>
+          <h2>Person 2 💗</h2>
           <label>
             Full name
             <input id="p2-name" type="text" value="Felipe Batista de Sousa" />
@@ -71,7 +72,7 @@
       </section>
 
       <section class="actions">
-        <button id="calculate-btn" type="button">Reveal our stars 💖</button>
+        <button id="calculate-btn" type="button">Reveal our love map ✨</button>
       </section>
 
       <section class="card result-card" id="results" aria-live="polite">
@@ -82,11 +83,13 @@
             <small>% match</small>
           </div>
         </div>
+        <p id="score-caption" class="score-caption"></p>
 
         <div class="chips">
           <span class="chip" id="signs-chip">Taurus + Virgo</span>
           <span class="chip" id="element-chip">Earth + Earth</span>
-          <span class="chip" id="vibe-chip">Grounded soulmates</span>
+          <span class="chip" id="modality-chip">Fixed + Mutable</span>
+          <span class="chip" id="vibe-chip">Steady heart connection</span>
         </div>
 
         <p id="reading" class="reading"></p>
@@ -97,13 +100,70 @@
             <p id="strengths"></p>
           </article>
           <article>
-            <h3>Sweet reminders</h3>
-            <p id="reminders"></p>
+            <h3>Communication rhythm</h3>
+            <p id="communication"></p>
           </article>
           <article>
             <h3>Romantic date idea</h3>
             <p id="date-idea"></p>
           </article>
+        </div>
+
+        <div class="pillars">
+          <h3>Compatibility pillars</h3>
+          <div class="pillar-item">
+            <div class="pillar-line">
+              <span>Element harmony</span><span id="element-score">0%</span>
+            </div>
+            <div class="bar"><span id="element-bar"></span></div>
+          </div>
+          <div class="pillar-item">
+            <div class="pillar-line">
+              <span>Modality flow</span><span id="modality-score">0%</span>
+            </div>
+            <div class="bar"><span id="modality-bar"></span></div>
+          </div>
+          <div class="pillar-item">
+            <div class="pillar-line">
+              <span>Romance expression fit</span><span id="romance-score">0%</span>
+            </div>
+            <div class="bar"><span id="romance-bar"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card detail-sections">
+        <article>
+          <h3>Emotional focus to emphasize</h3>
+          <p id="emotional-focus"></p>
+        </article>
+        <article>
+          <h3>Sweet reminders</h3>
+          <p id="reminders"></p>
+        </article>
+      </section>
+
+      <section class="card accuracy-card">
+        <h3>What this reading emphasizes correctly</h3>
+        <ul>
+          <li>Sun-sign dynamics (core identity and relationship tone).</li>
+          <li>Element compatibility (Fire, Earth, Air, Water chemistry).</li>
+          <li>Modality compatibility (Cardinal, Fixed, Mutable pacing).</li>
+        </ul>
+        <p class="accuracy-note" id="accuracy-note"></p>
+      </section>
+
+      <section class="card sources-card">
+        <h3>For deeper synastry (full chart comparison)</h3>
+        <p>
+          Major astrology sites recommend adding Moon, Venus, Mars, inter-chart aspects, and composite charts
+          for deeper compatibility interpretation.
+        </p>
+        <div class="source-links">
+          <a href="https://www.astrology.com/article/astrological-compatibility-venus-mars/" target="_blank" rel="noreferrer">Astrology.com compatibility guide</a>
+          <a href="https://cafeastrology.com/synastry_compatibility.html" target="_blank" rel="noreferrer">Cafe Astrology synastry overview</a>
+          <a href="https://cafeastrology.com/synastry/interchartaspects.html" target="_blank" rel="noreferrer">Cafe Astrology inter-chart aspects</a>
+          <a href="https://www.astro.com/cgi/atxgen.cgi?btyp=acx" target="_blank" rel="noreferrer">Astro.com partner/composite tools</a>
         </div>
       </section>
     </main>

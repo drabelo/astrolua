@@ -1,40 +1,82 @@
 const SIGNS = [
-  { sign: "Capricorn", from: [12, 22], to: [1, 19], element: "Earth" },
-  { sign: "Aquarius", from: [1, 20], to: [2, 18], element: "Air" },
-  { sign: "Pisces", from: [2, 19], to: [3, 20], element: "Water" },
-  { sign: "Aries", from: [3, 21], to: [4, 19], element: "Fire" },
-  { sign: "Taurus", from: [4, 20], to: [5, 20], element: "Earth" },
-  { sign: "Gemini", from: [5, 21], to: [6, 20], element: "Air" },
-  { sign: "Cancer", from: [6, 21], to: [7, 22], element: "Water" },
-  { sign: "Leo", from: [7, 23], to: [8, 22], element: "Fire" },
-  { sign: "Virgo", from: [8, 23], to: [9, 22], element: "Earth" },
-  { sign: "Libra", from: [9, 23], to: [10, 22], element: "Air" },
-  { sign: "Scorpio", from: [10, 23], to: [11, 21], element: "Water" },
-  { sign: "Sagittarius", from: [11, 22], to: [12, 21], element: "Fire" },
+  { sign: "Capricorn", from: [12, 22], to: [1, 19], element: "Earth", modality: "Cardinal" },
+  { sign: "Aquarius", from: [1, 20], to: [2, 18], element: "Air", modality: "Fixed" },
+  { sign: "Pisces", from: [2, 19], to: [3, 20], element: "Water", modality: "Mutable" },
+  { sign: "Aries", from: [3, 21], to: [4, 19], element: "Fire", modality: "Cardinal" },
+  { sign: "Taurus", from: [4, 20], to: [5, 20], element: "Earth", modality: "Fixed" },
+  { sign: "Gemini", from: [5, 21], to: [6, 20], element: "Air", modality: "Mutable" },
+  { sign: "Cancer", from: [6, 21], to: [7, 22], element: "Water", modality: "Cardinal" },
+  { sign: "Leo", from: [7, 23], to: [8, 22], element: "Fire", modality: "Fixed" },
+  { sign: "Virgo", from: [8, 23], to: [9, 22], element: "Earth", modality: "Mutable" },
+  { sign: "Libra", from: [9, 23], to: [10, 22], element: "Air", modality: "Cardinal" },
+  { sign: "Scorpio", from: [10, 23], to: [11, 21], element: "Water", modality: "Fixed" },
+  { sign: "Sagittarius", from: [11, 22], to: [12, 21], element: "Fire", modality: "Mutable" },
 ];
 
 const PAIR_SCORES = {
-  "Taurus|Virgo": 94,
-  "Virgo|Taurus": 94,
+  "Taurus|Virgo": 93,
+  "Virgo|Taurus": 93,
 };
 
 const ELEMENT_SCORES = {
-  "Fire|Air": 84,
-  "Air|Fire": 84,
-  "Earth|Water": 88,
-  "Water|Earth": 88,
-  "Earth|Earth": 86,
-  "Water|Water": 84,
-  "Air|Air": 80,
-  "Fire|Fire": 79,
-  "Fire|Water": 62,
-  "Water|Fire": 62,
-  "Earth|Air": 66,
-  "Air|Earth": 66,
-  "Earth|Fire": 67,
-  "Fire|Earth": 67,
-  "Air|Water": 68,
-  "Water|Air": 68,
+  "Fire|Air": 86,
+  "Air|Fire": 86,
+  "Earth|Water": 89,
+  "Water|Earth": 89,
+  "Earth|Earth": 84,
+  "Water|Water": 83,
+  "Air|Air": 81,
+  "Fire|Fire": 80,
+  "Fire|Water": 63,
+  "Water|Fire": 63,
+  "Earth|Air": 67,
+  "Air|Earth": 67,
+  "Earth|Fire": 65,
+  "Fire|Earth": 65,
+  "Air|Water": 70,
+  "Water|Air": 70,
+};
+
+const MODALITY_SCORES = {
+  "Cardinal|Cardinal": 79,
+  "Cardinal|Fixed": 73,
+  "Fixed|Cardinal": 73,
+  "Cardinal|Mutable": 80,
+  "Mutable|Cardinal": 80,
+  "Fixed|Fixed": 82,
+  "Fixed|Mutable": 76,
+  "Mutable|Fixed": 76,
+  "Mutable|Mutable": 81,
+};
+
+const OPPOSITES = {
+  Aries: "Libra",
+  Taurus: "Scorpio",
+  Gemini: "Sagittarius",
+  Cancer: "Capricorn",
+  Leo: "Aquarius",
+  Virgo: "Pisces",
+  Libra: "Aries",
+  Scorpio: "Taurus",
+  Sagittarius: "Gemini",
+  Capricorn: "Cancer",
+  Aquarius: "Leo",
+  Pisces: "Virgo",
+};
+
+const SIGN_NOTES = {
+  Aries: { love: "direct and passionate", need: "adventure and honesty" },
+  Taurus: { love: "steady and sensual", need: "security and consistency" },
+  Gemini: { love: "playful and curious", need: "mental connection and variety" },
+  Cancer: { love: "protective and nurturing", need: "emotional safety and softness" },
+  Leo: { love: "warm and expressive", need: "appreciation and affection" },
+  Virgo: { love: "devoted and intentional", need: "reliability and practical care" },
+  Libra: { love: "romantic and considerate", need: "balance and harmony" },
+  Scorpio: { love: "deep and loyal", need: "trust and emotional depth" },
+  Sagittarius: { love: "optimistic and spontaneous", need: "freedom and growth" },
+  Capricorn: { love: "committed and dependable", need: "respect and long-term vision" },
+  Aquarius: { love: "thoughtful and original", need: "space and intellectual bond" },
+  Pisces: { love: "tender and intuitive", need: "empathy and emotional closeness" },
 };
 
 function inRange(month, day, [fromMonth, fromDay], [toMonth, toDay]) {
@@ -56,83 +98,173 @@ function inRange(month, day, [fromMonth, fromDay], [toMonth, toDay]) {
 function getSign(dateValue) {
   const [year, month, day] = dateValue.split("-").map(Number);
   if (!year || !month || !day) {
-    return { sign: "Unknown", element: "Unknown" };
+    return { sign: "Unknown", element: "Unknown", modality: "Unknown" };
   }
 
   for (const item of SIGNS) {
     if (inRange(month, day, item.from, item.to)) {
-      return { sign: item.sign, element: item.element };
+      return { sign: item.sign, element: item.element, modality: item.modality };
     }
   }
 
-  return { sign: "Unknown", element: "Unknown" };
+  return { sign: "Unknown", element: "Unknown", modality: "Unknown" };
 }
 
 function compatibilityFromElements(e1, e2) {
   return ELEMENT_SCORES[`${e1}|${e2}`] ?? 70;
 }
 
-function getCompatibility(signA, signB, elementA, elementB) {
-  return PAIR_SCORES[`${signA}|${signB}`] ?? compatibilityFromElements(elementA, elementB);
+function compatibilityFromModalities(m1, m2) {
+  return MODALITY_SCORES[`${m1}|${m2}`] ?? 75;
 }
 
-function vibeByScore(score, sameElement) {
+function getScores(first, second) {
+  const pairScore = PAIR_SCORES[`${first.sign}|${second.sign}`];
+  const elementScore = compatibilityFromElements(first.element, second.element);
+  const modalityScore = compatibilityFromModalities(first.modality, second.modality);
+  const oppositeBonus = OPPOSITES[first.sign] === second.sign ? 3 : 0;
+
+  const romanceScore = Math.round(
+    Math.min(98, Math.max(58, 0.6 * elementScore + 0.4 * modalityScore + oppositeBonus))
+  );
+  const finalScore =
+    pairScore ??
+    Math.round(Math.min(98, Math.max(56, 0.58 * elementScore + 0.27 * modalityScore + 0.15 * romanceScore)));
+
+  return {
+    finalScore,
+    elementScore,
+    modalityScore,
+    romanceScore,
+  };
+}
+
+function vibeByScore(score, sameElement, sameModality) {
   if (score >= 92) return "Soulmate energy";
-  if (score >= 84 && sameElement) return "Grounded soulmates";
+  if (score >= 86 && sameElement) return "Steady heart connection";
+  if (score >= 84 && sameModality) return "In-sync relationship rhythm";
   if (score >= 84) return "Beautifully balanced";
   if (score >= 74) return "Sweet and evolving";
-  return "Growth and chemistry";
+  return "Magnetic growth journey";
 }
 
-function romanticDateIdea(elementA, elementB) {
+function scoreCaption(score) {
+  if (score >= 92) return "Excellent long-term compatibility";
+  if (score >= 84) return "Very strong romantic compatibility";
+  if (score >= 75) return "Good compatibility with growth potential";
+  return "Works best with clear communication and intention";
+}
+
+function romanticDateIdea(elementA, elementB, modalityA, modalityB) {
   const key = `${elementA}|${elementB}`;
-  if (key === "Earth|Earth") return "Cook a candlelit dinner together with a handwritten love note under each plate.";
-  if (key.includes("Water")) return "Sunset picnic with your favorite songs and a slow dance.";
-  if (key.includes("Fire")) return "Dress up for a dreamy night out and finish with stargazing.";
+  if (key === "Earth|Earth") {
+    return "Cook a candlelit dinner together and leave handwritten love notes at each place setting.";
+  }
+  if (key.includes("Water")) return "Plan a sunset picnic with your favorite playlist and one slow dance.";
+  if (key.includes("Fire")) return "Dress up for a dreamy night out, then end with stargazing and dessert.";
+  if (modalityA === "Fixed" && modalityB === "Fixed") {
+    return "Create a cozy monthly ritual date and repeat it as your signature romance tradition.";
+  }
   return "Visit a cozy cafe, then walk hand-in-hand and talk about your next adventure.";
 }
 
-function buildReading(nameA, nameB, signA, signB, score) {
+function buildReading(nameA, nameB, first, second, score) {
   if (score >= 92) {
-    return `${nameA} and ${nameB}, your ${signA} + ${signB} match is naturally loyal, affectionate, and deeply supportive. You two make love feel safe and magical at the same time.`;
+    return `${nameA} and ${nameB}, your ${first.sign} + ${second.sign} match is naturally romantic, loyal, and built for long-term stability. You balance tenderness with commitment in a very rare way.`;
   }
 
   if (score >= 84) {
-    return `${nameA} and ${nameB}, your ${signA} + ${signB} combo has tender chemistry and a strong emotional rhythm. Keep choosing each other in little ways every day.`;
+    return `${nameA} and ${nameB}, your ${first.sign} + ${second.sign} combination has sweet chemistry and strong relationship potential. The more intentional your communication, the more your love deepens.`;
   }
 
-  return `${nameA} and ${nameB}, your ${signA} + ${signB} pairing brings contrast that can become beautiful harmony with patience and communication.`;
+  return `${nameA} and ${nameB}, your ${first.sign} + ${second.sign} pairing carries real attraction and growth potential. Keep emotional clarity high and make space for each other's pace.`;
+}
+
+function buildStrengths(first, second) {
+  const noteA = SIGN_NOTES[first.sign] ?? { love: "caring", need: "mutual respect" };
+  const noteB = SIGN_NOTES[second.sign] ?? { love: "warm", need: "kindness" };
+  return `${first.sign} is ${noteA.love}, while ${second.sign} is ${noteB.love}. Together, you can build a relationship that feels both affectionate and dependable.`;
+}
+
+function buildCommunication(first, second) {
+  if (first.element === second.element) {
+    return `Shared ${first.element.toLowerCase()} energy helps you understand each other quickly. Keep check-ins regular so comfort never becomes assumption.`;
+  }
+
+  if (first.modality === second.modality) {
+    return `You move at a similar ${first.modality.toLowerCase()} rhythm. Use that alignment to create clear habits for conflict repair and appreciation.`;
+  }
+
+  return `${first.sign} needs ${SIGN_NOTES[first.sign]?.need ?? "care"}, while ${second.sign} needs ${
+    SIGN_NOTES[second.sign]?.need ?? "clarity"
+  }. Name your needs early and kindly.`;
+}
+
+function buildEmotionalFocus(nameA, nameB, first, second) {
+  return `${nameA}'s ${first.sign} core seeks ${SIGN_NOTES[first.sign]?.need ?? "warmth"}, while ${nameB}'s ${
+    second.sign
+  } core seeks ${SIGN_NOTES[second.sign]?.need ?? "stability"}. Prioritize reassurance and quality time to keep the bond emotionally full.`;
+}
+
+function buildReminders(first, second) {
+  if (first.modality === "Fixed" || second.modality === "Fixed") {
+    return "When one of you gets stubborn, pause and return to the conversation with softness instead of proving a point.";
+  }
+  if (first.modality === "Cardinal" || second.modality === "Cardinal") {
+    return "If things feel rushed, slow down and reconnect emotionally before deciding the next step together.";
+  }
+  return "Avoid mixed signals: confirm plans, express affection clearly, and celebrate small relationship wins.";
+}
+
+function setBar(id, score) {
+  const bar = document.querySelector(id);
+  bar.style.width = `${score}%`;
 }
 
 function updateUI() {
-  const p1Name = document.querySelector("#p1-name").value.trim() || "Person 1";
-  const p2Name = document.querySelector("#p2-name").value.trim() || "Person 2";
+  const p1Name = (document.querySelector("#p1-name").value.trim() || "Person 1").split(" ")[0];
+  const p2Name = (document.querySelector("#p2-name").value.trim() || "Person 2").split(" ")[0];
   const p1Date = document.querySelector("#p1-date").value;
   const p2Date = document.querySelector("#p2-date").value;
+  const p1Time = document.querySelector("#p1-time").value.trim();
+  const p2Time = document.querySelector("#p2-time").value.trim();
+  const p1Place = document.querySelector("#p1-place").value.trim();
+  const p2Place = document.querySelector("#p2-place").value.trim();
 
   const first = getSign(p1Date);
   const second = getSign(p2Date);
+  const { finalScore, elementScore, modalityScore, romanceScore } = getScores(first, second);
 
-  const score = getCompatibility(first.sign, second.sign, first.element, second.element);
-  const vibe = vibeByScore(score, first.element === second.element);
+  const vibe = vibeByScore(finalScore, first.element === second.element, first.modality === second.modality);
+  const hasBirthDetails = Boolean(p1Time && p2Time && p1Place && p2Place);
 
-  document.querySelector("#couple-name").textContent = `${p1Name.split(" ")[0]} + ${p2Name.split(" ")[0]}`;
-  document.querySelector("#score").textContent = String(score);
+  document.querySelector("#couple-name").textContent = `${p1Name} + ${p2Name}`;
+  document.querySelector("#score").textContent = String(finalScore);
+  document.querySelector("#score-caption").textContent = scoreCaption(finalScore);
   document.querySelector("#signs-chip").textContent = `${first.sign} + ${second.sign}`;
   document.querySelector("#element-chip").textContent = `${first.element} + ${second.element}`;
+  document.querySelector("#modality-chip").textContent = `${first.modality} + ${second.modality}`;
   document.querySelector("#vibe-chip").textContent = vibe;
-  document.querySelector("#reading").textContent = buildReading(
-    p1Name.split(" ")[0],
-    p2Name.split(" ")[0],
-    first.sign,
-    second.sign,
-    score
+  document.querySelector("#reading").textContent = buildReading(p1Name, p2Name, first, second, finalScore);
+  document.querySelector("#strengths").textContent = buildStrengths(first, second);
+  document.querySelector("#communication").textContent = buildCommunication(first, second);
+  document.querySelector("#date-idea").textContent = romanticDateIdea(
+    first.element,
+    second.element,
+    first.modality,
+    second.modality
   );
-  document.querySelector("#strengths").textContent =
-    "Loyalty, emotional consistency, and building a peaceful life together with practical care.";
-  document.querySelector("#reminders").textContent =
-    "Say what you feel before stress builds, and keep romance alive with small daily affection.";
-  document.querySelector("#date-idea").textContent = romanticDateIdea(first.element, second.element);
+  document.querySelector("#emotional-focus").textContent = buildEmotionalFocus(p1Name, p2Name, first, second);
+  document.querySelector("#reminders").textContent = buildReminders(first, second);
+  document.querySelector("#element-score").textContent = `${elementScore}%`;
+  document.querySelector("#modality-score").textContent = `${modalityScore}%`;
+  document.querySelector("#romance-score").textContent = `${romanceScore}%`;
+  setBar("#element-bar", elementScore);
+  setBar("#modality-bar", modalityScore);
+  setBar("#romance-bar", romanceScore);
+  document.querySelector("#accuracy-note").textContent = hasBirthDetails
+    ? "You already included birth time and place for both people. For the most accurate next step, run full synastry with Moon, Venus, Mars, Ascendant, inter-chart aspects, and a composite chart."
+    : "For deeper accuracy, include complete birth time/place for both people, then compare Moon, Venus, Mars, Ascendant, inter-chart aspects, and a composite chart.";
 }
 
 document.querySelector("#calculate-btn").addEventListener("click", updateUI);
