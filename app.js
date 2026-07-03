@@ -79,6 +79,8 @@ const SIGN_NOTES = {
   Pisces: { love: "tender and intuitive", need: "empathy and emotional closeness" },
 };
 
+const SIGN_NAMES = SIGNS.map((item) => item.sign);
+
 const ELEMENT_NOTES = {
   Fire: {
     romance: "bold passion, playful spontaneity, and expressive affection",
@@ -101,6 +103,10 @@ const ELEMENT_NOTES = {
     emotional: "open communication and patience",
   },
 };
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
 
 function inRange(month, day, [fromMonth, fromDay], [toMonth, toDay]) {
   if (fromMonth < toMonth || (fromMonth === toMonth && fromDay <= toDay)) {
@@ -131,6 +137,11 @@ function getSign(dateValue) {
   }
 
   return { sign: "Unknown", element: "Unknown", modality: "Unknown" };
+}
+
+function getSignByName(signName) {
+  const found = SIGNS.find((item) => item.sign === signName);
+  return found ? { sign: found.sign, element: found.element, modality: found.modality } : null;
 }
 
 function compatibilityFromElements(e1, e2) {
@@ -321,9 +332,100 @@ function buildFlags(first, second) {
   return { green, watch };
 }
 
+function buildMoonSynastry(moon1, moon2) {
+  if (!moon1 || !moon2) {
+    return "Add both Moon signs to map emotional needs with higher precision.";
+  }
+  const score = compatibilityFromElements(moon1.element, moon2.element);
+  if (score >= 86) return `Excellent emotional ease (${moon1.sign} Moon + ${moon2.sign} Moon). You naturally soothe each other.`;
+  if (score >= 76) return `Good emotional flow (${moon1.sign} Moon + ${moon2.sign} Moon). Check-ins keep this connection strong.`;
+  return `Growth-oriented emotional mix (${moon1.sign} Moon + ${moon2.sign} Moon). Use gentle language during tense moments.`;
+}
+
+function buildVenusMarsSynastry(v1, m2, v2, m1) {
+  if (!v1 || !m2 || !v2 || !m1) {
+    return "Add both Venus and Mars signs to clarify attraction style, affection rhythm, and repair timing.";
+  }
+  const axisA = compatibilityFromElements(v1.element, m2.element);
+  const axisB = compatibilityFromElements(v2.element, m1.element);
+  const avg = Math.round((axisA + axisB) / 2);
+  if (avg >= 85) return `Strong attraction pattern (${v1.sign}/${m2.sign} and ${v2.sign}/${m1.sign}) with natural romantic momentum.`;
+  if (avg >= 74) return `Balanced chemistry pattern. Attraction is solid and improves with intentional affection habits.`;
+  return "High-growth chemistry pattern. Keep expectations explicit so desire and communication stay aligned.";
+}
+
+function buildRisingSynastry(r1, r2) {
+  if (!r1 || !r2) return "Add both Rising signs to map day-to-day pacing and social rhythm.";
+  if (r1.modality === r2.modality) {
+    return `Shared ${r1.modality.toLowerCase()} rising style creates similar pace in everyday life decisions.`;
+  }
+  return `${r1.sign} Rising + ${r2.sign} Rising can be complementary when routines and preferences are discussed early.`;
+}
+
+function calculateAdvancedScore(baseFinalScore, placements) {
+  const parts = [];
+  if (placements.moon1 && placements.moon2) {
+    parts.push(compatibilityFromElements(placements.moon1.element, placements.moon2.element));
+  }
+  if (placements.venus1 && placements.mars2) {
+    parts.push(compatibilityFromElements(placements.venus1.element, placements.mars2.element));
+  }
+  if (placements.venus2 && placements.mars1) {
+    parts.push(compatibilityFromElements(placements.venus2.element, placements.mars1.element));
+  }
+  if (placements.rising1 && placements.rising2) {
+    parts.push(compatibilityFromModalities(placements.rising1.modality, placements.rising2.modality));
+  }
+
+  if (!parts.length) {
+    return { finalScore: baseFinalScore, confidenceLabel: "Core reading (Sun/element/modality) • add more data for deeper accuracy" };
+  }
+
+  const advancedAverage = Math.round(parts.reduce((sum, value) => sum + value, 0) / parts.length);
+  const finalScore = Math.round(clamp(baseFinalScore * 0.82 + advancedAverage * 0.18, 56, 98));
+  const confidenceLabel =
+    parts.length >= 4
+      ? "High-depth reading (Sun + Moon + Venus + Mars + Rising dynamics)"
+      : "Expanded reading (partial deeper placements included)";
+  return { finalScore, confidenceLabel };
+}
+
+function balanceReading(balance) {
+  if (balance <= 35) {
+    return "You are currently weighted toward practical care. Add one surprise romantic gesture this week to rebalance warmth and novelty.";
+  }
+  if (balance >= 65) {
+    return "You are currently weighted toward spontaneous romance. Add one grounding ritual (planning, budgeting, or routine check-in) to sustain long-term stability.";
+  }
+  return "Your balance is healthy: practical care and romance are both present. Keep one weekly ritual for structure and one for spontaneity.";
+}
+
 function setBar(id, score) {
   const bar = document.querySelector(id);
   bar.style.width = `${score}%`;
+}
+
+function populateSignSelects() {
+  const selectIds = [
+    "#p1-moon",
+    "#p1-rising",
+    "#p1-venus",
+    "#p1-mars",
+    "#p2-moon",
+    "#p2-rising",
+    "#p2-venus",
+    "#p2-mars",
+  ];
+
+  selectIds.forEach((id) => {
+    const select = document.querySelector(id);
+    if (!select) return;
+    if (select.options.length > 0) return;
+    select.append(new Option("Unknown", ""));
+    SIGN_NAMES.forEach((signName) => {
+      select.append(new Option(signName, signName));
+    });
+  });
 }
 
 function updateUI() {
@@ -335,25 +437,38 @@ function updateUI() {
   const p2Time = document.querySelector("#p2-time").value.trim();
   const p1Place = document.querySelector("#p1-place").value.trim();
   const p2Place = document.querySelector("#p2-place").value.trim();
+  const balance = Number(document.querySelector("#balance-slider").value);
+
+  const placements = {
+    moon1: getSignByName(document.querySelector("#p1-moon").value),
+    rising1: getSignByName(document.querySelector("#p1-rising").value),
+    venus1: getSignByName(document.querySelector("#p1-venus").value),
+    mars1: getSignByName(document.querySelector("#p1-mars").value),
+    moon2: getSignByName(document.querySelector("#p2-moon").value),
+    rising2: getSignByName(document.querySelector("#p2-rising").value),
+    venus2: getSignByName(document.querySelector("#p2-venus").value),
+    mars2: getSignByName(document.querySelector("#p2-mars").value),
+  };
 
   const first = getSign(p1Date);
   const second = getSign(p2Date);
-  const { finalScore, elementScore, modalityScore, romanceScore } = getScores(first, second);
+  const { finalScore: baseFinalScore, elementScore, modalityScore, romanceScore } = getScores(first, second);
+  const advanced = calculateAdvancedScore(baseFinalScore, placements);
 
-  const vibe = vibeByScore(finalScore, first.element === second.element, first.modality === second.modality);
+  const vibe = vibeByScore(advanced.finalScore, first.element === second.element, first.modality === second.modality);
   const hasBirthDetails = Boolean(p1Time && p2Time && p1Place && p2Place);
   const roadmap = buildRoadmap(first, second);
   const rituals = buildRituals(first, second);
   const flags = buildFlags(first, second);
 
   document.querySelector("#couple-name").textContent = `${p1Name} + ${p2Name}`;
-  document.querySelector("#score").textContent = String(finalScore);
-  document.querySelector("#score-caption").textContent = scoreCaption(finalScore);
+  document.querySelector("#score").textContent = String(advanced.finalScore);
+  document.querySelector("#score-caption").textContent = scoreCaption(advanced.finalScore);
   document.querySelector("#signs-chip").textContent = `${first.sign} + ${second.sign}`;
   document.querySelector("#element-chip").textContent = `${first.element} + ${second.element}`;
   document.querySelector("#modality-chip").textContent = `${first.modality} + ${second.modality}`;
   document.querySelector("#vibe-chip").textContent = vibe;
-  document.querySelector("#reading").textContent = buildReading(p1Name, p2Name, first, second, finalScore);
+  document.querySelector("#reading").textContent = buildReading(p1Name, p2Name, first, second, advanced.finalScore);
   document.querySelector("#strengths").textContent = buildStrengths(first, second);
   document.querySelector("#communication").textContent = buildCommunication(first, second);
   document.querySelector("#date-idea").textContent = romanticDateIdea(
@@ -367,7 +482,16 @@ function updateUI() {
   document.querySelector("#romance-style").textContent = buildRomanceStyle(first, second);
   document.querySelector("#emotional-style").textContent = buildEmotionalStyle(first, second);
   document.querySelector("#conflict-style").textContent = buildConflictStyle(first, second);
-  document.querySelector("#growth-style").textContent = buildGrowthStyle(first, second, finalScore);
+  document.querySelector("#growth-style").textContent = buildGrowthStyle(first, second, advanced.finalScore);
+  document.querySelector("#moon-synastry").textContent = buildMoonSynastry(placements.moon1, placements.moon2);
+  document.querySelector("#venus-mars-synastry").textContent = buildVenusMarsSynastry(
+    placements.venus1,
+    placements.mars2,
+    placements.venus2,
+    placements.mars1
+  );
+  document.querySelector("#rising-synastry").textContent = buildRisingSynastry(placements.rising1, placements.rising2);
+  document.querySelector("#data-confidence").textContent = advanced.confidenceLabel;
   document.querySelector("#roadmap-now").textContent = roadmap.now;
   document.querySelector("#roadmap-next").textContent = roadmap.next;
   document.querySelector("#roadmap-later").textContent = roadmap.later;
@@ -380,6 +504,7 @@ function updateUI() {
   document.querySelector("#watch-1").textContent = flags.watch[0];
   document.querySelector("#watch-2").textContent = flags.watch[1];
   document.querySelector("#watch-3").textContent = flags.watch[2];
+  document.querySelector("#balance-reading").textContent = balanceReading(balance);
   document.querySelector("#element-score").textContent = `${elementScore}%`;
   document.querySelector("#modality-score").textContent = `${modalityScore}%`;
   document.querySelector("#romance-score").textContent = `${romanceScore}%`;
@@ -391,6 +516,8 @@ function updateUI() {
     : "For deeper accuracy, include complete birth time/place for both people, then compare Moon, Venus, Mars, Ascendant, inter-chart aspects, and a composite chart.";
 }
 
+populateSignSelects();
 document.querySelector("#calculate-btn").addEventListener("click", updateUI);
-document.querySelectorAll("input").forEach((field) => field.addEventListener("change", updateUI));
+document.querySelectorAll("input, select").forEach((field) => field.addEventListener("change", updateUI));
+document.querySelector("#balance-slider").addEventListener("input", updateUI);
 updateUI();

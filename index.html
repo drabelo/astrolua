@@ -75,6 +75,37 @@
         <button id="calculate-btn" type="button">Reveal our love map ✨</button>
       </section>
 
+      <section class="card advanced-card">
+        <h3>Phase 1 • Deepen the data (Big Three + Love Planets)</h3>
+        <p class="section-subtitle">
+          Add your Moon, Rising, Venus, and Mars signs to unlock a more personalized relationship roadmap.
+        </p>
+        <div class="advanced-grid">
+          <article>
+            <h4>Person 1 placements</h4>
+            <div class="advanced-row">
+              <label>Moon <select id="p1-moon"></select></label>
+              <label>Rising <select id="p1-rising"></select></label>
+            </div>
+            <div class="advanced-row">
+              <label>Venus <select id="p1-venus"></select></label>
+              <label>Mars <select id="p1-mars"></select></label>
+            </div>
+          </article>
+          <article>
+            <h4>Person 2 placements</h4>
+            <div class="advanced-row">
+              <label>Moon <select id="p2-moon"></select></label>
+              <label>Rising <select id="p2-rising"></select></label>
+            </div>
+            <div class="advanced-row">
+              <label>Venus <select id="p2-venus"></select></label>
+              <label>Mars <select id="p2-mars"></select></label>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section class="card result-card" id="results" aria-live="polite">
         <div class="top-line">
           <h2 id="couple-name">Dailton + Felipe</h2>
@@ -165,6 +196,28 @@
         </div>
       </section>
 
+      <section class="card synastry-card">
+        <h3>Phase 2 • Synastry focus</h3>
+        <div class="dashboard-grid">
+          <article>
+            <h4>Moon-to-Moon emotional flow</h4>
+            <p id="moon-synastry"></p>
+          </article>
+          <article>
+            <h4>Venus + Mars attraction pattern</h4>
+            <p id="venus-mars-synastry"></p>
+          </article>
+          <article>
+            <h4>Rising sign day-to-day dynamic</h4>
+            <p id="rising-synastry"></p>
+          </article>
+          <article>
+            <h4>Data depth confidence</h4>
+            <p id="data-confidence"></p>
+          </article>
+        </div>
+      </section>
+
       <section class="card split-grid">
         <article class="roadmap-card">
           <h3>Love roadmap</h3>
@@ -192,6 +245,19 @@
             <li id="ritual-3"></li>
           </ul>
         </article>
+      </section>
+
+      <section class="card balance-card">
+        <h3>Phase 3 • Practical care vs spontaneous romance</h3>
+        <p class="section-subtitle">
+          Set your relationship’s current balance and get a next-step prompt.
+        </p>
+        <label class="range-label" for="balance-slider">
+          <span>More practical care</span>
+          <input id="balance-slider" type="range" min="0" max="100" value="58" />
+          <span>More spontaneous romance</span>
+        </label>
+        <p id="balance-reading"></p>
       </section>
 
       <section class="card split-grid">

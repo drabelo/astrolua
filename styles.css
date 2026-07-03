@@ -133,7 +133,22 @@ input {
   font: inherit;
 }
 
+select {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+}
+
 input:focus {
+  outline: none;
+  border-color: var(--purple);
+}
+
+select:focus {
   outline: none;
   border-color: var(--purple);
 }
@@ -311,6 +326,65 @@ button:hover {
   line-height: 1.5;
 }
 
+.advanced-card h3,
+.synastry-card h3,
+.balance-card h3 {
+  margin: 0 0 6px;
+}
+
+.section-subtitle {
+  margin: 0 0 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.advanced-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.advanced-grid article {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 14px;
+}
+
+.advanced-grid h4 {
+  margin: 0 0 10px;
+}
+
+.advanced-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.range-label {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+}
+
+.range-label span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--pink);
+}
+
+.balance-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 .dashboard-card h3,
 .score-guide-card h3 {
   margin: 0 0 12px;
@@ -419,9 +493,16 @@ button:hover {
   .input-grid,
   .highlights,
   .row,
+  .advanced-grid,
+  .advanced-row,
   .dashboard-grid,
   .split-grid {
     grid-template-columns: 1fr;
+  }
+
+  .range-label {
+    grid-template-columns: 1fr;
+    gap: 6px;
   }
 
   .top-line {
