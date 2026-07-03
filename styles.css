@@ -389,3 +389,15 @@ blockquote {
     font-size: 0.86rem;
   }
 }
+
+.version-footer {
+  text-align: center;
+  padding: 0 12px 18px;
+  color: #7c699b;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.version-footer strong {
+  color: #5a3f88;
+}
