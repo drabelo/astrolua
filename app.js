@@ -80,6 +80,16 @@ const SIGN_NOTES = {
 };
 
 const SIGN_NAMES = SIGNS.map((item) => item.sign);
+const DERIVED_DEFAULT_PLACEMENTS = {
+  p1Moon: "Sagittarius",
+  p1Rising: "Taurus",
+  p1Venus: "Gemini",
+  p1Mars: "Aries",
+  p2Moon: "Taurus",
+  p2Rising: "Sagittarius",
+  p2Venus: "Virgo",
+  p2Mars: "Scorpio",
+};
 
 const ELEMENT_NOTES = {
   Fire: {
@@ -426,6 +436,15 @@ function populateSignSelects() {
       select.append(new Option(signName, signName));
     });
   });
+
+  document.querySelector("#p1-moon").value = DERIVED_DEFAULT_PLACEMENTS.p1Moon;
+  document.querySelector("#p1-rising").value = DERIVED_DEFAULT_PLACEMENTS.p1Rising;
+  document.querySelector("#p1-venus").value = DERIVED_DEFAULT_PLACEMENTS.p1Venus;
+  document.querySelector("#p1-mars").value = DERIVED_DEFAULT_PLACEMENTS.p1Mars;
+  document.querySelector("#p2-moon").value = DERIVED_DEFAULT_PLACEMENTS.p2Moon;
+  document.querySelector("#p2-rising").value = DERIVED_DEFAULT_PLACEMENTS.p2Rising;
+  document.querySelector("#p2-venus").value = DERIVED_DEFAULT_PLACEMENTS.p2Venus;
+  document.querySelector("#p2-mars").value = DERIVED_DEFAULT_PLACEMENTS.p2Mars;
 }
 
 function updateUI() {
@@ -512,7 +531,7 @@ function updateUI() {
   setBar("#modality-bar", modalityScore);
   setBar("#romance-bar", romanceScore);
   document.querySelector("#accuracy-note").textContent = hasBirthDetails
-    ? "You already included birth time and place for both people. For the most accurate next step, run full synastry with Moon, Venus, Mars, Ascendant, inter-chart aspects, and a composite chart."
+    ? "You already included birth time and place for both people. For the most accurate next step, run full synastry with Moon, Venus, Mars, Ascendant, inter-chart aspects, and a composite chart. (Derived defaults use local Brazil timezone assumptions.)"
     : "For deeper accuracy, include complete birth time/place for both people, then compare Moon, Venus, Mars, Ascendant, inter-chart aspects, and a composite chart.";
 }
 
