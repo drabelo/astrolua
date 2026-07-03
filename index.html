@@ -3,316 +3,117 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Astrolua • Compatibility</title>
+    <title>Astrolua • Dailton + Felipe</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="orb orb-1" aria-hidden="true"></div>
-    <div class="orb orb-2" aria-hidden="true"></div>
-    <div class="stars" aria-hidden="true"></div>
-    <main class="app">
-      <header class="hero card">
-        <p class="pill">✨ Astrolua • Love Edition</p>
-        <h1>A romantic compatibility reading for your relationship</h1>
-        <p class="subtitle">
-          Soft, modern, and centered on what astrology actually prioritizes in relationship matching.
-        </p>
+    <div class="orb orb-a" aria-hidden="true"></div>
+    <div class="orb orb-b" aria-hidden="true"></div>
+    <main class="page">
+      <header class="card hero">
+        <p class="pill">Astrolua • Signature Love Reading</p>
+        <h1>Dailton + Felipe</h1>
+        <p class="subtitle">A static, deep-chart romance profile with your full core placements and actionable relationship guidance.</p>
       </header>
 
-      <section class="input-grid">
-        <article class="card person-card">
-          <h2>Person 1 💗</h2>
-          <label>
-            Full name
-            <input id="p1-name" type="text" value="Dailton Ferandes Rabelo Junior" />
-          </label>
-          <div class="row">
-            <label>
-              Birth date
-              <input id="p1-date" type="date" value="1994-04-29" />
-            </label>
-            <label>
-              Birth time
-              <input id="p1-time" type="time" value="07:20" />
-            </label>
-          </div>
-          <label>
-            Birth place
-            <input id="p1-place" type="text" value="Jussara, Goias, Brazil" />
-          </label>
-        </article>
+      <section class="card highlight">
+        <div class="score">
+          <span class="score-number">93%</span>
+          <span class="score-label">Compatibility</span>
+        </div>
+        <div>
+          <h2>Cosmic headline</h2>
+          <p>
+            Taurus + Virgo gives this relationship rare long-term stability, while your deeper chart adds emotional warmth and magnetic
+            chemistry. This is a high-potential soulmate-style pairing built through consistency, tenderness, and intentional romance.
+          </p>
+        </div>
+      </section>
 
-        <article class="card person-card">
-          <h2>Person 2 💗</h2>
-          <label>
-            Full name
-            <input id="p2-name" type="text" value="Felipe Batista de Sousa" />
-          </label>
-          <div class="row">
-            <label>
-              Birth date
-              <input id="p2-date" type="date" value="1995-09-13" />
-            </label>
-            <label>
-              Birth time
-              <input id="p2-time" type="time" value="10:24" />
-            </label>
-          </div>
-          <label>
-            Birth place
-            <input id="p2-place" type="text" value="Goiania, Goias, Brazil" />
-          </label>
+      <section class="grid two">
+        <article class="card">
+          <h3>Birth profile</h3>
+          <p><strong>Dailton:</strong> Sun Taurus • Moon Sagittarius • Rising Taurus • Venus Gemini • Mars Aries</p>
+          <p><strong>Felipe:</strong> Sun Virgo • Moon Taurus • Rising Sagittarius • Venus Virgo • Mars Scorpio</p>
+        </article>
+        <article class="card">
+          <h3>Core dynamic</h3>
+          <ul>
+            <li><strong>Sun pair:</strong> Earth + Earth foundation (loyal, practical, stable)</li>
+            <li><strong>Moon pair:</strong> Sagittarius + Taurus (growth + emotional grounding)</li>
+            <li><strong>Venus/Mars:</strong> Strong attraction with depth and persistence</li>
+          </ul>
         </article>
       </section>
 
-      <section class="actions">
-        <button id="calculate-btn" type="button">Reveal our love map ✨</button>
-      </section>
-
-      <section class="card advanced-card">
-        <h3>Phase 1 • Deepen the data (Big Three + Love Planets)</h3>
-        <p class="section-subtitle">
-          Moon, Rising, Venus, and Mars are prefilled from your provided birth data, and you can edit them any time.
-        </p>
-        <div class="advanced-grid">
-          <article>
-            <h4>Person 1 placements</h4>
-            <div class="advanced-row">
-              <label>Moon <select id="p1-moon"></select></label>
-              <label>Rising <select id="p1-rising"></select></label>
-            </div>
-            <div class="advanced-row">
-              <label>Venus <select id="p1-venus"></select></label>
-              <label>Mars <select id="p1-mars"></select></label>
-            </div>
-          </article>
-          <article>
-            <h4>Person 2 placements</h4>
-            <div class="advanced-row">
-              <label>Moon <select id="p2-moon"></select></label>
-              <label>Rising <select id="p2-rising"></select></label>
-            </div>
-            <div class="advanced-row">
-              <label>Venus <select id="p2-venus"></select></label>
-              <label>Mars <select id="p2-mars"></select></label>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="card result-card" id="results" aria-live="polite">
-        <div class="top-line">
-          <h2 id="couple-name">Dailton + Felipe</h2>
-          <div class="score-wrap">
-            <span id="score" class="score">0</span>
-            <small>% match</small>
-          </div>
-        </div>
-        <p id="score-caption" class="score-caption"></p>
-
-        <div class="chips">
-          <span class="chip" id="signs-chip">Taurus + Virgo</span>
-          <span class="chip" id="element-chip">Earth + Earth</span>
-          <span class="chip" id="modality-chip">Fixed + Mutable</span>
-          <span class="chip" id="vibe-chip">Steady heart connection</span>
-        </div>
-
-        <p id="reading" class="reading"></p>
-
-        <div class="highlights">
-          <article>
-            <h3>Love strengths</h3>
-            <p id="strengths"></p>
-          </article>
-          <article>
-            <h3>Communication rhythm</h3>
-            <p id="communication"></p>
-          </article>
-          <article>
-            <h3>Romantic date idea</h3>
-            <p id="date-idea"></p>
-          </article>
-        </div>
-
-        <div class="pillars">
-          <h3>Compatibility pillars</h3>
-          <div class="pillar-item">
-            <div class="pillar-line">
-              <span>Element harmony</span><span id="element-score">0%</span>
-            </div>
-            <div class="bar"><span id="element-bar"></span></div>
-          </div>
-          <div class="pillar-item">
-            <div class="pillar-line">
-              <span>Modality flow</span><span id="modality-score">0%</span>
-            </div>
-            <div class="bar"><span id="modality-bar"></span></div>
-          </div>
-          <div class="pillar-item">
-            <div class="pillar-line">
-              <span>Romance expression fit</span><span id="romance-score">0%</span>
-            </div>
-            <div class="bar"><span id="romance-bar"></span></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="card detail-sections">
-        <article>
-          <h3>Emotional focus to emphasize</h3>
-          <p id="emotional-focus"></p>
+      <section class="grid three">
+        <article class="card metric">
+          <h4>Element harmony</h4>
+          <p>84%</p>
+          <small>Strong emotional reliability and daily compatibility.</small>
         </article>
-        <article>
-          <h3>Sweet reminders</h3>
-          <p id="reminders"></p>
+        <article class="card metric">
+          <h4>Modality flow</h4>
+          <p>76%</p>
+          <small>Works best with clear pacing and conflict repair rituals.</small>
+        </article>
+        <article class="card metric">
+          <h4>Romance expression</h4>
+          <p>81%</p>
+          <small>Natural affection grows quickly when romance stays intentional.</small>
         </article>
       </section>
 
-      <section class="card dashboard-card">
-        <h3>Relationship dashboard</h3>
-        <div class="dashboard-grid">
-          <article>
-            <h4>Romance style</h4>
-            <p id="romance-style"></p>
-          </article>
-          <article>
-            <h4>Emotional style</h4>
-            <p id="emotional-style"></p>
-          </article>
-          <article>
-            <h4>Conflict & repair</h4>
-            <p id="conflict-style"></p>
-          </article>
-          <article>
-            <h4>Long-term potential</h4>
-            <p id="growth-style"></p>
-          </article>
+      <section class="card">
+        <h3>Synastry focus (static interpretation)</h3>
+        <div class="grid two">
+          <div>
+            <h4>Moon-to-Moon</h4>
+            <p>
+              Sagittarius Moon + Taurus Moon creates a healthy “adventure and safety” polarity: one partner expands perspective while
+              the other stabilizes emotions.
+            </p>
+          </div>
+          <div>
+            <h4>Venus + Mars</h4>
+            <p>
+              Gemini/Virgo Venus signatures communicate love through detail and effort; Aries/Scorpio Mars adds passion, loyalty, and
+              depth. This is high chemistry with long-game potential.
+            </p>
+          </div>
         </div>
       </section>
 
-      <section class="card synastry-card">
-        <h3>Phase 2 • Synastry focus</h3>
-        <div class="dashboard-grid">
-          <article>
-            <h4>Moon-to-Moon emotional flow</h4>
-            <p id="moon-synastry"></p>
-          </article>
-          <article>
-            <h4>Venus + Mars attraction pattern</h4>
-            <p id="venus-mars-synastry"></p>
-          </article>
-          <article>
-            <h4>Rising sign day-to-day dynamic</h4>
-            <p id="rising-synastry"></p>
-          </article>
-          <article>
-            <h4>Data depth confidence</h4>
-            <p id="data-confidence"></p>
-          </article>
-        </div>
-      </section>
-
-      <section class="card split-grid">
-        <article class="roadmap-card">
+      <section class="grid two">
+        <article class="card">
           <h3>Love roadmap</h3>
           <ol>
-            <li>
-              <strong>Now (next 2 weeks):</strong>
-              <span id="roadmap-now"></span>
-            </li>
-            <li>
-              <strong>Next (next 2 months):</strong>
-              <span id="roadmap-next"></span>
-            </li>
-            <li>
-              <strong>Later (long-term):</strong>
-              <span id="roadmap-later"></span>
-            </li>
+            <li><strong>Now (2 weeks):</strong> Set one no-phone date night and keep it sacred.</li>
+            <li><strong>Next (2 months):</strong> Build a weekly emotional check-in ritual with one appreciation each.</li>
+            <li><strong>Later (long-term):</strong> Define a shared vision for home, money, and lifestyle priorities.</li>
           </ol>
         </article>
-
-        <article class="rituals-card">
-          <h3>Weekly romance rituals</h3>
+        <article class="card">
+          <h3>Watch-fors + green flags</h3>
           <ul>
-            <li id="ritual-1"></li>
-            <li id="ritual-2"></li>
-            <li id="ritual-3"></li>
+            <li><strong>Green flag:</strong> Very high consistency and practical care.</li>
+            <li><strong>Green flag:</strong> Real potential for dependable, long-term partnership.</li>
+            <li><strong>Watch-for:</strong> Taurus/Virgo stubbornness or over-critique during stress.</li>
+            <li><strong>Watch-for:</strong> Over-prioritizing routine and under-prioritizing spontaneity.</li>
           </ul>
         </article>
       </section>
 
-      <section class="card balance-card">
-        <h3>Phase 3 • Practical care vs spontaneous romance</h3>
-        <p class="section-subtitle">
-          Set your relationship’s current balance and get a next-step prompt.
-        </p>
-        <label class="range-label" for="balance-slider">
-          <span>More practical care</span>
-          <input id="balance-slider" type="range" min="0" max="100" value="58" />
-          <span>More spontaneous romance</span>
-        </label>
-        <p id="balance-reading"></p>
-      </section>
-
-      <section class="card split-grid">
-        <article class="green-card">
-          <h3>Green flags to celebrate</h3>
-          <ul>
-            <li id="green-1"></li>
-            <li id="green-2"></li>
-            <li id="green-3"></li>
-          </ul>
-        </article>
-
-        <article class="watch-card">
-          <h3>Watch-fors (so love stays soft)</h3>
-          <ul>
-            <li id="watch-1"></li>
-            <li id="watch-2"></li>
-            <li id="watch-3"></li>
-          </ul>
-        </article>
-      </section>
-
-      <section class="card score-guide-card">
-        <h3>How to read your compatibility score</h3>
-        <p>
-          <strong>90–98:</strong> exceptional natural alignment. <strong>80–89:</strong> strong compatibility with healthy effort.
-          <strong>70–79:</strong> good potential with intentional communication. <strong>Below 70:</strong> strong chemistry can still
-          work beautifully when emotional needs are named clearly.
-        </p>
-      </section>
-
-      <section class="card accuracy-card">
-        <h3>What this reading emphasizes correctly</h3>
-        <ul>
-          <li>Sun-sign dynamics (core identity and relationship tone).</li>
-          <li>Element compatibility (Fire, Earth, Air, Water chemistry).</li>
-          <li>Modality compatibility (Cardinal, Fixed, Mutable pacing).</li>
-        </ul>
-        <p class="accuracy-note" id="accuracy-note"></p>
-      </section>
-
-      <section class="card sources-card">
-        <h3>For deeper synastry (full chart comparison)</h3>
-        <p>
-          Major astrology sites recommend adding Moon, Venus, Mars, inter-chart aspects, and composite charts
-          for deeper compatibility interpretation.
-        </p>
-        <div class="source-links">
-          <a href="https://www.astrology.com/article/astrological-compatibility-venus-mars/" target="_blank" rel="noreferrer">Astrology.com compatibility guide</a>
-          <a href="https://cafeastrology.com/synastry_compatibility.html" target="_blank" rel="noreferrer">Cafe Astrology synastry overview</a>
-          <a href="https://cafeastrology.com/synastry/interchartaspects.html" target="_blank" rel="noreferrer">Cafe Astrology inter-chart aspects</a>
-          <a href="https://www.astro.com/cgi/atxgen.cgi?btyp=acx" target="_blank" rel="noreferrer">Astro.com partner/composite tools</a>
-        </div>
+      <section class="card">
+        <h3>Your wow-level relationship mantra</h3>
+        <blockquote>
+          “Our love is strongest when we pair steady care with playful romance, speak gently before tension grows, and choose each
+          other in small ways every day.”
+        </blockquote>
       </section>
     </main>
-    <script src="./app.js"></script>
   </body>
 </html>
