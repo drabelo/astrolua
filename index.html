@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Astrolua • Compatibility</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="orb orb-1" aria-hidden="true"></div>
+    <div class="orb orb-2" aria-hidden="true"></div>
+    <main class="app">
+      <header class="hero card">
+        <p class="pill">✨ Astrolua</p>
+        <h1>Cute cosmic compatibility for two hearts</h1>
+        <p class="subtitle">
+          A modern and romantic compatibility reading with your birth details.
+        </p>
+      </header>
+
+      <section class="input-grid">
+        <article class="card person-card">
+          <h2>Person 1</h2>
+          <label>
+            Full name
+            <input id="p1-name" type="text" value="Dailton Ferandes Rabelo Junior" />
+          </label>
+          <div class="row">
+            <label>
+              Birth date
+              <input id="p1-date" type="date" value="1994-04-29" />
+            </label>
+            <label>
+              Birth time
+              <input id="p1-time" type="time" value="07:20" />
+            </label>
+          </div>
+          <label>
+            Birth place
+            <input id="p1-place" type="text" value="Jussara, Goias, Brazil" />
+          </label>
+        </article>
+
+        <article class="card person-card">
+          <h2>Person 2</h2>
+          <label>
+            Full name
+            <input id="p2-name" type="text" value="Felipe Batista de Sousa" />
+          </label>
+          <div class="row">
+            <label>
+              Birth date
+              <input id="p2-date" type="date" value="1995-09-13" />
+            </label>
+            <label>
+              Birth time
+              <input id="p2-time" type="time" value="10:24" />
+            </label>
+          </div>
+          <label>
+            Birth place
+            <input id="p2-place" type="text" value="Goiania, Goias, Brazil" />
+          </label>
+        </article>
+      </section>
+
+      <section class="actions">
+        <button id="calculate-btn" type="button">Reveal our stars 💖</button>
+      </section>
+
+      <section class="card result-card" id="results" aria-live="polite">
+        <div class="top-line">
+          <h2 id="couple-name">Dailton + Felipe</h2>
+          <div class="score-wrap">
+            <span id="score" class="score">0</span>
+            <small>% match</small>
+          </div>
+        </div>
+
+        <div class="chips">
+          <span class="chip" id="signs-chip">Taurus + Virgo</span>
+          <span class="chip" id="element-chip">Earth + Earth</span>
+          <span class="chip" id="vibe-chip">Grounded soulmates</span>
+        </div>
+
+        <p id="reading" class="reading"></p>
+
+        <div class="highlights">
+          <article>
+            <h3>Love strengths</h3>
+            <p id="strengths"></p>
+          </article>
+          <article>
+            <h3>Sweet reminders</h3>
+            <p id="reminders"></p>
+          </article>
+          <article>
+            <h3>Romantic date idea</h3>
+            <p id="date-idea"></p>
+          </article>
+        </div>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
