@@ -79,6 +79,29 @@ const SIGN_NOTES = {
   Pisces: { love: "tender and intuitive", need: "empathy and emotional closeness" },
 };
 
+const ELEMENT_NOTES = {
+  Fire: {
+    romance: "bold passion, playful spontaneity, and expressive affection",
+    emotional: "quick feelings that need honest, direct expression",
+  },
+  Earth: {
+    romance: "consistency, loyalty, and acts of practical love",
+    emotional: "steady reassurance and reliability over drama",
+  },
+  Air: {
+    romance: "conversation, curiosity, and witty connection",
+    emotional: "space to process through words and perspective",
+  },
+  Water: {
+    romance: "deep intimacy, tenderness, and emotional fusion",
+    emotional: "gentle listening, empathy, and meaningful closeness",
+  },
+  Unknown: {
+    romance: "care and intentional affection",
+    emotional: "open communication and patience",
+  },
+};
+
 function inRange(month, day, [fromMonth, fromDay], [toMonth, toDay]) {
   if (fromMonth < toMonth || (fromMonth === toMonth && fromDay <= toDay)) {
     return (
@@ -216,6 +239,88 @@ function buildReminders(first, second) {
   return "Avoid mixed signals: confirm plans, express affection clearly, and celebrate small relationship wins.";
 }
 
+function buildRomanceStyle(first, second) {
+  return `${first.sign} brings ${ELEMENT_NOTES[first.element].romance}; ${second.sign} brings ${ELEMENT_NOTES[second.element].romance}. Your best romance style is consistent affection + intentional quality time.`;
+}
+
+function buildEmotionalStyle(first, second) {
+  return `${first.sign} needs ${ELEMENT_NOTES[first.element].emotional}, while ${second.sign} needs ${ELEMENT_NOTES[second.element].emotional}. Name feelings early and reflect back what you heard.`;
+}
+
+function buildConflictStyle(first, second) {
+  if (first.modality === "Fixed" && second.modality === "Fixed") {
+    return "Both of you can hold your ground. Use a repair ritual: pause, validate each other, then return with one concrete request each.";
+  }
+  if (first.modality === "Cardinal" || second.modality === "Cardinal") {
+    return "At least one of you moves quickly. Slow arguments down by agreeing on one issue at a time, then choosing one small next step.";
+  }
+  return "You both adapt fast, but clarity can slip. During conflict, repeat agreements out loud and write them down.";
+}
+
+function buildGrowthStyle(first, second, score) {
+  if (score >= 90) {
+    return "Your chart dynamics support long-term building: home, shared routines, and emotional safety grow quickly when nurtured.";
+  }
+  if (score >= 80) {
+    return "Great potential for lasting love. The relationship strengthens most when expectations and boundaries are explicit.";
+  }
+  return "This pairing can become powerful through emotional maturity: curiosity over defensiveness is your growth superpower.";
+}
+
+function buildRoadmap(first, second) {
+  const now =
+    first.element === second.element
+      ? "Schedule one no-phone quality-time night and protect it."
+      : "Create a weekly emotional check-in with zero interruptions.";
+  const next =
+    first.modality === second.modality
+      ? "Design one shared relationship routine you both commit to."
+      : "Agree on your conflict-repair script and practice it twice.";
+  const later =
+    OPPOSITES[first.sign] === second.sign
+      ? "Use your complementary traits to build a balanced long-term vision."
+      : "Build a shared 12-month plan around love, money, and lifestyle priorities.";
+  return { now, next, later };
+}
+
+function buildRituals(first, second) {
+  const rituals = [
+    "6-second kiss + 20-second hug every day, no exceptions.",
+    "Weekly appreciation round: each person names 3 things they loved this week.",
+    "Monthly romance date where phones stay away for the full date.",
+  ];
+  if (first.element === "Earth" || second.element === "Earth") {
+    rituals[2] = "Monthly cozy home date: cook together and write each other one short love note.";
+  } else if (first.element === "Fire" || second.element === "Fire") {
+    rituals[2] = "Monthly adventure date: do something new together, then debrief feelings after.";
+  } else if (first.element === "Water" || second.element === "Water") {
+    rituals[2] = "Monthly deep-talk night with candles, music, and a shared relationship check-in.";
+  }
+  return rituals;
+}
+
+function buildFlags(first, second) {
+  const green = [
+    `Natural ${first.element.toLowerCase()} + ${second.element.toLowerCase()} chemistry that supports emotional bonding.`,
+    "Strong potential for loyalty when both people communicate needs early.",
+    "Mutual care style can become a stable, romantic long-term rhythm.",
+  ];
+
+  const watch = [
+    "Assuming love is understood without saying it explicitly.",
+    "Letting conflict drag instead of using a clear repair conversation.",
+    "Prioritizing routine so much that romance rituals disappear.",
+  ];
+
+  if (first.modality === "Fixed" || second.modality === "Fixed") {
+    watch[0] = "Digging in during disagreement instead of staying curious.";
+  } else if (first.modality === "Mutable" && second.modality === "Mutable") {
+    watch[1] = "Changing plans too often without confirming each other's expectations.";
+  }
+
+  return { green, watch };
+}
+
 function setBar(id, score) {
   const bar = document.querySelector(id);
   bar.style.width = `${score}%`;
@@ -237,6 +342,9 @@ function updateUI() {
 
   const vibe = vibeByScore(finalScore, first.element === second.element, first.modality === second.modality);
   const hasBirthDetails = Boolean(p1Time && p2Time && p1Place && p2Place);
+  const roadmap = buildRoadmap(first, second);
+  const rituals = buildRituals(first, second);
+  const flags = buildFlags(first, second);
 
   document.querySelector("#couple-name").textContent = `${p1Name} + ${p2Name}`;
   document.querySelector("#score").textContent = String(finalScore);
@@ -256,6 +364,22 @@ function updateUI() {
   );
   document.querySelector("#emotional-focus").textContent = buildEmotionalFocus(p1Name, p2Name, first, second);
   document.querySelector("#reminders").textContent = buildReminders(first, second);
+  document.querySelector("#romance-style").textContent = buildRomanceStyle(first, second);
+  document.querySelector("#emotional-style").textContent = buildEmotionalStyle(first, second);
+  document.querySelector("#conflict-style").textContent = buildConflictStyle(first, second);
+  document.querySelector("#growth-style").textContent = buildGrowthStyle(first, second, finalScore);
+  document.querySelector("#roadmap-now").textContent = roadmap.now;
+  document.querySelector("#roadmap-next").textContent = roadmap.next;
+  document.querySelector("#roadmap-later").textContent = roadmap.later;
+  document.querySelector("#ritual-1").textContent = rituals[0];
+  document.querySelector("#ritual-2").textContent = rituals[1];
+  document.querySelector("#ritual-3").textContent = rituals[2];
+  document.querySelector("#green-1").textContent = flags.green[0];
+  document.querySelector("#green-2").textContent = flags.green[1];
+  document.querySelector("#green-3").textContent = flags.green[2];
+  document.querySelector("#watch-1").textContent = flags.watch[0];
+  document.querySelector("#watch-2").textContent = flags.watch[1];
+  document.querySelector("#watch-3").textContent = flags.watch[2];
   document.querySelector("#element-score").textContent = `${elementScore}%`;
   document.querySelector("#modality-score").textContent = `${modalityScore}%`;
   document.querySelector("#romance-score").textContent = `${romanceScore}%`;
@@ -268,4 +392,5 @@ function updateUI() {
 }
 
 document.querySelector("#calculate-btn").addEventListener("click", updateUI);
+document.querySelectorAll("input").forEach((field) => field.addEventListener("change", updateUI));
 updateUI();
