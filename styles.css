@@ -111,6 +111,24 @@ body {
   line-height: 1.62;
 }
 
+.top-profile {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 10px 0 12px;
+}
+
+.top-profile p {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 .hero-tags {
   display: flex;
   flex-wrap: wrap;
@@ -248,6 +266,7 @@ blockquote {
 
 @media (max-width: 780px) {
   .highlight,
+  .top-profile,
   .grid.two,
   .grid.three {
     grid-template-columns: 1fr;
