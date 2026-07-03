@@ -16,7 +16,11 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;          /* prevents body overflow propagation that breaks position:fixed on Safari */
+  background: var(--bg-0);     /* fallback so no black flash if body::before ever fails to paint */
+}
 
 body {
   font-family: var(--sans);
