@@ -23,8 +23,8 @@ export const I18N = {
         { label: 'Sol em Touro · 8°52\'', text: 'Firme, sensorial e leal. Quando ama, constrói — com paciência e presença. E sim: teimoso, mas do tipo que fica.' },
         { label: 'Lua em Sagitário · 28°58\'', text: 'Por dentro, precisa de horizonte: humor, sinceridade e espaço pra sonhar grande. Uma Lua no último grau — intensa e sábia.' },
         { label: 'Ascendente em Touro · 19°12\'', text: 'Chega trazendo calma. As pessoas sentem estabilidade só de estar perto — e o Sol no mesmo signo do Ascendente deixa tudo ainda mais inteiro: o que se vê é o que é.' },
-        { label: 'Vênus em Câncer · 10°08\'', text: 'Ama cuidando: casa, comida, colo. Carinho, pra Dailton, é um verbo que se conjuga todos os dias.' },
-        { label: 'Marte em Peixes · 21°44\'', text: 'Age pela intuição e evita briga à toa — a força é mansa, mas é força.' },
+        { label: 'Vênus em Gêmeos · 3°51\'', text: 'Ama conversando: piada interna, mensagem no meio do dia, curiosidade um pelo outro. Pra Dailton, papo bom é carinho.' },
+        { label: 'Marte em Áries · 11°21\'', text: 'Fogo direto: quando decide, vai. Pavio rápido também — mas apaga rápido e não guarda mágoa.' },
       ],
     },
     felipeCard: {
@@ -33,8 +33,8 @@ export const I18N = {
         { label: 'Sol em Virgem · 20°16\'', text: 'Amor em forma de gesto útil: reparar, melhorar, resolver. Perfeccionista com o mundo — e consigo mesmo.' },
         { label: 'Lua em Touro · 13°18\'', text: 'O coração pede constância: toque, conforto, rotina boa. Quando se sente seguro, é porto.' },
         { label: 'Ascendente em Escorpião · 25°13\'', text: 'Primeira impressão: olhar profundo, presença magnética, mistério. Não se entrega de cara — mas quando entrega, é inteiro.' },
-        { label: 'Vênus em Libra · 5°41\'', text: 'Ama em dupla: equilíbrio, beleza, gentileza. Vênus em casa própria — romântico de nascença.' },
-        { label: 'Marte junto de Plutão em Sagitário', text: 'Quando quer algo, quer inteiro. Uma determinação silenciosa e profunda.' },
+        { label: 'Vênus em Virgem · 26°41\'', text: 'Ama em forma de cuidado prático: consertar, lembrar, facilitar a sua vida. O gesto pequeno e certeiro é a declaração dele.' },
+        { label: 'Marte em Escorpião · 4°09\'', text: 'No signo do próprio Ascendente: vontade silenciosa e profunda. Quando quer algo, quer inteiro.' },
       ],
     },
 
@@ -44,32 +44,27 @@ export const I18N = {
     aspects: {
       sunMoon: {
         title: 'A Lua dele sobre o Sol seu',
-        badge: 'Lua de Felipe ☌ Sol de Dailton · em Touro',
-        text: 'O aspecto clássico dos casais duradouros. O que Felipe precisa sentir para estar em paz é exatamente o que Dailton simplesmente é. Em Touro, isso vira algo concreto: casa, cheiro de café, presença. Vocês não precisam se esforçar para "funcionar" — o encaixe é de fábrica.',
-      },
-      moonAsc: {
-        title: 'O coração dele no seu horizonte',
-        badge: 'Lua de Felipe ☌ Ascendente de Dailton · em Touro',
-        text: 'A Lua de Felipe também abraça o Ascendente de Dailton. O jeito de Dailton existir no mundo é, para Felipe, sinônimo de segurança emocional. Perto de você, ele se sente em casa — literalmente.',
+        badge: 'Lua de Felipe ☌ Sol e Ascendente de Dailton · em Touro',
+        text: 'O aspecto clássico dos casais duradouros. O que Felipe precisa sentir para estar em paz é exatamente o que Dailton simplesmente é — a Lua dele abraça o seu Sol e o seu Ascendente de uma vez. Em Touro, isso vira algo concreto: casa, cheiro de café, presença. Vocês não precisam se esforçar para "funcionar" — o encaixe é de fábrica.',
       },
       ascSun: {
         title: 'Terra com terra',
-        badge: 'Ascendente de Dailton △ Sol e Mercúrio de Felipe · orbes 1°04\' e 0°18\'',
-        text: 'O Ascendente taurino de Dailton forma trígonos exatos com o Sol e o Mercúrio de Felipe. Fluidez rara no dia a dia: o essencial de um não atrapalha o essencial do outro — apoia. Conversa fácil, convivência que rende.',
+        badge: 'Ascendente de Dailton △ Sol de Felipe · orbe 1°04\'',
+        text: 'O Ascendente taurino de Dailton forma um trígono exato com o Sol virginiano de Felipe. Fluidez rara no cotidiano: o jeito de viver de um apoia — em vez de atrapalhar — o essencial do outro. Convivência que simplesmente rende.',
       },
-      mcJupiter: {
-        title: 'Sorte no futuro a dois',
-        badge: 'Júpiter de Felipe ✶ Meio-do-Céu de Dailton · orbe 0°04\' — exato',
-        text: 'Com precisão de quatro minutos de arco, o Júpiter de Felipe abençoa o ponto de carreira e direção de vida de Dailton. Felipe abre portas para o futuro de Dailton — torce, expande, acredita. Ter alguém assim do lado muda trajetórias.',
+      uranusVenus: {
+        title: 'A faísca que não envelhece',
+        badge: 'Urano de Dailton △ Vênus de Felipe · orbe 0°20\' — quase exato',
+        text: 'O contato mais preciso da sinastria de vocês (e o mais forte do relatório): Urano de Dailton eletriza a Vênus de Felipe, com Plutão dando profundidade no mesmo ponto. Tradução: pra Felipe, amar Dailton nunca vira rotina — tem sempre uma surpresa, um frio na barriga que renova. É o antídoto natural contra a mesmice.',
       },
-      venusMoon: {
-        title: 'Carinho que chega inteiro',
-        badge: 'Vênus de Dailton ✶ Lua de Felipe · água e terra',
-        text: 'A Vênus canceriana de Dailton cuida; a Lua taurina de Felipe recebe. O afeto de um é exatamente o alimento do outro. Domingo em casa, comida boa, silêncio confortável: o amor de vocês tem endereço.',
+      venusJupiter: {
+        title: 'Romance em tamanho grande',
+        badge: 'Vênus de Dailton ☍ Júpiter de Felipe · orbe 4°14\'',
+        text: 'O afeto de um encontra o otimismo do outro e tudo cresce: planos, presentes, risadas, mesa cheia. Só um lembrete carinhoso: generosidade também cabe no orçamento. Exagerar junto é ótimo — combinem só o tamanho do exagero.',
       },
       jupiterMoon: {
         title: 'Expansão do coração',
-        badge: 'Júpiter de Dailton ☍ Lua de Felipe',
+        badge: 'Júpiter de Dailton ☍ Lua de Felipe · orbe 3°24\'',
         text: 'Dailton amplia o que Felipe sente — mais riso, mais fé, mais apetite de vida. O único cuidado: generosidade demais às vezes promete além do combinado. Mas como defeito, é dos bons.',
       },
     },
@@ -78,28 +73,27 @@ export const I18N = {
     realTalkIntro:
       'Nenhuma sinastria de verdade é só flores. Estes aspectos pedem trabalho — e são exatamente os que fazem um amor amadurecer.',
     realAspects: {
-      marsSaturn: {
-        title: 'O freio e o motor',
-        badge: 'Saturno de Felipe ☌ Marte de Dailton · orbe 0°26\' — exato',
-        text: 'O Saturno de Felipe pousa em cima do Marte de Dailton com precisão cirúrgica. Tradução: às vezes o realismo de Felipe soa como freio no impulso de Dailton — e pode doer como crítica, mesmo quando é cuidado. O lado bom é enorme: essa é a assinatura de casais que constroem coisas de longo prazo. O combinado: Felipe tempera o realismo com incentivo; Dailton lembra que "vai devagar" não significa "não vai".',
+      moonVenus: {
+        title: 'Coração livre, amor preciso',
+        badge: 'Lua de Dailton □ Vênus de Felipe · orbe 2°17\'',
+        text: 'A Lua sagitariana de Dailton precisa de espaço, espontaneidade e verdade dita sem filtro. A Vênus virginiana de Felipe ama nos detalhes: o plano, o cuidado, o jeito certo. Às vezes o improviso de um soa como descuido, e o zelo do outro soa como cobrança. Nenhum dos dois é o vilão — é só tradução: liberdade não é desamor, e detalhe não é crítica.',
       },
-      marsSun: {
-        title: 'Faísca de verdade',
-        badge: 'Marte de Dailton ☍ Sol de Felipe · orbe 1°28\'',
-        text: 'Atração e atrito nascem do mesmo aspecto. Vocês se acendem — e de vez em quando batem de frente. A regra de ouro: briguem pelo assunto, nunca um contra o outro. Essa energia, bem usada, é paixão que não esfria.',
+      saturnJupiter: {
+        title: 'O pé no chão e o pé na estrada',
+        badge: 'Saturno de Dailton □ Júpiter de Felipe · orbe 1°58\'',
+        text: 'O senso de limite de Dailton faz ângulo com o otimismo expansivo de Felipe. Nos planos grandes — dinheiro, mudanças, apostas — um vai querer garantias e o outro, fé. A dupla funciona quando cada um faz o seu papel: Felipe sonha o destino, Dailton constrói a estrada.',
+      },
+      mercuryMars: {
+        title: 'Palavras com pimenta',
+        badge: 'Mercúrio de Dailton ☍ Marte de Felipe · orbe 3°33\'',
+        text: 'O jeito de falar de um acende o motor do outro — ótimo para debates, perigoso para discussões às onze da noite. Se o tom subir, façam uma pausa e voltem: a faísca que inflama conversa é a mesma que esquenta o resto. Usem a seu favor.',
       },
       plutoAsc: {
         title: 'Intensidade que transforma',
-        badge: 'Plutão de Dailton ☌ Ascendente de Felipe · orbe 1°21\'',
+        badge: 'Plutão de Dailton ☌ Ascendente de Felipe · orbe 1°59\'',
         text: 'O Plutão de Dailton toca o Ascendente escorpiano de Felipe: essa relação mexe fundo em quem Felipe é — magnetismo forte, e às vezes a sensação de ser visto até demais. O acordo silencioso: profundidade sim, controle não. Transformar sem tentar possuir.',
       },
-      venusVenus: {
-        title: 'Duas línguas de amor',
-        badge: 'Vênus de Dailton □ Vênus de Felipe · Câncer e Libra',
-        text: 'Dailton demonstra amor com profundidade emocional e cuidado; Felipe, com harmonia, estética e palavras gentis. Nenhum dos dois está errado — mas sem tradução, um pode não reconhecer o gesto do outro como amor. Perguntem-se de vez em quando: "como você quer ser amado hoje?"',
-      },
     },
-
     todayTitle: 'O céu de hoje para vocês',
     todayIntro: 'Esta parte se recalcula sozinha, todos os dias, com a posição real dos astros.',
     todayMoonIn: 'Lua em',
@@ -155,10 +149,10 @@ export const I18N = {
     },
     loveNotes: [
       'A Lua dele mora no seu Sol. Alguns encaixes ninguém ensaia.',
-      'Um sextil de 0°04\' não é sorte — é o céu sendo específico sobre vocês.',
+      'Um trígono de 0°20\' não é sorte — é o céu sendo específico sobre vocês.',
       'Touro no Sol de um, na Lua do outro: quando vocês dois dizem "fica", é pra valer.',
-      'O Saturno dele guarda o seu fogo. Chama protegida dura mais.',
-      'Vênus em Câncer cuida, Lua em Touro recebe. O amor de vocês tem cheiro de casa.',
+      'Marte em Áries acende, Lua em Touro sustenta. Fogo com lareira.',
+      'Vênus em Gêmeos conversa, Vênus em Virgem cuida. O amor de vocês fala e faz.',
       'A Lua dele nasceu no seu horizonte. Ele te viu e reconheceu o caminho de casa.',
       'Casais de verdade têm quadraturas de verdade. As suas têm solução: conversa.',
       'Nasceram a 160 km de distância e o céu já tinha combinado tudo.',
@@ -190,8 +184,8 @@ export const I18N = {
         { label: "Sun in Taurus · 8°52'", text: 'Steady, sensory, loyal. When he loves, he builds — with patience and presence. And yes: stubborn, but the kind that stays.' },
         { label: "Moon in Sagittarius · 28°58'", text: 'Inside, he needs horizon: humor, honesty, and room to dream big. A last-degree Moon — intense and wise.' },
         { label: "Taurus Ascendant · 19°12'", text: 'He walks in carrying calm. People feel steadier just being near him — and with Sun and Ascendant in the same sign, what you see is what he is.' },
-        { label: "Venus in Cancer · 10°08'", text: 'He loves by caring: home, food, holding you close. For Dailton, affection is a verb conjugated daily.' },
-        { label: "Mars in Pisces · 21°44'", text: 'He acts on intuition and avoids pointless fights — the strength is gentle, but it is strength.' },
+        { label: "Venus in Gemini · 3°51'", text: 'He loves by talking: inside jokes, a message in the middle of the day, curiosity about you. For Dailton, good conversation is affection.' },
+        { label: "Mars in Aries · 11°21'", text: "Direct fire: once he decides, he goes. A quick fuse too — but it burns out fast and holds no grudges." },
       ],
     },
     felipeCard: {
@@ -200,8 +194,8 @@ export const I18N = {
         { label: "Sun in Virgo · 20°16'", text: 'Love in the shape of useful gestures: fixing, improving, solving. A perfectionist with the world — and with himself.' },
         { label: "Moon in Taurus · 13°18'", text: 'His heart asks for constancy: touch, comfort, good routine. When he feels safe, he is a harbor.' },
         { label: "Scorpio Ascendant · 25°13'", text: "First impression: deep gaze, magnetic presence, mystery. He doesn't hand himself over at once — but when he does, it's whole." },
-        { label: "Venus in Libra · 5°41'", text: 'He loves in pairs: balance, beauty, kindness. Venus in her own sign — a born romantic.' },
-        { label: 'Mars conjunct Pluto in Sagittarius', text: 'When he wants something, he wants it whole. A quiet, deep determination.' },
+        { label: "Venus in Virgo · 26°41'", text: 'He loves through practical care: fixing things, remembering things, making your life easier. The small precise gesture is his declaration.' },
+        { label: "Mars in Scorpio · 4°09'", text: 'In the sign of his own Ascendant: a quiet, deep will. When he wants something, he wants it whole.' },
       ],
     },
 
@@ -211,62 +205,55 @@ export const I18N = {
     aspects: {
       sunMoon: {
         title: 'His Moon on your Sun',
-        badge: "Felipe's Moon ☌ Dailton's Sun · in Taurus",
-        text: "The classic aspect of lasting couples. What Felipe needs in order to feel at peace is exactly what Dailton simply is. In Taurus it becomes concrete: home, the smell of coffee, presence. You don't have to work at 'fitting' — the fit came from the factory.",
-      },
-      moonAsc: {
-        title: 'His heart on your horizon',
-        badge: "Felipe's Moon ☌ Dailton's Ascendant · in Taurus",
-        text: "Felipe's Moon also embraces Dailton's Ascendant. The way Dailton simply exists in the world is, for Felipe, the feeling of emotional safety. Near you, he is home — literally.",
+        badge: "Felipe's Moon ☌ Dailton's Sun and Ascendant · in Taurus",
+        text: "The classic aspect of lasting couples. What Felipe needs in order to feel at peace is exactly what Dailton simply is — his Moon embraces your Sun and your Ascendant at once. In Taurus it becomes concrete: home, the smell of coffee, presence. You don't have to work at 'fitting' — the fit came from the factory.",
       },
       ascSun: {
         title: 'Earth with earth',
-        badge: "Dailton's Ascendant △ Felipe's Sun and Mercury · orbs 1°04' and 0°18'",
-        text: "Dailton's Taurus Ascendant makes exact trines to Felipe's Sun and Mercury. Rare ease in daily life: what is essential to one supports — rather than obstructs — what is essential to the other. Easy talk, a shared life that simply works.",
+        badge: "Dailton's Ascendant △ Felipe's Sun · orb 1°04'",
+        text: "Dailton's Taurus Ascendant makes an exact trine to Felipe's Virgo Sun. Rare ease in daily life: the way one lives supports — rather than obstructs — what is essential to the other. A shared life that simply works.",
       },
-      mcJupiter: {
-        title: 'Luck in the future you share',
-        badge: "Felipe's Jupiter ✶ Dailton's Midheaven · orb 0°04' — exact",
-        text: "To within four arc-minutes, Felipe's Jupiter blesses Dailton's career point and life direction. Felipe opens doors to Dailton's future — believing, expanding, cheering. Having someone like that beside you changes trajectories.",
+      uranusVenus: {
+        title: 'The spark that never ages',
+        badge: "Dailton's Uranus △ Felipe's Venus · orb 0°20' — near exact",
+        text: "The most precise contact in your synastry (and the strongest in the report): Dailton's Uranus electrifies Felipe's Venus, with Pluto adding depth at the same point. Translation: for Felipe, loving Dailton never turns into routine — there is always a surprise, a flutter that renews itself. It is the natural antidote to sameness.",
       },
-      venusMoon: {
-        title: 'Affection that arrives whole',
-        badge: "Dailton's Venus ✶ Felipe's Moon · water and earth",
-        text: "Dailton's Cancer Venus nurtures; Felipe's Taurus Moon receives. One's way of giving love is exactly the other's food. Sunday at home, good food, comfortable silence: your love has an address.",
+      venusJupiter: {
+        title: 'Romance, size large',
+        badge: "Dailton's Venus ☍ Felipe's Jupiter · orb 4°14'",
+        text: "One's affection meets the other's optimism and everything grows: plans, gifts, laughter, a full table. One loving reminder: generosity has a budget too. Overdoing it together is wonderful — just agree on the size of the overdoing.",
       },
       jupiterMoon: {
         title: 'The heart, expanded',
-        badge: "Dailton's Jupiter ☍ Felipe's Moon",
+        badge: "Dailton's Jupiter ☍ Felipe's Moon · orb 3°24'",
         text: 'Dailton amplifies what Felipe feels — more laughter, more faith, more appetite for life. One caution: too much generosity sometimes promises past the plan. But as flaws go, this is a good one.',
       },
     },
-
     realTalkTitle: 'Real talk (the sky is serious too)',
     realTalkIntro:
       'No true synastry is all flowers. These aspects ask for work — and they are exactly the ones that make a love grow up.',
     realAspects: {
-      marsSaturn: {
-        title: 'The brake and the engine',
-        badge: "Felipe's Saturn ☌ Dailton's Mars · orb 0°26' — exact",
-        text: "Felipe's Saturn lands on Dailton's Mars with surgical precision. Translation: sometimes Felipe's realism feels like a brake on Dailton's drive — and can sting like criticism even when it's care. The upside is huge: this is the signature of couples who build long-term things. The deal: Felipe seasons realism with encouragement; Dailton remembers that 'slow down' doesn't mean 'don't go'.",
+      moonVenus: {
+        title: 'Free heart, precise love',
+        badge: "Dailton's Moon □ Felipe's Venus · orb 2°17'",
+        text: "Dailton's Sagittarius Moon needs space, spontaneity, and truth said without a filter. Felipe's Virgo Venus loves in the details: the plan, the care, the right way. Sometimes one's improvising reads as carelessness, and the other's diligence reads as nitpicking. Neither is the villain — it just needs translating: freedom isn't unlove, and detail isn't criticism.",
       },
-      marsSun: {
-        title: 'Real spark',
-        badge: "Dailton's Mars ☍ Felipe's Sun · orb 1°28'",
-        text: "Attraction and friction are born from the same aspect. You light each other up — and now and then you butt heads. Golden rule: fight about the topic, never against each other. Used well, this energy is passion that doesn't cool.",
+      saturnJupiter: {
+        title: 'One foot on the ground, one on the road',
+        badge: "Dailton's Saturn □ Felipe's Jupiter · orb 1°58'",
+        text: "Dailton's sense of limits squares Felipe's expansive optimism. In the big plans — money, moves, bets — one will want guarantees and the other, faith. The duo works when each plays his part: Felipe dreams the destination, Dailton builds the road.",
+      },
+      mercuryMars: {
+        title: 'Words with pepper',
+        badge: "Dailton's Mercury ☍ Felipe's Mars · orb 3°33'",
+        text: "The way one talks revs the other's engine — great for debates, dangerous for arguments at eleven p.m. If the tone climbs, pause and come back: the spark that heats an argument is the same one that heats everything else. Use it in your favor.",
       },
       plutoAsc: {
         title: 'Intensity that transforms',
-        badge: "Dailton's Pluto ☌ Felipe's Ascendant · orb 1°21'",
+        badge: "Dailton's Pluto ☌ Felipe's Ascendant · orb 1°59'",
         text: "Dailton's Pluto touches Felipe's Scorpio Ascendant: this relationship reaches deep into who Felipe is — strong magnetism, and sometimes the feeling of being seen almost too well. The quiet agreement: depth yes, control no. Transform without trying to possess.",
       },
-      venusVenus: {
-        title: 'Two love languages',
-        badge: "Dailton's Venus □ Felipe's Venus · Cancer and Libra",
-        text: "Dailton shows love through emotional depth and caretaking; Felipe through harmony, beauty, and gentle words. Neither is wrong — but without translation, one may not recognize the other's gesture as love. Ask each other now and then: 'how do you want to be loved today?'",
-      },
     },
-
     todayTitle: 'Today’s sky for you two',
     todayIntro: 'This section recalculates itself every day from the real positions of the planets.',
     todayMoonIn: 'Moon in',
@@ -322,10 +309,10 @@ export const I18N = {
     },
     loveNotes: [
       'His Moon lives on your Sun. Some fits no one rehearses.',
-      "A 0°04' sextile isn't luck — it's the sky being specific about you two.",
+      "A 0°20' trine isn't luck — it's the sky being specific about you two.",
       "Taurus in one's Sun, in the other's Moon: when you two say \"stay\", you mean it.",
-      'His Saturn guards your fire. A sheltered flame burns longer.',
-      'Venus in Cancer gives care, Moon in Taurus receives it. Your love smells like home.',
+      'Mars in Aries lights the fire, Moon in Taurus keeps it burning. Flame with a hearth.',
+      'Venus in Gemini talks, Venus in Virgo does. Your love both says and shows.',
       'His Moon rose on your horizon. He saw you and recognized the way home.',
       'Real couples have real squares. Yours come with a fix: talking.',
       'Born 160 km apart, and the sky had already arranged everything.',

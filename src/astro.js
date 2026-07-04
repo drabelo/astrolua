@@ -81,7 +81,11 @@ export function planetLongitudes(date) {
   out.moon = A.EclipticGeoMoon(date).lon;
   const bodies = { mercury: 'Mercury', venus: 'Venus', mars: 'Mars', jupiter: 'Jupiter', saturn: 'Saturn', uranus: 'Uranus', neptune: 'Neptune', pluto: 'Pluto' };
   for (const [k, b] of Object.entries(bodies)) {
-    out[k] = A.EclipticLongitude(A.Body[b], date);
+    // Geocentric ecliptic-of-date longitude. NOT A.EclipticLongitude(), which
+    // is heliocentric and puts Mercury/Venus/Mars whole signs away from where
+    // an astrological chart has them.
+    const ecl = A.Ecliptic(A.GeoVector(A.Body[b], date, true));
+    out[k] = ecl.elon;
   }
   return out;
 }

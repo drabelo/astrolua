@@ -18,41 +18,21 @@
 
 html { scroll-behavior: smooth; }
 
+/* The gradient lives directly on body so it spans the full document —
+   fixed-position background layers get clipped/unpainted by iOS Safari. */
 body {
   font-family: var(--sans);
   color: var(--ink);
-  background: var(--bg-0);
+  background:
+    radial-gradient(1100px 700px at 85% -120px, rgba(242, 166, 200, 0.13), transparent 60%),
+    radial-gradient(900px 640px at 8% 560px, rgba(120, 90, 220, 0.17), transparent 55%),
+    radial-gradient(1000px 800px at 60% 100%, rgba(232, 196, 118, 0.10), transparent 55%),
+    linear-gradient(170deg, var(--bg-0) 0%, var(--bg-1) 40%, var(--bg-2) 72%, var(--bg-3) 100%);
+  background-color: var(--bg-2);
   min-height: 100vh;
   line-height: 1.7;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-}
-
-/* Fixed gradient layer — reliable on mobile, unlike background-attachment: fixed */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background:
-    radial-gradient(1100px 700px at 85% -8%, rgba(242, 166, 200, 0.14), transparent 60%),
-    radial-gradient(900px 640px at 8% 22%, rgba(120, 90, 220, 0.18), transparent 55%),
-    radial-gradient(1000px 800px at 60% 105%, rgba(232, 196, 118, 0.10), transparent 55%),
-    linear-gradient(170deg, var(--bg-0) 0%, var(--bg-1) 40%, var(--bg-2) 72%, var(--bg-3) 100%);
-}
-
-/* soft "moon" glow, top right */
-body::after {
-  content: '';
-  position: fixed;
-  top: -140px;
-  right: -140px;
-  width: 420px;
-  height: 420px;
-  z-index: -1;
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 38%, rgba(255, 244, 214, 0.20), rgba(255, 244, 214, 0.05) 45%, transparent 70%);
-  pointer-events: none;
 }
 
 /* ---- starfield ---- */
@@ -106,6 +86,13 @@ body::after {
   animation: shoot 11s ease-in 3s infinite;
   opacity: 0;
   pointer-events: none;
+}
+.shooting-star.s2 {
+  top: 55%;
+  animation-delay: 8.5s;
+  animation-duration: 14s;
+  width: 110px;
+  transform: rotate(-14deg);
 }
 @keyframes shoot {
   0% { transform: translate(0, 0) rotate(-18deg); opacity: 0; }
@@ -164,6 +151,43 @@ main {
   padding: 4rem 1rem 2rem;
   position: relative;
 }
+/* soft "moon" glow in the hero's top-right corner */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -180px;
+  right: min(-140px, calc((100vw - 100%) / -2));
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, rgba(255, 244, 214, 0.20), rgba(255, 244, 214, 0.05) 45%, transparent 70%);
+  pointer-events: none;
+  animation: moonBreathe 8s ease-in-out infinite;
+}
+@keyframes moonBreathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+/* staggered entrance */
+.hero .kicker, .hero h1, .hero .tagline, .hero .births, .hero .scroll-hint {
+  opacity: 0;
+  animation: rise 0.9s cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+}
+.hero .kicker { animation-delay: 0.1s; }
+.hero h1 { animation-delay: 0.25s; }
+.hero .tagline { animation-delay: 0.45s; }
+.hero .births { animation-delay: 0.65s; }
+.hero .scroll-hint { animation-delay: 1.2s; animation-name: riseThenBob; animation-duration: 3.3s; animation-iteration-count: infinite; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes riseThenBob {
+  0% { opacity: 0; transform: translateY(22px); }
+  12% { opacity: 1; transform: translateY(0); }
+  56% { transform: translateY(7px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
 .hero .kicker {
   font: 600 0.72rem/1 var(--sans);
   letter-spacing: 0.42em;
@@ -177,12 +201,18 @@ main {
   font-size: clamp(2.9rem, 9vw, 5.4rem);
   line-height: 1.06;
   letter-spacing: -0.01em;
-  background: linear-gradient(115deg, #fff 15%, var(--gold) 48%, var(--rose) 85%);
+  background: linear-gradient(115deg, #fff 10%, var(--gold) 35%, var(--rose) 60%, #fff 85%, var(--gold) 110%);
+  background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   margin-bottom: 1.1rem;
   text-wrap: balance;
+  animation: rise 0.9s cubic-bezier(0.22, 0.9, 0.3, 1) 0.25s forwards, shimmerPan 9s ease-in-out 1.4s infinite alternate;
+}
+@keyframes shimmerPan {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
 }
 .hero .tagline {
   font-family: var(--serif);
@@ -211,11 +241,6 @@ main {
   bottom: 2.2rem;
   font-size: 0.84rem;
   color: var(--ink-dim);
-  animation: bob 2.4s ease-in-out infinite;
-}
-@keyframes bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(7px); }
 }
 
 /* ---- sections ---- */
@@ -237,6 +262,12 @@ section > h2 {
   color: var(--gold);
   font-size: 0.8rem;
   margin-bottom: 1.2rem;
+  text-shadow: 0 0 8px rgba(232, 196, 118, 0.0);
+  animation: glyphTwinkle 3.6s ease-in-out infinite;
+}
+@keyframes glyphTwinkle {
+  0%, 100% { text-shadow: 0 0 2px rgba(232, 196, 118, 0.1); opacity: 0.8; }
+  50% { text-shadow: 0 0 12px rgba(232, 196, 118, 0.7); opacity: 1; }
 }
 .sec-divider::before, .sec-divider::after {
   content: '';
@@ -322,15 +353,25 @@ section > .intro {
   position: relative;
   border-radius: 50%;
   padding: 10px;
+  animation: wheelFloat 7s ease-in-out infinite;
+}
+@keyframes wheelFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
 }
 .wheel-frame::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(232, 196, 118, 0.10), transparent 70%);
+  background: radial-gradient(circle, rgba(232, 196, 118, 0.13), transparent 70%);
   filter: blur(20px);
   z-index: -1;
+  animation: haloPulse 5.5s ease-in-out infinite;
+}
+@keyframes haloPulse {
+  0%, 100% { opacity: 0.65; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.04); }
 }
 .wheel-wrap svg {
   width: min(92vw, 580px);
@@ -354,6 +395,7 @@ section > .intro {
 /* ---- aspects ---- */
 .aspect-card {
   position: relative;
+  overflow: hidden;
   background: var(--card);
   border: 1px solid var(--card-line);
   border-left: 3px solid var(--gold-soft);
@@ -368,6 +410,19 @@ section > .intro {
   transform: translateY(-3px);
   box-shadow: 0 16px 40px -18px rgba(0, 0, 0, 0.5);
 }
+.aspect-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.045), transparent);
+  transform: skewX(-18deg);
+  pointer-events: none;
+  transition: left 0.9s ease;
+}
+.aspect-card:hover::after { left: 130%; }
 .aspect-card h3 {
   font-family: var(--serif);
   font-weight: 420;
@@ -419,6 +474,11 @@ section > .intro {
   font-size: 3.2rem;
   line-height: 1;
   filter: drop-shadow(0 0 18px rgba(255, 240, 200, 0.35));
+  animation: moonBob 4.5s ease-in-out infinite;
+}
+@keyframes moonBob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); filter: drop-shadow(0 0 14px rgba(255, 240, 200, 0.28)); }
+  50% { transform: translateY(-6px) rotate(3deg); filter: drop-shadow(0 0 24px rgba(255, 240, 200, 0.5)); }
 }
 .today-moon-text { text-align: left; }
 .today-moon-text .big {
@@ -497,4 +557,14 @@ footer {
   color: var(--ink-dim);
   padding-bottom: 2rem;
 }
-footer .heart { color: var(--rose); }
+footer .heart {
+  color: var(--rose);
+  display: inline-block;
+  animation: heartbeat 2.2s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%, 40%, 100% { transform: scale(1); }
+  10% { transform: scale(1.35); }
+  20% { transform: scale(1); }
+  30% { transform: scale(1.22); }
+}

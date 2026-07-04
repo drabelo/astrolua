@@ -116,12 +116,12 @@ function wheelSVG() {
   const pairs = [
     ['dailton', 'sun', 'felipe', 'moon', 'soft'],
     ['dailton', 'ascendant', 'felipe', 'sun', 'soft'],
-    ['dailton', 'midheaven', 'felipe', 'jupiter', 'soft'],
-    ['dailton', 'venus', 'felipe', 'moon', 'soft'],
+    ['dailton', 'uranus', 'felipe', 'venus', 'soft'],
+    ['dailton', 'venus', 'felipe', 'jupiter', 'soft'],
     ['dailton', 'jupiter', 'felipe', 'moon', 'hard'],
-    ['dailton', 'mars', 'felipe', 'saturn', 'hard'],
-    ['dailton', 'mars', 'felipe', 'sun', 'hard'],
-    ['dailton', 'venus', 'felipe', 'venus', 'hard'],
+    ['dailton', 'moon', 'felipe', 'venus', 'hard'],
+    ['dailton', 'saturn', 'felipe', 'jupiter', 'hard'],
+    ['dailton', 'mercury', 'felipe', 'mars', 'hard'],
     ['dailton', 'pluto', 'felipe', 'ascendant', 'hard'],
   ];
   for (const [pa, ka, pb, kb, kind] of pairs) {
@@ -189,6 +189,7 @@ function render() {
       <button data-lang="en" class="${lang === 'en' ? 'active' : ''}">EN</button>
     </div>
     <div class="shooting-star" aria-hidden="true"></div>
+    <div class="shooting-star s2" aria-hidden="true"></div>
     <main>
       <header class="hero">
         <div class="kicker">${T.heroKicker}</div>
