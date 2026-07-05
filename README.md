@@ -24,6 +24,18 @@ Natal positions are precomputed into `src/chartData.js` (they never change);
 `npm run natal` regenerates the raw numbers for review if birth data is ever
 corrected.
 
+## Weekly horoscopes (astrology-api.io)
+
+`.github/workflows/weekly-extras.yml` runs every Monday (and on demand via
+workflow_dispatch): it calls astrology-api.io for both partners' personalized
+weekly horoscopes (PT + EN), writes `public/api-extras.json`, and commits it,
+which triggers a redeploy. The site renders the section only when that file
+exists and is fresh; otherwise it is hidden.
+
+One-time setup: add the API token as a repository secret named
+`ASTROLOGY_API_KEY` (Settings → Secrets and variables → Actions). The token
+must never be committed — the site is fully client-side and public.
+
 ## Deployment
 
 Pushes to `main` deploy automatically to GitHub Pages via

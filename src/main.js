@@ -36,6 +36,22 @@ const TONE_OF = {
 
 let lang = localStorage.getItem('astrolua-lang') || 'pt';
 
+// Weekly horoscopes fetched by the scheduled workflow into api-extras.json.
+// The section stays hidden until the file exists and is reasonably fresh.
+let apiExtras = null;
+async function loadApiExtras() {
+  try {
+    const res = await fetch('./api-extras.json', { cache: 'no-cache' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const ageDays = (Date.now() - new Date(data.generatedAt)) / 86400000;
+    if (data.weekly && ageDays < 12) {
+      apiExtras = data;
+      render();
+    }
+  } catch { /* no extras — section stays hidden */ }
+}
+
 function tightestTransit(transits, natalPoints) {
   let best = null;
   for (const body of TRANSIT_BODIES) {
@@ -172,6 +188,28 @@ function aspectCardHTML(a) {
   </div>`;
 }
 
+function weeklySectionHTML(T) {
+  if (!apiExtras) return '';
+  const cols = ['dailton', 'felipe'].map(who => {
+    const text = apiExtras.weekly?.[who]?.[lang] || apiExtras.weekly?.[who]?.pt;
+    if (!text) return '';
+    return `<div class="today-col"><h4>${T.weeklyFor[who]}</h4><p>${text}</p></div>`;
+  }).join('');
+  if (!cols) return '';
+  const updated = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' })
+    .format(new Date(apiExtras.generatedAt));
+  return `
+      <section class="weekly">
+        <h2 class="reveal">${T.weeklyTitle}</h2>
+        <div class="sec-divider reveal">☄</div>
+        <p class="intro reveal">${T.weeklyIntro}</p>
+        <div class="today-sky reveal">
+          <div class="today-cols">${cols}</div>
+          <div class="updated-at">${T.weeklyUpdated} ${updated} · astrology-api.io</div>
+        </div>
+      </section>`;
+}
+
 function render() {
   const T = t9();
   document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
@@ -262,7 +300,7 @@ function render() {
           <div class="updated-at">${T.updatedAt} ${dateFmt}</div>
         </div>
       </section>
-
+${weeklySectionHTML(T)}
       <p class="disclaimer">${T.disclaimer}</p>
       <footer>${T.footer} <span class="heart">♥</span></footer>
     </main>
@@ -288,6 +326,7 @@ function render() {
 }
 
 render();
+loadApiExtras();
 // Re-render at local midnight so an open tab rolls over to the new day's sky.
 (function scheduleMidnight() {
   const now = new Date();
