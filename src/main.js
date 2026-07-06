@@ -500,6 +500,155 @@ function destinySectionHTML(T) {
       </section>`;
 }
 
+// --- person-page API insights: love languages, flags, monthly, chapters, places ---
+// Every field on apiExtras.person[who] may be absent — each helper below
+// hides itself (returns '') the moment its own data isn't there.
+function textFor(obj) {
+  if (!obj || typeof obj !== 'object') return null;
+  const t = obj[lang] || obj.pt || obj.en;
+  return typeof t === 'string' && t ? t : null;
+}
+
+function splitParagraphs(text) {
+  return text
+    .split(/\n+/)
+    .map(s => s.trim())
+    .filter(Boolean)
+    .map(p => `<p>${p}</p>`)
+    .join('');
+}
+
+function insightsSectionHTML(T, who) {
+  const person = apiExtras?.person?.[who];
+  if (!person) return '';
+  const loveText = textFor(person.loveLanguages);
+  const flagsText = textFor(person.flags);
+  if (!loveText && !flagsText) return '';
+  const loveCard = loveText ? `<div class="aspect-card reveal">
+    <h3>${T.personApi.loveTitle}</h3>
+    ${splitParagraphs(loveText)}
+  </div>` : '';
+  const flagsCard = flagsText ? `<div class="aspect-card reveal insight-flags">
+    <h3>${T.personApi.flagsTitle}</h3>
+    ${splitParagraphs(flagsText)}
+  </div>` : '';
+  return `
+      <section class="insights">
+        ${loveCard}
+        ${flagsCard}
+      </section>`;
+}
+
+function monthlySectionHTML(T, who) {
+  if (!apiExtras) return '';
+  const text = textFor(apiExtras.monthly?.[who]);
+  if (!text) return '';
+  const updated = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' })
+    .format(new Date(apiExtras.generatedAt));
+  return `
+      <section class="monthly">
+        <h2 class="reveal">${T.personApi.monthlyTitle}</h2>
+        <div class="sec-divider reveal">☉</div>
+        <div class="today-sky reveal">
+          <div class="today-cols"><div class="today-col"><p>${text}</p></div></div>
+          <div class="updated-at">${T.weeklyUpdated} ${updated} · astrology-api.io</div>
+        </div>
+      </section>`;
+}
+
+// Formats a 'YYYY-MM-DD...' string to a localized date without crossing a
+// timezone boundary; anything else is parsed as a best effort, and whatever
+// can't be parsed at all is shown as-is.
+function formatChapterDate(str) {
+  if (typeof str !== 'string' || !str) return '';
+  const dateFmt = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'medium' });
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(str);
+  if (m) {
+    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return isNaN(d.getTime()) ? str : dateFmt.format(d);
+  }
+  const d = new Date(str);
+  return isNaN(d.getTime()) ? str : dateFmt.format(d);
+}
+
+function chapterRangeHTML(start, end) {
+  const s = formatChapterDate(start);
+  const e = formatChapterDate(end);
+  if (s && e) return `<div class="chapter-range">${s} – ${e}</div>`;
+  if (s || e) return `<div class="chapter-range">${s || e}</div>`;
+  return '';
+}
+
+function chapterRowHTML(T, ch) {
+  if (!ch || typeof ch !== 'object') return '';
+  const level = typeof ch.level === 'string' && ch.level ? ch.level : '';
+  const signKey = typeof ch.sign === 'string' ? ch.sign.toLowerCase() : '';
+  const signLabel = signKey && T.signs[signKey] ? T.signs[signKey] : (typeof ch.sign === 'string' ? ch.sign : '');
+  const rulerHTML = typeof ch.ruler === 'string' && ch.ruler ? ` <span class="chapter-ruler">(${ch.ruler})</span>` : '';
+  const signLine = signLabel || rulerHTML ? `<div class="chapter-sign">${signLabel}${rulerHTML}</div>` : '';
+  const rangeHTML = chapterRangeHTML(ch.start, ch.end);
+  if (!signLine && !rangeHTML) return '';
+  return `<div class="chapter-row">
+    ${level ? `<span class="chapter-chip">${level}</span>` : ''}
+    <div class="chapter-body">
+      ${signLine}
+      ${rangeHTML}
+    </div>
+  </div>`;
+}
+
+function chaptersSectionHTML(T, who) {
+  const chapters = apiExtras?.person?.[who]?.chapters;
+  if (!Array.isArray(chapters) || !chapters.length) return '';
+  const rows = chapters.map(ch => chapterRowHTML(T, ch)).filter(Boolean).join('');
+  if (!rows) return '';
+  return `
+      <section class="chapters">
+        <h2 class="reveal">${T.personApi.chaptersTitle}</h2>
+        <div class="sec-divider reveal">⏳</div>
+        <p class="intro reveal">${T.personApi.chaptersIntro}</p>
+        <div class="chapters-list reveal">${rows}</div>
+      </section>`;
+}
+
+// Strength values in the API response are arbitrary/unnormalized, so dots
+// are computed relative to the strongest place in this person's own list.
+function placeDotsHTML(strength, maxStrength) {
+  if (typeof strength !== 'number' || !isFinite(strength) || !maxStrength) return '';
+  const ratio = Math.max(0, strength / maxStrength);
+  const dots = Math.min(5, Math.max(1, Math.round(ratio * 5)));
+  return `<div class="place-dots" aria-hidden="true">${'●'.repeat(dots)}${'○'.repeat(5 - dots)}</div>`;
+}
+
+function placeChipHTML(p, maxStrength) {
+  if (!p || typeof p !== 'object' || typeof p.name !== 'string' || !p.name) return '';
+  const labelHTML = typeof p.label === 'string' && p.label ? `<div class="place-label">${p.label}</div>` : '';
+  const dotsHTML = placeDotsHTML(p.strength, maxStrength);
+  return `<div class="place-chip">
+    <div class="place-name">${p.name}</div>
+    ${labelHTML}
+    ${dotsHTML}
+  </div>`;
+}
+
+function placesSectionHTML(T, who) {
+  const places = apiExtras?.person?.[who]?.places;
+  if (!Array.isArray(places) || !places.length) return '';
+  const strengths = places
+    .map(p => (p && typeof p.strength === 'number' && isFinite(p.strength)) ? p.strength : null)
+    .filter(v => v !== null);
+  const maxStrength = strengths.length ? Math.max(...strengths) : 0;
+  const chips = places.map(p => placeChipHTML(p, maxStrength)).filter(Boolean).join('');
+  if (!chips) return '';
+  return `
+      <section class="places">
+        <h2 class="reveal">${T.personApi.placesTitle}</h2>
+        <div class="sec-divider reveal">🧭</div>
+        <p class="intro reveal">${T.personApi.placesIntro}</p>
+        <div class="places-row reveal">${chips}</div>
+      </section>`;
+}
+
 function weeklySectionHTML(T) {
   if (!apiExtras) return '';
   const cols = ['dailton', 'felipe'].map(who => {
@@ -607,6 +756,7 @@ function personPageHTML(T, sky) {
         </div>
       </section>
 ${personNumerologySectionHTML(T, who)}
+${insightsSectionHTML(T, who)}
       <section class="today">
         <h2 class="reveal">${T.todayTitle}</h2>
         <div class="sec-divider reveal">✧</div>
@@ -634,6 +784,9 @@ ${weeklyText ? `
         <div class="today-sky reveal"><div class="today-cols"><div class="today-col"><p>${weeklyText}</p></div></div>
         <div class="updated-at">${T.weeklyUpdated} ${new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' }).format(new Date(apiExtras.generatedAt))} · astrology-api.io</div></div>
       </section>` : ''}
+${monthlySectionHTML(T, who)}
+${chaptersSectionHTML(T, who)}
+${placesSectionHTML(T, who)}
       <p class="disclaimer">${T.disclaimer}</p>
       <footer>${T.footer} <span class="heart" role="button" tabindex="0" aria-label="${T.heartAria}">♥</span></footer>
     </main>

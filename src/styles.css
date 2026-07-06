@@ -914,6 +914,92 @@ section > .intro {
 .destiny-row-strength .destiny-marker { color: var(--gold); }
 .destiny-row-challenge .destiny-marker { color: var(--rose); }
 
+/* ---- person-page insights (love languages / flags) ---- */
+.insights .aspect-card h3 { color: var(--gold); }
+.insights .aspect-card.insight-flags { border-left-color: rgba(242, 166, 200, 0.5); }
+.insights .aspect-card.insight-flags h3 { color: var(--rose); }
+
+/* ---- life chapters (zodiacal releasing) ---- */
+.chapters-list {
+  max-width: 620px;
+  margin: 0 auto;
+}
+.chapter-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 0.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.chapter-row:last-child { border-bottom: none; }
+.chapter-chip {
+  flex: 0 0 auto;
+  min-width: 2.5rem;
+  text-align: center;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(120deg, rgba(232, 196, 118, 0.22), rgba(232, 196, 118, 0.1));
+  border: 1px solid var(--gold-soft);
+  color: var(--gold);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.chapter-body {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.3rem 1.2rem;
+}
+.chapter-sign {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+}
+.chapter-sign .chapter-ruler {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--ink-dim);
+  margin-left: 0.15rem;
+}
+.chapter-range {
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+
+/* ---- places (astrocartography) ---- */
+.places-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.place-chip {
+  background: rgba(11, 10, 30, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 0.95rem 1.1rem;
+}
+.place-name {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+.place-label {
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+  margin-top: 0.2rem;
+}
+.place-dots {
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+}
+
 /* ---- footer ---- */
 .disclaimer {
   margin-top: 4rem;

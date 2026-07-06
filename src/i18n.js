@@ -204,6 +204,16 @@ export const I18N = {
     weeklyIntro: 'Horóscopo semanal personalizado, calculado sobre os mapas natais completos — renovado toda segunda-feira.',
     weeklyFor: { dailton: 'Para Dailton', felipe: 'Para Felipe' },
     weeklyUpdated: 'Atualizado em',
+
+    personApi: {
+      monthlyTitle: 'O mês pela frente',
+      loveTitle: 'Como você ama',
+      flagsTitle: 'Sinais verdes e vermelhos',
+      chaptersTitle: 'Capítulos de vida',
+      chaptersIntro: 'Ciclos longos de tempo, calculados pela liberação zodiacal: cada capítulo dura anos e muda o tema principal da sua história.',
+      placesTitle: 'Seus lugares no mundo',
+      placesIntro: 'A partir da astrocartografia: os lugares onde as linhas do seu mapa correm mais fortes.',
+    },
     todayTitle: 'O céu de hoje para vocês',
     todayIntro: 'Esta parte se recalcula sozinha, todos os dias, com a posição real dos astros.',
     todayMoonIn: 'Lua em',
@@ -504,6 +514,16 @@ export const I18N = {
     weeklyIntro: 'A personalized weekly horoscope computed on the full natal charts — refreshed every Monday.',
     weeklyFor: { dailton: 'For Dailton', felipe: 'For Felipe' },
     weeklyUpdated: 'Updated',
+
+    personApi: {
+      monthlyTitle: 'The month ahead',
+      loveTitle: 'How you love',
+      flagsTitle: 'Green and red flags',
+      chaptersTitle: 'Life chapters',
+      chaptersIntro: 'Long-period timing from zodiacal releasing: each chapter runs for years and shifts the main theme of your story.',
+      placesTitle: 'Your places in the world',
+      placesIntro: "From astrocartography: the places where this chart's lines run strong.",
+    },
     todayTitle: 'Today’s sky for you two',
     todayIntro: 'This section recalculates itself every day from the real positions of the planets.',
     todayMoonIn: 'Moon in',
