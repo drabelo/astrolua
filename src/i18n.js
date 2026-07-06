@@ -61,6 +61,28 @@ export const I18N = {
         'Juntos, o casal pesa pra terra: construir, cuidar e sustentar é o que vem mais fácil pra vocês dois. A água também tem peso de sobra — sentimento fundo, intuição, memória emocional. O que rareia é leveza: pouco ar (as palavras, nomear o que sente) e pouco fogo (espontaneidade, a faísca do improviso). Não é defeito, é convite: digam em voz alta o que sentem, e coloquem a aventura na agenda — porque, sozinha, ela não costuma aparecer nos mapas de nenhum dos dois.',
     },
 
+    numerology: {
+      title: 'Os números de vocês',
+      intro:
+        'Numerologia pitagórica: soma-se cada dígito da data de nascimento até sobrar um único número — a não ser que caia num número mestre (11, 22, 33), que fica do jeito que é.',
+      coupleTitle: 'Número do casal',
+      meanings: {
+        '1': {
+          title: 'Caminho de Vida 1 — o Líder',
+          text: 'Iniciativa e independência: gosta de abrir caminho, não de seguir o que já está pronto. Uma força que se constrói sozinha — o desafio é aprender a deixar o outro ajudar.',
+        },
+        '3': {
+          title: 'Caminho de Vida 3 — o Comunicador',
+          text: 'Expressão, alegria e criatividade correm soltas. Fala fácil, contagia fácil — o cuidado é não se dispersar em mil ideias e esquecer de terminar alguma.',
+          coupleText: 'Juntos, vocês somam 3: comunicação, alegria e criatividade. Um casal que conversa, ri e cria junto — de projeto a piada interna. O aviso honesto: o 3 também dispersa. Combinem terminar o que começam, um pelo outro.',
+        },
+        '11': {
+          title: 'Caminho de Vida 11 — o Intuitivo',
+          text: 'Um número mestre: sensibilidade fora da curva, intuição que capta o que ainda nem foi dito, e um jeito de inspirar quem está por perto. É energia de alma antiga — nervosa às vezes, e que precisa de chão para não se perder nas próprias antenas.',
+        },
+      },
+    },
+
     synastryTitle: 'Onde os céus se abraçam',
     synastryIntro:
       'Sinastria é sobreposição: o mapa de um tocando o mapa do outro. Estes são os contatos reais mais fortes entre vocês — com o grau exato de cada um.',
@@ -256,6 +278,28 @@ export const I18N = {
       labels: { fire: 'Fire', earth: 'Earth', air: 'Air', water: 'Water' },
       combined:
         "Together, this couple leans earth-heavy: building, tending, and holding steady comes easiest to you two. Water carries plenty of weight too — deep feeling, intuition, emotional memory. What runs thin is lightness: little air (words, naming what you feel) and little fire (spontaneity, the spark of improvising). That's not a flaw, it's an invitation: say out loud what you feel, and put the adventure on the calendar — because left alone, it doesn't tend to show up in either of your charts.",
+    },
+
+    numerology: {
+      title: 'Your numbers',
+      intro:
+        "Pythagorean numerology: add up every digit of a birth date until one number is left — unless it lands on a master number (11, 22, 33), which stays exactly as it is.",
+      coupleTitle: 'Couple number',
+      meanings: {
+        '1': {
+          title: 'Life Path 1 — the Leader',
+          text: "Initiative and independence: he'd rather open the road than follow one already laid out. A self-made kind of drive — the growth edge is learning to let others help.",
+        },
+        '3': {
+          title: 'Life Path 3 — the Communicator',
+          text: 'Expression, joy, and creativity run loose. Talks easily, catches on easily — the thing to watch is scattering across a thousand ideas and never finishing one.',
+          coupleText: "Together you add up to 3: communication, joy, and creativity. A couple who talks, laughs, and creates together — from shared projects to inside jokes. Honest caveat: 3 also scatters. Agree to finish what you start, for each other.",
+        },
+        '11': {
+          title: 'Life Path 11 — the Intuitive',
+          text: "A master number: sensitivity a notch above the curve, intuition that picks up what hasn't even been said yet, and a way of inspiring the people nearby. It's old-soul energy — restless at times, and it needs grounding so it doesn't get lost in its own antennas.",
+        },
+      },
     },
 
     synastryTitle: 'Where your skies embrace',

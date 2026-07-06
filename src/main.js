@@ -158,6 +158,68 @@ function elementsSectionHTML(T) {
       </section>`;
 }
 
+// --- numerology ---
+// Life path number: sum every digit of the birth date (YYYYMMDD), then keep
+// reducing by digit-sum until a single digit — except master numbers 11, 22,
+// 33 are left alone wherever they land, including as a final result.
+function digitSum(n) {
+  return String(n).split('').reduce((sum, ch) => sum + Number(ch), 0);
+}
+const MASTER_NUMBERS = [11, 22, 33];
+function reduceNumerology(n) {
+  while (n > 9 && !MASTER_NUMBERS.includes(n)) {
+    n = digitSum(n);
+  }
+  return n;
+}
+function lifePathNumber(isoDate) {
+  // isoDate: 'YYYY-MM-DD...' — only the date part matters.
+  const digits = isoDate.slice(0, 10).replace(/-/g, '');
+  return reduceNumerology(digitSum(digits));
+}
+function numberCardHTML(T, number, name) {
+  const meaning = T.numerology.meanings[String(number)];
+  return `<div class="card reveal number-card">
+    <div class="number-big">${number}</div>
+    <h3>${meaning.title}</h3>
+    ${name ? `<div class="number-name">${name}</div>` : ''}
+    <p>${meaning.text}</p>
+  </div>`;
+}
+function numerologySectionHTML(T) {
+  const dNum = lifePathNumber(PEOPLE.dailton.birth.iso);
+  const fNum = lifePathNumber(PEOPLE.felipe.birth.iso);
+  const coupleNum = reduceNumerology(dNum + fNum);
+  const coupleMeaning = T.numerology.meanings[String(coupleNum)];
+  return `
+      <section class="numerology">
+        <h2 class="reveal">${T.numerology.title}</h2>
+        <div class="sec-divider reveal">✧</div>
+        <p class="intro reveal">${T.numerology.intro}</p>
+        <div class="numerology-grid">
+          ${numberCardHTML(T, dNum, T.forDailton)}
+          <div class="card reveal number-card couple-number">
+            <div class="number-big">${coupleNum}</div>
+            <h3>${T.numerology.coupleTitle}</h3>
+            <p>${coupleMeaning.coupleText || coupleMeaning.text}</p>
+          </div>
+          ${numberCardHTML(T, fNum, T.forFelipe)}
+        </div>
+      </section>`;
+}
+function personNumerologySectionHTML(T, who) {
+  const num = lifePathNumber(PEOPLE[who].birth.iso);
+  const meaning = T.numerology.meanings[String(num)];
+  return `
+      <section class="numerology person-numerology">
+        <div class="card reveal number-card">
+          <div class="number-big">${num}</div>
+          <h3>${meaning.title}</h3>
+          <p>${meaning.text}</p>
+        </div>
+      </section>`;
+}
+
 // --- synastry wheel SVG ---
 function polar(cx, cy, r, lonDeg) {
   const th = ((180 - lonDeg) * Math.PI) / 180; // 0° Aries at left, counterclockwise
@@ -361,7 +423,7 @@ function personPageHTML(T, sky) {
           <div class="wheel-frame">${wheelSVG([who])}</div>
         </div>
       </section>
-
+${personNumerologySectionHTML(T, who)}
       <section class="today">
         <h2 class="reveal">${T.todayTitle}</h2>
         <div class="sec-divider reveal">✧</div>
@@ -451,6 +513,7 @@ function render() {
         </div>
       </section>
 ${elementsSectionHTML(T)}
+${numerologySectionHTML(T)}
       <section class="synastry">
         <h2 class="reveal">${T.synastryTitle}</h2>
         <div class="sec-divider reveal">❦</div>
