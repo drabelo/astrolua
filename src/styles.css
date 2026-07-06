@@ -75,6 +75,15 @@ body {
   to { opacity: 1; }
 }
 
+/* Once starfield.js is running it paints its own canvas — stop the CSS
+   starfield from also drawing/animating underneath it. If JS never runs,
+   #stars never gets this class and the CSS starfield above is the fallback. */
+#stars.canvas-active,
+#stars.canvas-active::before {
+  background-image: none;
+  animation: none;
+}
+
 /* shooting star */
 .shooting-star {
   position: fixed;

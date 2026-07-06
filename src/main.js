@@ -2,6 +2,7 @@ import './styles.css';
 import { signOf, planetLongitudes, aspectBetween, moonPhaseInfo, nextMoonPhaseSign, wholeSignHouse } from './astro.js';
 import { PEOPLE } from './chartData.js';
 import { I18N } from './i18n.js';
+import { initStarfield } from './starfield.js';
 
 // U+FE0E forces monochrome text glyphs — otherwise many platforms render
 // these as colored emoji, which wrecks the wheel's look.
@@ -729,6 +730,7 @@ function heartBurst(x, y) {
   }
 }
 
+initStarfield();
 render();
 loadApiExtras();
 // Re-render at local midnight so an open tab rolls over to the new day's sky.
