@@ -139,6 +139,24 @@ export const I18N = {
         text: 'O Plutão de Dailton toca o Ascendente escorpiano de Felipe: essa relação mexe fundo em quem Felipe é — magnetismo forte, e às vezes a sensação de ser visto até demais. O acordo silencioso: profundidade sim, controle não. Transformar sem tentar possuir.',
       },
     },
+
+    composite: {
+      title: 'O mapa do meio',
+      intro: 'Um mapa composto é o ponto médio entre dois mapas natais — nem o de um, nem o do outro, mas o retrato astrológico da própria relação, como se ela fosse uma terceira pessoa.',
+      sun: {
+        title: 'Sol composto em Câncer',
+        text: 'A identidade central dessa relação é lar, cuidado, família escolhida — vocês dois, juntos, são uma casa.',
+      },
+      moon: {
+        title: 'Lua composta em Peixes',
+        text: 'O clima emocional da relação: sonhador, empático, precisa de uma honestidade gentil para não escorregar para a idealização.',
+      },
+      venus: {
+        title: 'Vênus composta em Leão',
+        text: 'Como essa relação ama: com orgulho, com calor, celebrada às claras — no primeiro grau exato de Leão, uma declaração de amor que quer brilhar.',
+      },
+    },
+
     weeklyTitle: 'A semana de vocês',
     weeklyIntro: 'Horóscopo semanal personalizado, calculado sobre os mapas natais completos — renovado toda segunda-feira.',
     weeklyFor: { dailton: 'Para Dailton', felipe: 'Para Felipe' },
@@ -357,6 +375,24 @@ export const I18N = {
         text: "Dailton's Pluto touches Felipe's Scorpio Ascendant: this relationship reaches deep into who Felipe is — strong magnetism, and sometimes the feeling of being seen almost too well. The quiet agreement: depth yes, control no. Transform without trying to possess.",
       },
     },
+
+    composite: {
+      title: 'The chart in between',
+      intro: 'A composite chart is the midpoint between two natal charts — not one person\'s sky or the other\'s, but the astrological portrait of the relationship itself, as though it were a third person.',
+      sun: {
+        title: 'Composite Sun in Cancer',
+        text: "This relationship's core identity is home, care, chosen family — the two of you, together, are a home.",
+      },
+      moon: {
+        title: 'Composite Moon in Pisces',
+        text: "The relationship's emotional weather: dreamy, empathic, and it needs gentle honesty so it doesn't drift into idealizing.",
+      },
+      venus: {
+        title: 'Composite Venus in Leo',
+        text: 'How this relationship loves: proudly, warmly, celebrated out in the open — at the very first degree of Leo, a declaration of love that wants to shine.',
+      },
+    },
+
     weeklyTitle: 'Your week ahead',
     weeklyIntro: 'A personalized weekly horoscope computed on the full natal charts — refreshed every Monday.',
     weeklyFor: { dailton: 'For Dailton', felipe: 'For Felipe' },

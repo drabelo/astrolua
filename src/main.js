@@ -220,6 +220,39 @@ function personNumerologySectionHTML(T, who) {
       </section>`;
 }
 
+// --- composite chart ---
+// Circular midpoint (shorter arc) of a placement between the two charts —
+// the standard way to build a composite chart's points.
+function circularMidpoint(a, b) {
+  const d = ((b - a + 540) % 360) - 180;
+  return ((a + d / 2) + 360) % 360;
+}
+function degreeLabel(degree) {
+  const deg = Math.floor(degree);
+  const min = Math.round((degree - deg) * 60);
+  return `${deg}°${String(min).padStart(2, '0')}'`;
+}
+function compositeCardHTML(T, key) {
+  const c = T.composite[key];
+  const lon = circularMidpoint(PEOPLE.dailton.points[key], PEOPLE.felipe.points[key]);
+  const sign = signOf(lon);
+  const badge = `${T.signs[sign.key]} · ${degreeLabel(sign.degree)}`;
+  return `<div class="aspect-card reveal">
+    <h3>${c.title}</h3>
+    <span class="badge">${badge}</span>
+    <p>${c.text}</p>
+  </div>`;
+}
+function compositeSectionHTML(T) {
+  return `
+      <section class="composite">
+        <h2 class="reveal">${T.composite.title}</h2>
+        <div class="sec-divider reveal">◐</div>
+        <p class="intro reveal">${T.composite.intro}</p>
+        ${['sun', 'moon', 'venus'].map(key => compositeCardHTML(T, key)).join('')}
+      </section>`;
+}
+
 // --- synastry wheel SVG ---
 function polar(cx, cy, r, lonDeg) {
   const th = ((180 - lonDeg) * Math.PI) / 180; // 0° Aries at left, counterclockwise
@@ -527,7 +560,7 @@ ${numerologySectionHTML(T)}
         <p class="intro reveal">${T.realTalkIntro}</p>
         ${Object.values(T.realAspects).map(aspectCardHTML).join('')}
       </section>
-
+${compositeSectionHTML(T)}
       <section class="today">
         <h2 class="reveal">${T.todayTitle}</h2>
         <div class="sec-divider reveal">✧</div>

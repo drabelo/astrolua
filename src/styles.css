@@ -578,6 +578,7 @@ section > .intro {
 }
 .aspect-card p { font-size: 0.95rem; opacity: 0.92; }
 .synastry .aspect-card h3 { color: var(--gold); }
+.composite .aspect-card h3 { color: var(--gold); }
 .real .aspect-card { border-left-color: rgba(242, 166, 200, 0.5); }
 .real .aspect-card h3 { color: var(--rose); }
 .real .aspect-card .badge {
