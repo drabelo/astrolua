@@ -11,6 +11,13 @@ export function signOf(lonDeg) {
   return { key: SIGNS[idx], index: idx, degree: lon - idx * 30, lon };
 }
 
+// Whole-sign house of a placement (planetLon) as seen from a chart whose
+// Ascendant sits at ascLon: the Ascendant's sign is the 1st house, and every
+// sign after it counts up one house at a time, wrapping at 12.
+export function wholeSignHouse(planetLon, ascLon) {
+  return ((signOf(planetLon).index - signOf(ascLon).index + 12) % 12) + 1;
+}
+
 function horizonOf(date, observer, lonDeg) {
   const sphere = new A.Spherical(0, lonDeg, 1);
   const vecEct = A.VectorFromSphere(sphere, date);

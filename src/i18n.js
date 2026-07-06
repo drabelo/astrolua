@@ -157,6 +157,39 @@ export const I18N = {
       },
     },
 
+    overlays: {
+      title: 'Onde um mora no céu do outro',
+      intro: 'Overlay é isso: pegar os planetas de um mapa e deixar cair nas casas do outro — casas inteiras, contadas por signo.',
+      inChartOf: { dailton: 'No mapa de Dailton', felipe: 'No mapa de Felipe' },
+      houseChip: (n) => `casa ${n}`,
+      rows: {
+        felipeSunInDailton: {
+          label: 'Sol de Felipe',
+          text: 'Casa do romance, da diversão, da celebração: Felipe acende o setor de paquera e diversão de Dailton — com ele, o amor nunca deixa de ser namoro.',
+        },
+        felipeMoonInDailton: {
+          label: 'Lua de Felipe',
+          text: 'Os sentimentos dele pousam bem em cima da identidade de Dailton: familiaridade instantânea, como se já se conhecessem de outra vida.',
+        },
+        felipeVenusInDailton: {
+          label: 'Vênus de Felipe',
+          text: 'Reforço: o afeto dele também cai na casa do romance — dobra a dose de leveza e paquera entre os dois.',
+        },
+        dailtonSunInFelipe: {
+          label: 'Sol de Dailton',
+          text: 'A casa do casamento e da parceria, sem meio-termo: para Felipe, Dailton é simplesmente "o parceiro" — não existe outra leitura possível.',
+        },
+        dailtonMoonInFelipe: {
+          label: 'Lua de Dailton',
+          text: 'O coração de Dailton dá a Felipe uma sensação de segurança material e física — chão firme debaixo dos pés.',
+        },
+        dailtonVenusInFelipe: {
+          label: 'Vênus de Dailton',
+          text: 'Intimidade profunda, fusão, confiança — um afeto que vai bem além da superfície.',
+        },
+      },
+    },
+
     weeklyTitle: 'A semana de vocês',
     weeklyIntro: 'Horóscopo semanal personalizado, calculado sobre os mapas natais completos — renovado toda segunda-feira.',
     weeklyFor: { dailton: 'Para Dailton', felipe: 'Para Felipe' },
@@ -393,6 +426,39 @@ export const I18N = {
       },
     },
 
+    overlays: {
+      title: "Where each lives in the other's sky",
+      intro: "An overlay drops one chart's planets into the other's houses — whole-sign, one house per zodiac sign.",
+      inChartOf: { dailton: "In Dailton's chart", felipe: "In Felipe's chart" },
+      houseChip: (n) => `${ordinal(n)} house`,
+      rows: {
+        felipeSunInDailton: {
+          label: "Felipe's Sun",
+          text: "The house of romance, play, and celebration: Felipe lights up Dailton's fun-and-flirtation sector — with him, love never stops being courtship.",
+        },
+        felipeMoonInDailton: {
+          label: "Felipe's Moon",
+          text: "His feelings land right on top of Dailton's identity — instant familiarity, like they already knew each other somehow.",
+        },
+        felipeVenusInDailton: {
+          label: "Felipe's Venus",
+          text: 'A double dose: his affection also falls in the romance house — twice the lightness, twice the courtship between them.',
+        },
+        dailtonSunInFelipe: {
+          label: "Dailton's Sun",
+          text: 'The house of marriage and partnership, no ambiguity about it: to Felipe, Dailton simply reads as "the partner" — there is no other way to see it.',
+        },
+        dailtonMoonInFelipe: {
+          label: "Dailton's Moon",
+          text: "Dailton's heart gives Felipe a sense of material and physical security — solid ground underfoot.",
+        },
+        dailtonVenusInFelipe: {
+          label: "Dailton's Venus",
+          text: 'Deep intimacy, merging, trust — an affection that runs well past the surface.',
+        },
+      },
+    },
+
     weeklyTitle: 'Your week ahead',
     weeklyIntro: 'A personalized weekly horoscope computed on the full natal charts — refreshed every Monday.',
     weeklyFor: { dailton: 'For Dailton', felipe: 'For Felipe' },
@@ -479,4 +545,16 @@ export const I18N = {
 
 function cap(s) {
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+// English ordinal suffix (1st, 2nd, 3rd, 4th, ... 11th, 12th, ...).
+function ordinal(n) {
+  const rem100 = n % 100;
+  if (rem100 >= 11 && rem100 <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1: return `${n}st`;
+    case 2: return `${n}nd`;
+    case 3: return `${n}rd`;
+    default: return `${n}th`;
+  }
 }

@@ -477,6 +477,42 @@ section > .intro {
 .numerology-grid .couple-number .number-big { font-size: 3.4rem; }
 .person-numerology .number-card p { text-align: center; max-width: 560px; margin: 0 auto; }
 
+/* ---- house overlays ---- */
+.overlays-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.3rem;
+}
+.overlay-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 1.1rem;
+}
+.overlay-row:last-child { margin-bottom: 0; }
+.overlay-chip {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: linear-gradient(120deg, rgba(232, 196, 118, 0.22), rgba(232, 196, 118, 0.1));
+  border: 1px solid var(--gold-soft);
+  color: var(--gold);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.overlay-body h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--rose);
+  margin-bottom: 0.2rem;
+}
+.overlay-body p {
+  font-size: 0.93rem;
+  opacity: 0.92;
+}
+
 /* ---- wheel ---- */
 .wheel-wrap {
   display: flex;

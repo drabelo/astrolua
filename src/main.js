@@ -1,5 +1,5 @@
 import './styles.css';
-import { signOf, planetLongitudes, aspectBetween, moonPhaseInfo, nextMoonPhaseSign } from './astro.js';
+import { signOf, planetLongitudes, aspectBetween, moonPhaseInfo, nextMoonPhaseSign, wholeSignHouse } from './astro.js';
 import { PEOPLE } from './chartData.js';
 import { I18N } from './i18n.js';
 
@@ -250,6 +250,51 @@ function compositeSectionHTML(T) {
         <div class="sec-divider reveal">◐</div>
         <p class="intro reveal">${T.composite.intro}</p>
         ${['sun', 'moon', 'venus'].map(key => compositeCardHTML(T, key)).join('')}
+      </section>`;
+}
+
+// --- house overlays (whole-sign) ---
+// Drops one person's planet into the other's whole-sign houses: the house
+// number is (planet's sign index - host's Ascendant sign index), wrapped to
+// 1-12. Copy strings live in i18n; only the house number is computed here.
+function overlayRowHTML(T, rowKey, planetLon, ascLon) {
+  const row = T.overlays.rows[rowKey];
+  const house = wholeSignHouse(planetLon, ascLon);
+  return `<div class="overlay-row">
+    <span class="overlay-chip">${T.overlays.houseChip(house)}</span>
+    <div class="overlay-body">
+      <h4>${row.label}</h4>
+      <p>${row.text}</p>
+    </div>
+  </div>`;
+}
+
+function overlayCardHTML(T, title, rows) {
+  return `<div class="card reveal overlay-card">
+    <h3>${title}</h3>
+    ${rows.map(([rowKey, planetLon, ascLon]) => overlayRowHTML(T, rowKey, planetLon, ascLon)).join('')}
+  </div>`;
+}
+
+function overlaysSectionHTML(T) {
+  const d = PEOPLE.dailton.points, f = PEOPLE.felipe.points;
+  return `
+      <section class="overlays">
+        <h2 class="reveal">${T.overlays.title}</h2>
+        <div class="sec-divider reveal">⌂</div>
+        <p class="intro reveal">${T.overlays.intro}</p>
+        <div class="overlays-grid">
+          ${overlayCardHTML(T, T.overlays.inChartOf.dailton, [
+            ['felipeSunInDailton', f.sun, d.ascendant],
+            ['felipeMoonInDailton', f.moon, d.ascendant],
+            ['felipeVenusInDailton', f.venus, d.ascendant],
+          ])}
+          ${overlayCardHTML(T, T.overlays.inChartOf.felipe, [
+            ['dailtonSunInFelipe', d.sun, f.ascendant],
+            ['dailtonMoonInFelipe', d.moon, f.ascendant],
+            ['dailtonVenusInFelipe', d.venus, f.ascendant],
+          ])}
+        </div>
       </section>`;
 }
 
@@ -561,6 +606,7 @@ ${numerologySectionHTML(T)}
         ${Object.values(T.realAspects).map(aspectCardHTML).join('')}
       </section>
 ${compositeSectionHTML(T)}
+${overlaysSectionHTML(T)}
       <section class="today">
         <h2 class="reveal">${T.todayTitle}</h2>
         <div class="sec-divider reveal">✧</div>
