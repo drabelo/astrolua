@@ -225,6 +225,11 @@ export const I18N = {
     updatedAt: 'Calculado em',
     heartAria: 'Clique para soltar corações',
 
+    share: {
+      aria: 'Compartilhar esta página',
+      copied: 'link copiado!',
+    },
+
     mission: {
       label: 'missão do dia',
       items: [
@@ -534,6 +539,11 @@ export const I18N = {
     loveNoteLabel: 'love note of the day',
     updatedAt: 'Computed at',
     heartAria: 'Click to release hearts',
+
+    share: {
+      aria: 'Share this page',
+      copied: 'link copied!',
+    },
 
     mission: {
       label: "today's little mission",

@@ -721,6 +721,33 @@ function navHTML(T) {
   return `<nav class="site-nav" aria-label="Profiles">${link('us')}${link('dailton')}${link('felipe')}</nav>`;
 }
 
+// --- share button ---
+const SHARE_ICON = `<svg class="icon-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line></svg>`;
+const SHARE_CHECK_ICON = `<svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+function shareButtonHTML(T) {
+  return `
+    <button type="button" class="share-btn" id="share-btn" aria-label="${T.share.aria}">
+      ${SHARE_ICON}${SHARE_CHECK_ICON}
+    </button>
+    <div class="share-toast" id="share-toast" role="status" aria-live="polite">${T.share.copied}</div>`;
+}
+
+// Icon swap is driven purely by the `.copied` class (see .share-btn .icon-*
+// rules in styles.css) rather than the `hidden` attribute — SVGElement
+// doesn't reliably reflect the `.hidden` IDL property in every engine.
+let shareToastTimer = null;
+function showShareCopied(btn) {
+  const toast = document.getElementById('share-toast');
+  btn.classList.add('copied');
+  if (toast) toast.classList.add('visible');
+  clearTimeout(shareToastTimer);
+  shareToastTimer = setTimeout(() => {
+    btn.classList.remove('copied');
+    if (toast) toast.classList.remove('visible');
+  }, 2200);
+}
+
 function personPageHTML(T, sky) {
   const who = VIEW; // 'dailton' | 'felipe'
   const card = who === 'dailton' ? T.dailtonCard : T.felipeCard;
@@ -811,6 +838,7 @@ function render() {
       <button data-lang="en" class="${lang === 'en' ? 'active' : ''}">EN</button>
     </div>
     ${navHTML(T)}
+    ${shareButtonHTML(T)}
     <div class="shooting-star" aria-hidden="true"></div>
     <div class="shooting-star s2" aria-hidden="true"></div>`;
 
@@ -927,6 +955,27 @@ function wireUp() {
     }
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  const shareBtn = document.getElementById('share-btn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async () => {
+      const url = window.location.href;
+      const shareData = { title: document.title, url };
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return; // user cancelled — no toast
+          // otherwise fall through to the clipboard fallback below
+        }
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        showShareCopied(shareBtn);
+      } catch { /* clipboard blocked — silently ignore */ }
+    });
+  }
 
   document.querySelectorAll('footer .heart').forEach(heart => {
     heart.addEventListener('click', (e) => heartBurst(e.clientX, e.clientY));
