@@ -4,9 +4,9 @@
 // src/main.js loadApiExtras).
 //
 // Runs in GitHub Actions (.github/workflows/weekly-extras.yml) with the token
-// provided via the ASTROLOGY_API_KEY repository secret. Never commit the key,
-// and never commit public/api-extras.json itself (it is regenerated on every
-// scheduled run and is git-ignored).
+// provided via the ASTROLOGY_API_KEY repository secret. Never commit the key.
+// The workflow itself commits public/api-extras.json after each scheduled
+// run; don't commit a locally generated (or --mock) copy by hand.
 //
 // Local development: `node scripts/fetchApiExtras.mjs --mock` skips the
 // network entirely and writes a realistic mock public/api-extras.json (same
