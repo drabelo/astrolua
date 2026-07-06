@@ -36,12 +36,22 @@ const TONE_OF = {
 
 let lang = localStorage.getItem('astrolua-lang') || 'pt';
 
+// Which page this is: 'us' (relationship home), 'dailton', or 'felipe'.
+// Set via <body data-view="..."> in each entry HTML.
+const VIEW = document.body.dataset.view || 'us';
+const ROOT = VIEW === 'us' ? './' : '../';
+const PAGE_HREFS = {
+  us: VIEW === 'us' ? './' : '../',
+  dailton: VIEW === 'us' ? './dailton/' : '../dailton/',
+  felipe: VIEW === 'us' ? './felipe/' : '../felipe/',
+};
+
 // Weekly horoscopes fetched by the scheduled workflow into api-extras.json.
 // The section stays hidden until the file exists and is reasonably fresh.
 let apiExtras = null;
 async function loadApiExtras() {
   try {
-    const res = await fetch('./api-extras.json', { cache: 'no-cache' });
+    const res = await fetch(ROOT + 'api-extras.json', { cache: 'no-cache' });
     if (!res.ok) return;
     const data = await res.json();
     const ageDays = (Date.now() - new Date(data.generatedAt)) / 86400000;
@@ -154,7 +164,7 @@ function polar(cx, cy, r, lonDeg) {
   return [cx + r * Math.cos(th), cy + r * Math.sin(th)];
 }
 
-function wheelSVG() {
+function wheelSVG(persons = ['dailton', 'felipe']) {
   const size = 580, cx = size / 2, cy = size / 2;
   const rOuter = 276, rZodiacIn = 240, rFelipe = 212, rDailton = 162, rInner = 118;
   let s = `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="Synastry wheel">`;
@@ -196,7 +206,7 @@ function wheelSVG() {
     ['dailton', 'mercury', 'felipe', 'mars', 'hard'],
     ['dailton', 'pluto', 'felipe', 'ascendant', 'hard'],
   ];
-  for (const [pa, ka, pb, kb, kind] of pairs) {
+  for (const [pa, ka, pb, kb, kind] of persons.length === 2 ? pairs : []) {
     const [x1, y1] = polar(cx, cy, rInner, PEOPLE[pa].points[ka]);
     const [x2, y2] = polar(cx, cy, rInner, PEOPLE[pb].points[kb]);
     const style = kind === 'soft'
@@ -221,9 +231,10 @@ function wheelSVG() {
       s += `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${key.length > 2 ? 11 : 19}" font-weight="700" fill="${color}">${PLANET_GLYPHS[key]}</text>`;
     }
   };
-  plot('felipe', rFelipe, '#f2a6c8');
-  plot('dailton', rDailton, '#e8c476');
-  s += `<text x="${cx}" y="${cy - 7}" text-anchor="middle" font-size="15" fill="rgba(243,239,255,0.7)" font-style="italic" style="font-family:Georgia,serif">D ♥ F</text>`;
+  if (persons.includes('felipe')) plot('felipe', persons.length === 1 ? rDailton : rFelipe, '#f2a6c8');
+  if (persons.includes('dailton')) plot('dailton', rDailton, '#e8c476');
+  const centerLabel = persons.length === 2 ? 'D ♥ F' : (persons[0] === 'dailton' ? 'D' : 'F');
+  s += `<text x="${cx}" y="${cy - 7}" text-anchor="middle" font-size="15" fill="rgba(243,239,255,0.7)" font-style="italic" style="font-family:Georgia,serif">${centerLabel}</text>`;
   s += `<text x="${cx}" y="${cy + 14}" text-anchor="middle" font-size="9.5" letter-spacing="2" fill="rgba(243,239,255,0.4)">ASTROLUA</text>`;
   s += '</svg>';
   return s;
@@ -311,10 +322,83 @@ function comingMoonsSectionHTML(T) {
       </section>`;
 }
 
+function navHTML(T) {
+  const link = key => `<a href="${PAGE_HREFS[key]}" class="${VIEW === key ? 'active' : ''}" ${VIEW === key ? 'aria-current="page"' : ''}>${T.nav[key]}</a>`;
+  return `<nav class="site-nav" aria-label="Profiles">${link('us')}${link('dailton')}${link('felipe')}</nav>`;
+}
+
+function personPageHTML(T, sky) {
+  const who = VIEW; // 'dailton' | 'felipe'
+  const card = who === 'dailton' ? T.dailtonCard : T.felipeCard;
+  const birthLine = who === 'dailton' ? T.heroBirthDailton : T.heroBirthFelipe;
+  const page = T.pages[who];
+  const counts = elementCounts(PEOPLE[who].points);
+  const dateFmt = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', {
+    dateStyle: 'full', timeStyle: 'short',
+  }).format(sky.now);
+  const weeklyText = apiExtras?.weekly?.[who]?.[lang] || apiExtras?.weekly?.[who]?.pt;
+  return `
+    <main>
+      <header class="hero person-hero">
+        <div class="kicker">${T.heroKicker}</div>
+        <h1>${PEOPLE[who].name}</h1>
+        <p class="tagline">${page.tagline}</p>
+        <div class="births"><div>${who === 'dailton' ? '☀️' : '🌙'} <span>${birthLine}</span></div></div>
+        <div class="scroll-hint">${T.scrollHint}</div>
+      </header>
+
+      <section class="charts">
+        <h2 class="reveal">${page.chartTitle}</h2>
+        <div class="sec-divider reveal">✦</div>
+        <div class="charts-grid single">
+          ${natalCardHTML(card)}
+          <div class="card reveal">
+            <h3>${T.elements.title}</h3>
+            ${elementBarsHTML(counts, T)}
+          </div>
+        </div>
+        <div class="wheel-wrap reveal">
+          <div class="wheel-frame">${wheelSVG([who])}</div>
+        </div>
+      </section>
+
+      <section class="today">
+        <h2 class="reveal">${T.todayTitle}</h2>
+        <div class="sec-divider reveal">✧</div>
+        <div class="today-sky reveal">
+          <div class="today-head">
+            <span class="moon-emoji">${MOON_EMOJI[sky.moonPhase.phase]}</span>
+            <div class="today-moon-text">
+              <div class="big">${T.todayMoonIn} ${T.signs[sky.moonSign.key]} · ${sky.moonSign.degree.toFixed(0)}°</div>
+              <div class="small">${T.phases[sky.moonPhase.phase]} · ${(sky.moonPhase.illumination * 100).toFixed(0)}%</div>
+            </div>
+          </div>
+          <div class="today-cols">
+            <div class="today-col">
+              <h4>${who === 'dailton' ? T.forDailton : T.forFelipe}</h4>
+              ${transitBlock(sky[who])}
+            </div>
+          </div>
+          <div class="updated-at">${T.updatedAt} ${dateFmt}</div>
+        </div>
+      </section>
+${weeklyText ? `
+      <section class="weekly">
+        <h2 class="reveal">${T.weeklyTitle}</h2>
+        <div class="sec-divider reveal">☄</div>
+        <div class="today-sky reveal"><div class="today-cols"><div class="today-col"><p>${weeklyText}</p></div></div>
+        <div class="updated-at">${T.weeklyUpdated} ${new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' }).format(new Date(apiExtras.generatedAt))} · astrology-api.io</div></div>
+      </section>` : ''}
+      <p class="disclaimer">${T.disclaimer}</p>
+      <footer>${T.footer} <span class="heart">♥</span></footer>
+    </main>
+  `;
+}
+
 function render() {
   const T = t9();
   document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
-  document.title = T.title;
+  document.title = VIEW === 'us' ? T.title : T.pages[VIEW].title;
   const sky = todaySky();
   const dayOfYear = Math.floor((sky.now - new Date(sky.now.getFullYear(), 0, 0)) / 86400000);
   const note = T.loveNotes[dayOfYear % T.loveNotes.length];
@@ -322,13 +406,22 @@ function render() {
     dateStyle: 'full', timeStyle: 'short',
   }).format(sky.now);
 
-  document.getElementById('app').innerHTML = `
+  const chrome = `
     <div class="lang-toggle" role="group" aria-label="Language">
       <button data-lang="pt" class="${lang === 'pt' ? 'active' : ''}">PT</button>
       <button data-lang="en" class="${lang === 'en' ? 'active' : ''}">EN</button>
     </div>
+    ${navHTML(T)}
     <div class="shooting-star" aria-hidden="true"></div>
-    <div class="shooting-star s2" aria-hidden="true"></div>
+    <div class="shooting-star s2" aria-hidden="true"></div>`;
+
+  if (VIEW !== 'us') {
+    document.getElementById('app').innerHTML = chrome + personPageHTML(T, sky);
+    wireUp();
+    return;
+  }
+
+  document.getElementById('app').innerHTML = chrome + `
     <main>
       <header class="hero">
         <div class="kicker">${T.heroKicker}</div>
@@ -408,6 +501,10 @@ ${weeklySectionHTML(T)}
     </main>
   `;
 
+  wireUp();
+}
+
+function wireUp() {
   document.querySelectorAll('.lang-toggle button').forEach(btn => {
     btn.addEventListener('click', () => {
       lang = btn.dataset.lang;

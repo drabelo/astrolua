@@ -13,6 +13,20 @@ export const I18N = {
     heroBirthFelipe: 'Felipe · 13 de setembro de 1995, 09:54 · Goiânia, GO',
     scrollHint: 'desça para ler o céu ✨',
 
+    nav: { us: 'Nós', dailton: 'Dailton', felipe: 'Felipe' },
+    pages: {
+      dailton: {
+        title: 'Dailton — astrolua',
+        tagline: 'O céu de Dailton, por inteiro.',
+        chartTitle: 'O mapa natal',
+      },
+      felipe: {
+        title: 'Felipe — astrolua',
+        tagline: 'O céu de Felipe, por inteiro.',
+        chartTitle: 'O mapa natal',
+      },
+    },
+
     chartsTitle: 'Dois céus, um encontro',
     chartsIntro:
       'Antes da sinastria, cada um tem o seu próprio céu. Estes são os mapas natais calculados com efemérides reais — sem arredondar, sem inventar.',
@@ -195,6 +209,20 @@ export const I18N = {
     heroBirthDailton: 'Dailton · April 29 1994, 7:20 am · Jussara, GO, Brazil',
     heroBirthFelipe: 'Felipe · September 13 1995, 9:54 am · Goiânia, GO, Brazil',
     scrollHint: 'scroll to read the sky ✨',
+
+    nav: { us: 'Us', dailton: 'Dailton', felipe: 'Felipe' },
+    pages: {
+      dailton: {
+        title: 'Dailton — astrolua',
+        tagline: "Dailton's sky, in full.",
+        chartTitle: 'The natal chart',
+      },
+      felipe: {
+        title: 'Felipe — astrolua',
+        tagline: "Felipe's sky, in full.",
+        chartTitle: 'The natal chart',
+      },
+    },
 
     chartsTitle: 'Two skies, one meeting',
     chartsIntro:
