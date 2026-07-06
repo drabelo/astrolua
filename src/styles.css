@@ -300,6 +300,7 @@ section > .intro {
   .reveal { opacity: 1; transform: none; transition: none; }
   #stars, #stars::before, .shooting-star, .hero .scroll-hint { animation: none; }
   html { scroll-behavior: auto; }
+  .element-fill { transition: none; }
 }
 
 /* ---- natal cards ---- */
@@ -341,6 +342,62 @@ section > .intro {
   margin-bottom: 0.1rem;
 }
 .natal-line .text { font-size: 0.93rem; color: var(--ink); opacity: 0.9; }
+
+/* ---- elemental chemistry ---- */
+.elements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.3rem;
+}
+.element-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.7rem;
+}
+.element-bar:last-child { margin-bottom: 0; }
+.element-label {
+  flex: 0 0 3.4rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.element-track {
+  flex: 1;
+  height: 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.element-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 6px;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible .element-fill { width: var(--fill-w); }
+.element-fill.fire { background: rgba(255, 158, 125, 0.85); }
+.element-fill.earth { background: var(--gold); }
+.element-fill.air { background: #a8c6f0; }
+.element-fill.water { background: #8fd0d9; }
+.element-count {
+  flex: 0 0 1.3rem;
+  text-align: right;
+  font-size: 0.82rem;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
+.elements-combined {
+  margin-top: 1.4rem;
+  text-align: center;
+}
+.elements-combined p {
+  max-width: 640px;
+  margin: 0 auto;
+  font-size: 0.96rem;
+}
 
 /* ---- wheel ---- */
 .wheel-wrap {

@@ -92,6 +92,62 @@ function t9() {
   return I18N[lang];
 }
 
+// --- elemental chemistry ---
+// 10 planets + ascendant (midheaven excluded on purpose — it's about
+// placement/career, not temperament).
+const ELEMENT_KEYS = ['fire', 'earth', 'air', 'water'];
+const ELEMENT_POINTS = [
+  'sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn',
+  'uranus', 'neptune', 'pluto', 'ascendant',
+];
+
+function elementCounts(points) {
+  const counts = { fire: 0, earth: 0, air: 0, water: 0 };
+  for (const key of ELEMENT_POINTS) {
+    const el = ELEMENT_KEYS[signOf(points[key]).index % 4];
+    counts[el]++;
+  }
+  return counts;
+}
+
+function elementBarsHTML(counts, T) {
+  return ELEMENT_KEYS.map(el => {
+    const count = counts[el];
+    const pct = ((count / ELEMENT_POINTS.length) * 100).toFixed(1);
+    return `<div class="element-bar">
+      <span class="element-label">${T.elements.labels[el]}</span>
+      <div class="element-track"><div class="element-fill ${el}" style="--fill-w:${pct}%"></div></div>
+      <span class="element-count">${count}</span>
+    </div>`;
+  }).join('');
+}
+
+function elementCardHTML(personKey, counts, T) {
+  const name = personKey === 'dailton' ? T.forDailton : T.forFelipe;
+  return `<div class="card reveal">
+    <h3>${name}</h3>
+    ${elementBarsHTML(counts, T)}
+  </div>`;
+}
+
+function elementsSectionHTML(T) {
+  const dailtonCounts = elementCounts(PEOPLE.dailton.points);
+  const felipeCounts = elementCounts(PEOPLE.felipe.points);
+  return `
+      <section class="elements">
+        <h2 class="reveal">${T.elements.title}</h2>
+        <div class="sec-divider reveal">🜃</div>
+        <p class="intro reveal">${T.elements.intro}</p>
+        <div class="elements-grid">
+          ${elementCardHTML('dailton', dailtonCounts, T)}
+          ${elementCardHTML('felipe', felipeCounts, T)}
+        </div>
+        <div class="today-sky reveal elements-combined">
+          <p>${T.elements.combined}</p>
+        </div>
+      </section>`;
+}
+
 // --- synastry wheel SVG ---
 function polar(cx, cy, r, lonDeg) {
   const th = ((180 - lonDeg) * Math.PI) / 180; // 0° Aries at left, counterclockwise
@@ -256,7 +312,7 @@ function render() {
           </div>
         </div>
       </section>
-
+${elementsSectionHTML(T)}
       <section class="synastry">
         <h2 class="reveal">${T.synastryTitle}</h2>
         <div class="sec-divider reveal">❦</div>

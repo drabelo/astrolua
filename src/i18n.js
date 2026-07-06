@@ -38,6 +38,15 @@ export const I18N = {
       ],
     },
 
+    elements: {
+      title: 'A química dos elementos',
+      intro:
+        'Fogo, terra, ar e água: quanto de cada elemento cada mapa carrega, olhando os dez planetas e o Ascendente de cada um.',
+      labels: { fire: 'Fogo', earth: 'Terra', air: 'Ar', water: 'Água' },
+      combined:
+        'Juntos, o casal pesa pra terra: construir, cuidar e sustentar é o que vem mais fácil pra vocês dois. A água também tem peso de sobra — sentimento fundo, intuição, memória emocional. O que rareia é leveza: pouco ar (as palavras, nomear o que sente) e pouco fogo (espontaneidade, a faísca do improviso). Não é defeito, é convite: digam em voz alta o que sentem, e coloquem a aventura na agenda — porque, sozinha, ela não costuma aparecer nos mapas de nenhum dos dois.',
+    },
+
     synastryTitle: 'Onde os céus se abraçam',
     synastryIntro:
       'Sinastria é sobreposição: o mapa de um tocando o mapa do outro. Estes são os contatos reais mais fortes entre vocês — com o grau exato de cada um.',
@@ -201,6 +210,15 @@ export const I18N = {
         { label: "Venus in Virgo · 26°41'", text: 'He loves through practical care: fixing things, remembering things, making your life easier. The small precise gesture is his declaration.' },
         { label: "Mars in Scorpio · 4°09'", text: 'In the sign of his own Ascendant: a quiet, deep will. When he wants something, he wants it whole.' },
       ],
+    },
+
+    elements: {
+      title: 'Your elemental chemistry',
+      intro:
+        'Fire, earth, air, and water: how much of each element each chart carries, looking at the ten planets and each of your Ascendants.',
+      labels: { fire: 'Fire', earth: 'Earth', air: 'Air', water: 'Water' },
+      combined:
+        "Together, this couple leans earth-heavy: building, tending, and holding steady comes easiest to you two. Water carries plenty of weight too — deep feeling, intuition, emotional memory. What runs thin is lightness: little air (words, naming what you feel) and little fire (spontaneity, the spark of improvising). That's not a flaw, it's an invitation: say out loud what you feel, and put the adventure on the calendar — because left alone, it doesn't tend to show up in either of your charts.",
     },
 
     synastryTitle: 'Where your skies embrace',
