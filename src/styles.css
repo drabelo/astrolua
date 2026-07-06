@@ -337,6 +337,8 @@ section > .intro {
   html { scroll-behavior: auto; }
   .element-fill { transition: none; }
   .moon-day-cell.today { animation: none; }
+  footer .heart { animation: none; }
+  .burst-heart { animation: none; opacity: 0; }
 }
 
 /* ---- natal cards ---- */
@@ -705,6 +707,25 @@ section > .intro {
   max-width: 520px;
   text-wrap: balance;
 }
+.mission-block {
+  margin-top: 1.3rem;
+  text-align: center;
+}
+.mission-block .mission-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.mission-block .mission-line {
+  font-size: 0.98rem;
+  margin: 0.45rem auto 0;
+  max-width: 480px;
+  text-wrap: balance;
+  color: var(--ink);
+  opacity: 0.92;
+}
 .updated-at {
   margin-top: 1.4rem;
   text-align: center;
@@ -799,10 +820,35 @@ footer .heart {
   color: var(--rose);
   display: inline-block;
   animation: heartbeat 2.2s ease-in-out infinite;
+  cursor: pointer;
+  border-radius: 50%;
+}
+footer .heart:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
 }
 @keyframes heartbeat {
   0%, 40%, 100% { transform: scale(1); }
   10% { transform: scale(1.35); }
   20% { transform: scale(1); }
   30% { transform: scale(1.22); }
+}
+
+/* ---- heart burst ---- */
+.burst-heart {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 999;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  animation-name: heartBurst;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+}
+@keyframes heartBurst {
+  0% { transform: translate(-50%, -50%) translate(0, 0) scale(0.7); opacity: 1; }
+  100% { transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(1); opacity: 0; }
 }

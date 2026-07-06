@@ -203,6 +203,27 @@ export const I18N = {
     noMajorTransit: 'Céu tranquilo: nenhum trânsito apertado hoje — aproveitem a calmaria.',
     loveNoteLabel: 'nota de amor do dia',
     updatedAt: 'Calculado em',
+    heartAria: 'Clique para soltar corações',
+
+    mission: {
+      label: 'missão do dia',
+      items: [
+        'Mandem um ao outro uma foto do céu de onde cada um está agora.',
+        'Digam um elogio que nunca falaram em voz alta — hoje é a hora.',
+        'Escolham juntos a música da semana de vocês dois.',
+        'Dez minutos de celular longe, só conversa.',
+        'Descubram juntos em que fase está a Lua hoje.',
+        'Perguntem um ao outro qual foi a melhor parte do dia — e escutem de verdade.',
+        'Façam uma lista de três coisas pra fazer juntos ainda este ano.',
+        'Mandem um áudio de bom-dia só porque sim.',
+        'Relembrem, com detalhes, o dia em que se conheceram.',
+        'Escolham um filme pra assistir "juntos", mesmo à distância.',
+        'Contem um pro outro o que sentiu na primeira vez que se viram.',
+        'Mandem uma foto de algo que fez vocês pensarem um no outro hoje.',
+        'Terminem a frase "Com você, eu..." e mandem a resposta sem pensar demais.',
+        'Escolham um signo do zodíaco e inventem uma piada interna sobre ele.',
+      ],
+    },
 
     moons: {
       title: 'As próximas luas',
@@ -472,6 +493,27 @@ export const I18N = {
     noMajorTransit: 'A quiet sky: no tight transits today — enjoy the calm.',
     loveNoteLabel: 'love note of the day',
     updatedAt: 'Computed at',
+    heartAria: 'Click to release hearts',
+
+    mission: {
+      label: "today's little mission",
+      items: [
+        'Send each other a photo of the sky where you are right now.',
+        "Say a compliment you've never said out loud — today's the day.",
+        'Pick your song of the week, together.',
+        'Ten minutes away from your phones, just talking.',
+        'Figure out together what moon phase it is today.',
+        'Ask each other what the best part of your day was — and really listen.',
+        'Make a list of three things to do together before the year ends.',
+        'Send a good-morning voice note just because.',
+        'Retell, in detail, the day you met.',
+        'Pick a movie to watch "together," even apart.',
+        'Tell each other what you felt the first time you saw one another.',
+        'Send a photo of something that made you think of the other today.',
+        'Finish the sentence "With you, I..." and send the answer without overthinking it.',
+        'Pick a zodiac sign and invent an inside joke about it.',
+      ],
+    },
 
     moons: {
       title: 'The coming moons',

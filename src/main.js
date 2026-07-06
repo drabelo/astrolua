@@ -530,7 +530,7 @@ ${weeklyText ? `
         <div class="updated-at">${T.weeklyUpdated} ${new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' }).format(new Date(apiExtras.generatedAt))} · astrology-api.io</div></div>
       </section>` : ''}
       <p class="disclaimer">${T.disclaimer}</p>
-      <footer>${T.footer} <span class="heart">♥</span></footer>
+      <footer>${T.footer} <span class="heart" role="button" tabindex="0" aria-label="${T.heartAria}">♥</span></footer>
     </main>
   `;
 }
@@ -542,6 +542,7 @@ function render() {
   const sky = todaySky();
   const dayOfYear = Math.floor((sky.now - new Date(sky.now.getFullYear(), 0, 0)) / 86400000);
   const note = T.loveNotes[dayOfYear % T.loveNotes.length];
+  const mission = T.mission.items[dayOfYear % T.mission.items.length];
   const dateFmt = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', {
     dateStyle: 'full', timeStyle: 'short',
   }).format(sky.now);
@@ -633,13 +634,17 @@ ${overlaysSectionHTML(T)}
             <div class="ln-label">${T.loveNoteLabel}</div>
             <blockquote>“${note}”</blockquote>
           </div>
+          <div class="mission-block">
+            <div class="mission-label">${T.mission.label}</div>
+            <p class="mission-line">${mission}</p>
+          </div>
           <div class="updated-at">${T.updatedAt} ${dateFmt}</div>
         </div>
       </section>
 ${comingMoonsSectionHTML(T)}
 ${weeklySectionHTML(T)}
       <p class="disclaimer">${T.disclaimer}</p>
-      <footer>${T.footer} <span class="heart">♥</span></footer>
+      <footer>${T.footer} <span class="heart" role="button" tabindex="0" aria-label="${T.heartAria}">♥</span></footer>
     </main>
   `;
 
@@ -664,6 +669,64 @@ function wireUp() {
     }
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  document.querySelectorAll('footer .heart').forEach(heart => {
+    heart.addEventListener('click', (e) => heartBurst(e.clientX, e.clientY));
+    heart.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        const rect = heart.getBoundingClientRect();
+        heartBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      }
+    });
+  });
+}
+
+// --- heart burst ---
+const BURST_COUNT = 14;
+const BURST_COLORS = ['var(--rose)', 'var(--gold)', '#ffffff'];
+const BURST_MAX_NODES = 60;
+
+function heartBurst(x, y) {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return; // the footer heart already carries a subtle static/pulse look — no extra motion
+  }
+  // Guard against rapid re-clicks piling up nodes: trim the oldest before adding more.
+  const existing = document.querySelectorAll('.burst-heart');
+  const overflow = existing.length + BURST_COUNT - BURST_MAX_NODES;
+  for (let i = 0; i < overflow; i++) {
+    if (existing[i]) existing[i].remove();
+  }
+
+  for (let i = 0; i < BURST_COUNT; i++) {
+    const span = document.createElement('span');
+    span.className = 'burst-heart';
+    span.textContent = '♥';
+    span.setAttribute('aria-hidden', 'true');
+
+    const dx = (Math.random() - 0.5) * 140;
+    const dy = -(70 + Math.random() * 110);
+    const size = 10 + Math.random() * 16;
+    const color = BURST_COLORS[Math.floor(Math.random() * BURST_COLORS.length)];
+    const duration = 0.8 + Math.random() * 0.7;
+    const delay = Math.random() * 0.12;
+
+    span.style.left = `${x}px`;
+    span.style.top = `${y}px`;
+    span.style.setProperty('--dx', `${dx}px`);
+    span.style.setProperty('--dy', `${dy}px`);
+    span.style.fontSize = `${size}px`;
+    span.style.color = color;
+    span.style.opacity = (0.55 + Math.random() * 0.45).toFixed(2);
+    span.style.animationDuration = `${duration}s`;
+    span.style.animationDelay = `${delay}s`;
+
+    document.body.appendChild(span);
+    const cleanup = () => span.remove();
+    span.addEventListener('animationend', cleanup);
+    // Safety net in case animationend doesn't fire (e.g. tab backgrounded).
+    setTimeout(cleanup, (duration + delay) * 1000 + 400);
+  }
 }
 
 render();
