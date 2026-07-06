@@ -117,6 +117,15 @@ export const I18N = {
     loveNoteLabel: 'nota de amor do dia',
     updatedAt: 'Calculado em',
 
+    moons: {
+      title: 'As próximas luas',
+      intro: 'Catorze dias de lua, do jeito que o céu vai desenhar — e as duas luas que vêm por aí, nova e cheia, cada uma com o signo em que acontece.',
+      nextNew: 'Próxima Lua Nova',
+      nextFull: 'Próxima Lua Cheia',
+      newLine: 'Boa lua pra plantar uma semente juntos — uma intenção, um plano, um começo pequeno.',
+      fullLine: 'Boa lua pra celebrar ou fechar um ciclo juntos — o que já floresceu entre vocês.',
+    },
+
     phases: {
       'new': 'Lua nova', 'waxing-crescent': 'Lua crescente', 'first-quarter': 'Quarto crescente',
       'waxing-gibbous': 'Gibosa crescente', 'full': 'Lua cheia', 'waning-gibbous': 'Gibosa minguante',
@@ -289,6 +298,15 @@ export const I18N = {
     noMajorTransit: 'A quiet sky: no tight transits today — enjoy the calm.',
     loveNoteLabel: 'love note of the day',
     updatedAt: 'Computed at',
+
+    moons: {
+      title: 'The coming moons',
+      intro: "Fourteen days of moon, drawn the way the sky will show it — plus the next two moons ahead, new and full, each with the sign it lands in.",
+      nextNew: 'Next New Moon',
+      nextFull: 'Next Full Moon',
+      newLine: 'A good moon to plant a seed together — an intention, a plan, a small beginning.',
+      fullLine: 'A good moon to celebrate or complete something together — whatever has bloomed between you two.',
+    },
 
     phases: {
       'new': 'New Moon', 'waxing-crescent': 'Waxing crescent', 'first-quarter': 'First quarter',

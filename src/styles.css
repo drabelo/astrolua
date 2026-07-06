@@ -301,6 +301,7 @@ section > .intro {
   #stars, #stars::before, .shooting-star, .hero .scroll-hint { animation: none; }
   html { scroll-behavior: auto; }
   .element-fill { transition: none; }
+  .moon-day-cell.today { animation: none; }
 }
 
 /* ---- natal cards ---- */
@@ -596,6 +597,72 @@ section > .intro {
   font-size: 0.72rem;
   color: var(--ink-dim);
 }
+
+/* ---- coming moons ---- */
+.moon-strip {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.3rem 0.2rem 0.9rem;
+  margin: -0.3rem -0.2rem -0.9rem;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+.moon-strip::-webkit-scrollbar { height: 6px; }
+.moon-strip::-webkit-scrollbar-thumb { background: var(--card-line); border-radius: 999px; }
+.moon-day-cell {
+  scroll-snap-align: center;
+  flex: 0 0 auto;
+  width: 3.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.7rem 0.3rem;
+  background: rgba(11, 10, 30, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+}
+.mdc-weekday {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.mdc-emoji { font-size: 1.4rem; line-height: 1; }
+.mdc-num { font-size: 0.78rem; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.moon-day-cell.today {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(232, 196, 118, 0.35);
+  animation: todayRingPulse 2.6s ease-in-out infinite;
+}
+.moon-day-cell.today .mdc-weekday,
+.moon-day-cell.today .mdc-num { color: var(--gold); }
+@keyframes todayRingPulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(232, 196, 118, 0.35); }
+  50% { box-shadow: 0 0 0 4px rgba(232, 196, 118, 0.15); }
+}
+.moon-highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.3rem;
+  margin-top: 1.6rem;
+}
+.moon-highlight { text-align: center; }
+.moon-highlight .mh-emoji { font-size: 2.4rem; margin-bottom: 0.5rem; }
+.moon-highlight h4 {
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.4rem;
+}
+.moon-highlight .mh-date { font-size: 0.95rem; }
+.moon-highlight .mh-sign { font-size: 0.85rem; color: var(--rose); margin-bottom: 0.7rem; }
+.moon-highlight p { font-size: 0.92rem; opacity: 0.92; }
 
 /* ---- footer ---- */
 .disclaimer {

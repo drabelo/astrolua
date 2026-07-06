@@ -1,5 +1,5 @@
 import './styles.css';
-import { signOf, planetLongitudes, aspectBetween, moonPhaseInfo } from './astro.js';
+import { signOf, planetLongitudes, aspectBetween, moonPhaseInfo, nextMoonPhaseSign } from './astro.js';
 import { PEOPLE } from './chartData.js';
 import { I18N } from './i18n.js';
 
@@ -266,6 +266,51 @@ function weeklySectionHTML(T) {
       </section>`;
 }
 
+// --- coming moons ---
+function comingMoonsSectionHTML(T) {
+  const now = new Date();
+  const locale = lang === 'pt' ? 'pt-BR' : 'en-US';
+  const weekdayFmt = new Intl.DateTimeFormat(locale, { weekday: 'narrow' });
+
+  const strip = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i, 12, 0, 0);
+    const phase = moonPhaseInfo(d);
+    const today = i === 0;
+    return `<div class="moon-day-cell${today ? ' today' : ''}">
+      <span class="mdc-weekday">${weekdayFmt.format(d)}</span>
+      <span class="mdc-emoji">${MOON_EMOJI[phase.phase]}</span>
+      <span class="mdc-num">${d.getDate()}</span>
+    </div>`;
+  }).join('');
+
+  const nextNew = nextMoonPhaseSign(0, now);
+  const nextFull = nextMoonPhaseSign(180, now);
+  const fullDateFmt = new Intl.DateTimeFormat(locale, { dateStyle: 'full' });
+
+  const highlightCard = (emoji, label, when, line) => `
+    <div class="card reveal moon-highlight">
+      <div class="mh-emoji">${emoji}</div>
+      <h4>${label}</h4>
+      <div class="mh-date">${fullDateFmt.format(when.date)}</div>
+      <div class="mh-sign">${T.signs[when.sign.key]}</div>
+      <p>${line}</p>
+    </div>`;
+
+  return `
+      <section class="moons">
+        <h2 class="reveal">${T.moons.title}</h2>
+        <div class="sec-divider reveal">☽</div>
+        <p class="intro reveal">${T.moons.intro}</p>
+        <div class="today-sky reveal">
+          <div class="moon-strip">${strip}</div>
+        </div>
+        <div class="moon-highlights">
+          ${highlightCard(MOON_EMOJI['new'], T.moons.nextNew, nextNew, T.moons.newLine)}
+          ${highlightCard(MOON_EMOJI['full'], T.moons.nextFull, nextFull, T.moons.fullLine)}
+        </div>
+      </section>`;
+}
+
 function render() {
   const T = t9();
   document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
@@ -356,6 +401,7 @@ ${elementsSectionHTML(T)}
           <div class="updated-at">${T.updatedAt} ${dateFmt}</div>
         </div>
       </section>
+${comingMoonsSectionHTML(T)}
 ${weeklySectionHTML(T)}
       <p class="disclaimer">${T.disclaimer}</p>
       <footer>${T.footer} <span class="heart">♥</span></footer>

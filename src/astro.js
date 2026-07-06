@@ -122,6 +122,15 @@ export function aspectBetween(lonA, lonB, orbs = ASPECTS) {
   return best;
 }
 
+// Finds the next moment the Moon reaches a given phase angle (0=new,
+// 180=full) after `fromDate`, and the zodiac sign the Moon is in then.
+export function nextMoonPhaseSign(targetLonDeg, fromDate, limitDays = 40) {
+  const found = A.SearchMoonPhase(targetLonDeg, fromDate, limitDays);
+  const date = found.date;
+  const sign = signOf(A.EclipticGeoMoon(date).lon);
+  return { date, sign };
+}
+
 export function moonPhaseInfo(date) {
   const angle = A.MoonPhase(date); // 0=new, 90=first quarter, 180=full, 270=last quarter
   const illum = A.Illumination(A.Body.Moon, date).phase_fraction;
