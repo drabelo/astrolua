@@ -396,6 +396,110 @@ function aspectCardHTML(a) {
   </div>`;
 }
 
+// --- destiny score (couple compatibility-score + synastry-report) ---
+function destinyScoreDialHTML(T, score) {
+  const value = typeof score.value === 'number' ? score.value : null;
+  const normalized = typeof score.normalized === 'number' ? score.normalized : null;
+  const overall = typeof score.overall === 'string' ? score.overall.replace(/-/g, ' ') : null;
+  const description = typeof score.description === 'string' ? score.description : null;
+  if (value === null && normalized === null && !overall && !description) return '';
+
+  const size = 160, cx = size / 2, cy = size / 2, r = 64, strokeW = 13;
+  const circumference = 2 * Math.PI * r;
+  let ringSVG = '';
+  if (normalized !== null) {
+    const pct = Math.max(0, Math.min(1, normalized));
+    const offset = circumference * (1 - pct);
+    ringSVG = `<circle class="ring-fill" cx="${cx}" cy="${cy}" r="${r}" stroke-width="${strokeW}"
+        style="stroke-dasharray:${circumference.toFixed(2)}px; --circumference:${circumference.toFixed(2)}px; --offset:${offset.toFixed(2)}px;"/>`;
+  }
+
+  return `<div class="destiny-dial-wrap">
+    <div class="destiny-dial">
+      <svg class="score-ring" viewBox="0 0 ${size} ${size}" role="img" aria-label="${T.destiny.title}">
+        <defs>
+          <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="var(--gold)"/>
+            <stop offset="100%" stop-color="var(--rose)"/>
+          </linearGradient>
+        </defs>
+        <circle class="ring-track" cx="${cx}" cy="${cy}" r="${r}" stroke-width="${strokeW}"/>
+        ${ringSVG}
+      </svg>
+      <div class="score-center">
+        ${value !== null ? `<div class="score-value">${value}</div>` : ''}
+        ${overall ? `<div class="score-overall">${overall}</div>` : ''}
+      </div>
+    </div>
+    <p class="score-caption-static">${T.destiny.scoreCaption}</p>
+    ${description ? `<p class="score-caption">${description}</p>` : ''}
+  </div>`;
+}
+
+function destinyHarmonyHTML(T, synastry) {
+  const harmonyPct = typeof synastry.harmonyPct === 'number' ? synastry.harmonyPct : null;
+  const tensionPct = typeof synastry.tensionPct === 'number' ? synastry.tensionPct : null;
+  const dynamicType = typeof synastry.dynamicType === 'string' ? synastry.dynamicType.replace(/-/g, ' ') : null;
+  const hasBar = harmonyPct !== null && tensionPct !== null;
+  if (!hasBar && !dynamicType) return '';
+  return `<div class="harmony-block">
+    ${hasBar ? `
+    <div class="harmony-bar">
+      <div class="harmony-seg harmony-gold" style="--w:${harmonyPct}%"></div>
+      <div class="harmony-seg harmony-rose" style="--w:${tensionPct}%"></div>
+    </div>
+    <div class="harmony-legend">
+      <span><span class="dot gold"></span>${T.destiny.harmonyLabel} · ${harmonyPct}%</span>
+      <span><span class="dot rose"></span>${T.destiny.tensionLabel} · ${tensionPct}%</span>
+    </div>` : ''}
+    ${dynamicType ? `<p class="destiny-dynamic">${dynamicType}</p>` : ''}
+  </div>`;
+}
+
+function destinyColsHTML(T, synastry) {
+  const strengths = Array.isArray(synastry.topStrengths) ? synastry.topStrengths.slice(0, 6) : [];
+  const challenges = Array.isArray(synastry.topChallenges) ? synastry.topChallenges.slice(0, 6) : [];
+  if (!strengths.length && !challenges.length) return '';
+  const strengthsCol = strengths.length ? `<div class="today-col destiny-col">
+    <h4>${T.destiny.strengthsLabel}</h4>
+    ${strengths.map(s => `<div class="destiny-row destiny-row-strength"><span class="destiny-marker">✦</span><span>${s}</span></div>`).join('')}
+  </div>` : '';
+  const challengesCol = challenges.length ? `<div class="today-col destiny-col">
+    <h4>${T.destiny.challengesLabel}</h4>
+    ${challenges.map(c => `<div class="destiny-row destiny-row-challenge"><span class="destiny-marker">☽</span><span>${c}</span></div>`).join('')}
+  </div>` : '';
+  return `<div class="today-cols destiny-cols">${strengthsCol}${challengesCol}</div>`;
+}
+
+function destinySectionHTML(T) {
+  const couple = apiExtras?.couple;
+  if (!couple) return '';
+  const score = couple.score;
+  const synastry = couple.synastry;
+  if (!score && !synastry) return '';
+
+  const dialHTML = score ? destinyScoreDialHTML(T, score) : '';
+  const harmonyHTML = synastry ? destinyHarmonyHTML(T, synastry) : '';
+  const colsHTML = synastry ? destinyColsHTML(T, synastry) : '';
+  if (!dialHTML && !harmonyHTML && !colsHTML) return '';
+
+  const updated = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' })
+    .format(new Date(apiExtras.generatedAt));
+
+  return `
+      <section class="destiny">
+        <h2 class="reveal">${T.destiny.title}</h2>
+        <div class="sec-divider reveal">✦</div>
+        <p class="intro reveal">${T.destiny.intro}</p>
+        <div class="today-sky reveal destiny-sky">
+          ${dialHTML}
+          ${harmonyHTML}
+          ${colsHTML}
+          <div class="updated-at">${T.weeklyUpdated} ${updated} · astrology-api.io</div>
+        </div>
+      </section>`;
+}
+
 function weeklySectionHTML(T) {
   if (!apiExtras) return '';
   const cols = ['dailton', 'felipe'].map(who => {
@@ -600,7 +704,7 @@ ${numerologySectionHTML(T)}
         <p class="intro reveal">${T.synastryIntro}</p>
         ${Object.values(T.aspects).map(aspectCardHTML).join('')}
       </section>
-
+${destinySectionHTML(T)}
       <section class="real">
         <h2 class="reveal">${T.realTalkTitle}</h2>
         <div class="sec-divider reveal">☾</div>

@@ -190,6 +190,16 @@ export const I18N = {
       },
     },
 
+    destiny: {
+      title: 'Score do destino',
+      intro: 'Medido a partir da sinastria completa pela astrology-api.io, atualizado toda semana.',
+      harmonyLabel: 'harmonia',
+      tensionLabel: 'tensão de crescimento',
+      strengthsLabel: 'pontos fortes',
+      challengesLabel: 'pontos de atenção',
+      scoreCaption: 'Um número sem teto fixo — o que importa é o quanto ele foge da média.',
+    },
+
     weeklyTitle: 'A semana de vocês',
     weeklyIntro: 'Horóscopo semanal personalizado, calculado sobre os mapas natais completos — renovado toda segunda-feira.',
     weeklyFor: { dailton: 'Para Dailton', felipe: 'Para Felipe' },
@@ -478,6 +488,16 @@ export const I18N = {
           text: 'Deep intimacy, merging, trust — an affection that runs well past the surface.',
         },
       },
+    },
+
+    destiny: {
+      title: 'The destiny score',
+      intro: 'Measured from the full synastry by astrology-api.io, refreshed weekly.',
+      harmonyLabel: 'harmony',
+      tensionLabel: 'growth tension',
+      strengthsLabel: 'top strengths',
+      challengesLabel: 'growing edges',
+      scoreCaption: 'A number with no fixed ceiling — what matters is how far it strays from average.',
     },
 
     weeklyTitle: 'Your week ahead',
