@@ -16,7 +16,10 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
 
 /* The gradient lives directly on body so it spans the full document —
    fixed-position background layers get clipped/unpainted by iOS Safari. */
@@ -31,7 +34,7 @@ body {
   background-color: var(--bg-2);
   min-height: 100vh;
   line-height: 1.7;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -191,9 +194,9 @@ main {
   content: '';
   position: absolute;
   top: -180px;
-  right: min(-140px, calc((100vw - 100%) / -2));
-  width: 440px;
-  height: 440px;
+  right: -60px;
+  width: min(440px, 70vw);
+  height: min(440px, 70vw);
   border-radius: 50%;
   background: radial-gradient(circle at 38% 38%, rgba(255, 244, 214, 0.20), rgba(255, 244, 214, 0.05) 45%, transparent 70%);
   pointer-events: none;
