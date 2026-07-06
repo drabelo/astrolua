@@ -147,7 +147,7 @@ function elementsSectionHTML(T) {
   return `
       <section class="elements">
         <h2 class="reveal">${T.elements.title}</h2>
-        <div class="sec-divider reveal">🜃</div>
+        <div class="sec-divider reveal" aria-hidden="true">🜃</div>
         <p class="intro reveal">${T.elements.intro}</p>
         <div class="elements-grid">
           ${elementCardHTML('dailton', dailtonCounts, T)}
@@ -195,7 +195,7 @@ function numerologySectionHTML(T) {
   return `
       <section class="numerology">
         <h2 class="reveal">${T.numerology.title}</h2>
-        <div class="sec-divider reveal">✧</div>
+        <div class="sec-divider reveal" aria-hidden="true">✧</div>
         <p class="intro reveal">${T.numerology.intro}</p>
         <div class="numerology-grid">
           ${numberCardHTML(T, dNum, T.forDailton)}
@@ -248,7 +248,7 @@ function compositeSectionHTML(T) {
   return `
       <section class="composite">
         <h2 class="reveal">${T.composite.title}</h2>
-        <div class="sec-divider reveal">◐</div>
+        <div class="sec-divider reveal" aria-hidden="true">◐</div>
         <p class="intro reveal">${T.composite.intro}</p>
         ${['sun', 'moon', 'venus'].map(key => compositeCardHTML(T, key)).join('')}
       </section>`;
@@ -282,7 +282,7 @@ function overlaysSectionHTML(T) {
   return `
       <section class="overlays">
         <h2 class="reveal">${T.overlays.title}</h2>
-        <div class="sec-divider reveal">⌂</div>
+        <div class="sec-divider reveal" aria-hidden="true">⌂</div>
         <p class="intro reveal">${T.overlays.intro}</p>
         <div class="overlays-grid">
           ${overlayCardHTML(T, T.overlays.inChartOf.dailton, [
@@ -305,10 +305,10 @@ function polar(cx, cy, r, lonDeg) {
   return [cx + r * Math.cos(th), cy + r * Math.sin(th)];
 }
 
-function wheelSVG(persons = ['dailton', 'felipe']) {
+function wheelSVG(persons = ['dailton', 'felipe'], ariaLabel = 'Synastry wheel') {
   const size = 580, cx = size / 2, cy = size / 2;
   const rOuter = 276, rZodiacIn = 240, rFelipe = 212, rDailton = 162, rInner = 118;
-  let s = `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="Synastry wheel">`;
+  let s = `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="${ariaLabel}">`;
   s += `<defs>
     <radialGradient id="wheelBg" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="rgba(120,90,220,0.14)"/>
@@ -489,7 +489,7 @@ function destinySectionHTML(T) {
   return `
       <section class="destiny">
         <h2 class="reveal">${T.destiny.title}</h2>
-        <div class="sec-divider reveal">✦</div>
+        <div class="sec-divider reveal" aria-hidden="true">✦</div>
         <p class="intro reveal">${T.destiny.intro}</p>
         <div class="today-sky reveal destiny-sky">
           ${dialHTML}
@@ -548,7 +548,7 @@ function monthlySectionHTML(T, who) {
   return `
       <section class="monthly">
         <h2 class="reveal">${T.personApi.monthlyTitle}</h2>
-        <div class="sec-divider reveal">☉</div>
+        <div class="sec-divider reveal" aria-hidden="true">☉</div>
         <div class="today-sky reveal">
           <div class="today-cols"><div class="today-col"><p>${text}</p></div></div>
           <div class="updated-at">${T.weeklyUpdated} ${updated} · astrology-api.io</div>
@@ -605,7 +605,7 @@ function chaptersSectionHTML(T, who) {
   return `
       <section class="chapters">
         <h2 class="reveal">${T.personApi.chaptersTitle}</h2>
-        <div class="sec-divider reveal">⏳</div>
+        <div class="sec-divider reveal" aria-hidden="true">⏳</div>
         <p class="intro reveal">${T.personApi.chaptersIntro}</p>
         <div class="chapters-list reveal">${rows}</div>
       </section>`;
@@ -643,7 +643,7 @@ function placesSectionHTML(T, who) {
   return `
       <section class="places">
         <h2 class="reveal">${T.personApi.placesTitle}</h2>
-        <div class="sec-divider reveal">🧭</div>
+        <div class="sec-divider reveal" aria-hidden="true">🧭</div>
         <p class="intro reveal">${T.personApi.placesIntro}</p>
         <div class="places-row reveal">${chips}</div>
       </section>`;
@@ -662,7 +662,7 @@ function weeklySectionHTML(T) {
   return `
       <section class="weekly">
         <h2 class="reveal">${T.weeklyTitle}</h2>
-        <div class="sec-divider reveal">☄</div>
+        <div class="sec-divider reveal" aria-hidden="true">☄</div>
         <p class="intro reveal">${T.weeklyIntro}</p>
         <div class="today-sky reveal">
           <div class="today-cols">${cols}</div>
@@ -681,7 +681,7 @@ function comingMoonsSectionHTML(T) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i, 12, 0, 0);
     const phase = moonPhaseInfo(d);
     const today = i === 0;
-    return `<div class="moon-day-cell${today ? ' today' : ''}">
+    return `<div class="moon-day-cell${today ? ' today' : ''}" aria-hidden="true">
       <span class="mdc-weekday">${weekdayFmt.format(d)}</span>
       <span class="mdc-emoji">${MOON_EMOJI[phase.phase]}</span>
       <span class="mdc-num">${d.getDate()}</span>
@@ -704,10 +704,10 @@ function comingMoonsSectionHTML(T) {
   return `
       <section class="moons">
         <h2 class="reveal">${T.moons.title}</h2>
-        <div class="sec-divider reveal">☽</div>
+        <div class="sec-divider reveal" aria-hidden="true">☽</div>
         <p class="intro reveal">${T.moons.intro}</p>
         <div class="today-sky reveal">
-          <div class="moon-strip">${strip}</div>
+          <div class="moon-strip" aria-label="${T.moons.stripAria}">${strip}</div>
         </div>
         <div class="moon-highlights">
           ${highlightCard(MOON_EMOJI['new'], T.moons.nextNew, nextNew, T.moons.newLine)}
@@ -719,6 +719,11 @@ function comingMoonsSectionHTML(T) {
 function navHTML(T) {
   const link = key => `<a href="${PAGE_HREFS[key]}" class="${VIEW === key ? 'active' : ''}" ${VIEW === key ? 'aria-current="page"' : ''}>${T.nav[key]}</a>`;
   return `<nav class="site-nav" aria-label="Profiles">${link('us')}${link('dailton')}${link('felipe')}</nav>`;
+}
+
+// --- skip link ---
+function skipLinkHTML(T) {
+  return `<a class="skip-link" href="#content">${T.skipLink}</a>`;
 }
 
 // --- share button ---
@@ -759,7 +764,7 @@ function personPageHTML(T, sky) {
   }).format(sky.now);
   const weeklyText = apiExtras?.weekly?.[who]?.[lang] || apiExtras?.weekly?.[who]?.pt;
   return `
-    <main>
+    <main id="content" tabindex="-1">
       <header class="hero person-hero">
         <div class="kicker">${T.heroKicker}</div>
         <h1>${PEOPLE[who].name}</h1>
@@ -770,7 +775,7 @@ function personPageHTML(T, sky) {
 
       <section class="charts">
         <h2 class="reveal">${page.chartTitle}</h2>
-        <div class="sec-divider reveal">✦</div>
+        <div class="sec-divider reveal" aria-hidden="true">✦</div>
         <div class="charts-grid single">
           ${natalCardHTML(card)}
           <div class="card reveal">
@@ -779,14 +784,14 @@ function personPageHTML(T, sky) {
           </div>
         </div>
         <div class="wheel-wrap reveal">
-          <div class="wheel-frame">${wheelSVG([who])}</div>
+          <div class="wheel-frame">${wheelSVG([who], T.pages[who].wheelAria)}</div>
         </div>
       </section>
 ${personNumerologySectionHTML(T, who)}
 ${insightsSectionHTML(T, who)}
       <section class="today">
         <h2 class="reveal">${T.todayTitle}</h2>
-        <div class="sec-divider reveal">✧</div>
+        <div class="sec-divider reveal" aria-hidden="true">✧</div>
         <div class="today-sky reveal">
           <div class="today-head">
             <span class="moon-emoji">${MOON_EMOJI[sky.moonPhase.phase]}</span>
@@ -807,7 +812,7 @@ ${insightsSectionHTML(T, who)}
 ${weeklyText ? `
       <section class="weekly">
         <h2 class="reveal">${T.weeklyTitle}</h2>
-        <div class="sec-divider reveal">☄</div>
+        <div class="sec-divider reveal" aria-hidden="true">☄</div>
         <div class="today-sky reveal"><div class="today-cols"><div class="today-col"><p>${weeklyText}</p></div></div>
         <div class="updated-at">${T.weeklyUpdated} ${new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' }).format(new Date(apiExtras.generatedAt))} · astrology-api.io</div></div>
       </section>` : ''}
@@ -824,6 +829,10 @@ function render() {
   const T = t9();
   document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
   document.title = VIEW === 'us' ? T.title : T.pages[VIEW].title;
+  const metaDescription = document.querySelector('meta[name="description"]');
+  if (metaDescription) {
+    metaDescription.setAttribute('content', VIEW === 'us' ? T.metaDescription : T.pages[VIEW].metaDescription);
+  }
   const sky = todaySky();
   const dayOfYear = Math.floor((sky.now - new Date(sky.now.getFullYear(), 0, 0)) / 86400000);
   const note = T.loveNotes[dayOfYear % T.loveNotes.length];
@@ -834,8 +843,8 @@ function render() {
 
   const chrome = `
     <div class="lang-toggle" role="group" aria-label="Language">
-      <button data-lang="pt" class="${lang === 'pt' ? 'active' : ''}">PT</button>
-      <button data-lang="en" class="${lang === 'en' ? 'active' : ''}">EN</button>
+      <button data-lang="pt" class="${lang === 'pt' ? 'active' : ''}" aria-pressed="${lang === 'pt'}">PT</button>
+      <button data-lang="en" class="${lang === 'en' ? 'active' : ''}" aria-pressed="${lang === 'en'}">EN</button>
     </div>
     ${navHTML(T)}
     ${shareButtonHTML(T)}
@@ -843,13 +852,13 @@ function render() {
     <div class="shooting-star s2" aria-hidden="true"></div>`;
 
   if (VIEW !== 'us') {
-    document.getElementById('app').innerHTML = chrome + personPageHTML(T, sky);
+    document.getElementById('app').innerHTML = skipLinkHTML(T) + chrome + personPageHTML(T, sky);
     wireUp();
     return;
   }
 
-  document.getElementById('app').innerHTML = chrome + `
-    <main>
+  document.getElementById('app').innerHTML = skipLinkHTML(T) + chrome + `
+    <main id="content" tabindex="-1">
       <header class="hero">
         <div class="kicker">${T.heroKicker}</div>
         <h1>${T.heroNames}</h1>
@@ -863,14 +872,14 @@ function render() {
 
       <section class="charts">
         <h2 class="reveal">${T.chartsTitle}</h2>
-        <div class="sec-divider reveal">✦</div>
+        <div class="sec-divider reveal" aria-hidden="true">✦</div>
         <p class="intro reveal">${T.chartsIntro}</p>
         <div class="charts-grid">
           ${natalCardHTML(T.dailtonCard)}
           ${natalCardHTML(T.felipeCard)}
         </div>
         <div class="wheel-wrap reveal">
-          <div class="wheel-frame">${wheelSVG()}</div>
+          <div class="wheel-frame">${wheelSVG(undefined, T.wheelAria)}</div>
           <div class="wheel-legend">
             <span><span class="dot" style="background:#e8c476"></span>Dailton</span>
             <span><span class="dot" style="background:#f2a6c8"></span>Felipe</span>
@@ -881,14 +890,14 @@ ${elementsSectionHTML(T)}
 ${numerologySectionHTML(T)}
       <section class="synastry">
         <h2 class="reveal">${T.synastryTitle}</h2>
-        <div class="sec-divider reveal">❦</div>
+        <div class="sec-divider reveal" aria-hidden="true">❦</div>
         <p class="intro reveal">${T.synastryIntro}</p>
         ${Object.values(T.aspects).map(aspectCardHTML).join('')}
       </section>
 ${destinySectionHTML(T)}
       <section class="real">
         <h2 class="reveal">${T.realTalkTitle}</h2>
-        <div class="sec-divider reveal">☾</div>
+        <div class="sec-divider reveal" aria-hidden="true">☾</div>
         <p class="intro reveal">${T.realTalkIntro}</p>
         ${Object.values(T.realAspects).map(aspectCardHTML).join('')}
       </section>
@@ -896,7 +905,7 @@ ${compositeSectionHTML(T)}
 ${overlaysSectionHTML(T)}
       <section class="today">
         <h2 class="reveal">${T.todayTitle}</h2>
-        <div class="sec-divider reveal">✧</div>
+        <div class="sec-divider reveal" aria-hidden="true">✧</div>
         <p class="intro reveal">${T.todayIntro}</p>
         <div class="today-sky reveal">
           <div class="today-head">

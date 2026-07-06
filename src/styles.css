@@ -115,6 +115,27 @@ body {
 
 #app { position: relative; z-index: 1; }
 
+/* ---- skip link ---- */
+.skip-link {
+  position: absolute;
+  top: -3rem;
+  left: 0.75rem;
+  z-index: 100;
+  background: var(--bg-1);
+  color: var(--ink);
+  border: 1px solid var(--card-line);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font: 600 0.85rem/1 var(--sans);
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+.skip-link:focus-visible {
+  top: 0.75rem;
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
 main {
   max-width: 900px;
   margin: 0 auto;
@@ -151,6 +172,10 @@ main {
   color: #241645;
   background: linear-gradient(120deg, var(--gold), #f4d9a3);
 }
+.site-nav a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
 @media (max-width: 560px) {
   .site-nav { top: auto; bottom: 1rem; }
 }
@@ -185,6 +210,10 @@ main {
 .lang-toggle button.active {
   color: #241645;
   background: linear-gradient(120deg, var(--gold), #f4d9a3);
+}
+.lang-toggle button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 /* ---- hero ---- */
@@ -342,16 +371,6 @@ section > .intro {
 .reveal.visible {
   opacity: 1;
   transform: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
-  #stars, #stars::before, .shooting-star, .hero .scroll-hint { animation: none; }
-  html { scroll-behavior: auto; }
-  .element-fill { transition: none; }
-  .moon-day-cell.today { animation: none; }
-  footer .heart { animation: none; }
-  .burst-heart { animation: none; opacity: 0; }
-  .ring-fill { transition: none; }
 }
 
 /* ---- natal cards ---- */
@@ -1116,7 +1135,20 @@ footer .heart:focus-visible {
   .share-btn { bottom: 4.6rem; }
   .share-toast { bottom: 8rem; }
 }
+/* Placed last so these overrides win the cascade regardless of source
+   order against the unconditional animation/transition rules above —
+   equal-specificity selectors resolve by position, and a media query
+   block earlier in the file would otherwise lose to a later plain rule. */
 @media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  #stars, #stars::before, .shooting-star, .hero .scroll-hint { animation: none; }
+  html { scroll-behavior: auto; }
+  .element-fill { transition: none; }
+  .moon-day-cell.today { animation: none; }
+  footer .heart { animation: none; }
+  .burst-heart { animation: none; opacity: 0; }
+  .ring-fill { transition: none; }
+  .skip-link { transition: none; }
   .share-btn { transition: none; }
   .share-toast { transition: none; }
 }

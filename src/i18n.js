@@ -6,6 +6,9 @@ export const I18N = {
   pt: {
     langName: 'Português',
     title: 'Dailton & Felipe — escrito nas estrelas',
+    metaDescription: 'Uma sinastria viva para Dailton & Felipe — efemérides reais, atualizada com o céu todos os dias.',
+    skipLink: 'Pular para o conteúdo',
+    wheelAria: 'Roda de sinastria de Dailton e Felipe',
     heroKicker: 'astrolua apresenta',
     heroNames: 'Dailton & Felipe',
     heroTagline: 'Um mapa do céu a dois — carinhoso, mas de verdade.',
@@ -17,13 +20,17 @@ export const I18N = {
     pages: {
       dailton: {
         title: 'Dailton — astrolua',
+        metaDescription: 'O céu de Dailton — mapa natal completo, trânsitos de hoje e horóscopo da semana.',
         tagline: 'O céu de Dailton, por inteiro.',
         chartTitle: 'O mapa natal',
+        wheelAria: 'Mapa natal de Dailton',
       },
       felipe: {
         title: 'Felipe — astrolua',
+        metaDescription: 'O céu de Felipe — mapa natal completo, trânsitos de hoje e horóscopo da semana.',
         tagline: 'O céu de Felipe, por inteiro.',
         chartTitle: 'O mapa natal',
+        wheelAria: 'Mapa natal de Felipe',
       },
     },
 
@@ -253,6 +260,7 @@ export const I18N = {
     moons: {
       title: 'As próximas luas',
       intro: 'Catorze dias de lua, do jeito que o céu vai desenhar — e as duas luas que vêm por aí, nova e cheia, cada uma com o signo em que acontece.',
+      stripAria: 'Tira com as fases da lua dos próximos 14 dias',
       nextNew: 'Próxima Lua Nova',
       nextFull: 'Próxima Lua Cheia',
       newLine: 'Boa lua pra plantar uma semente juntos — uma intenção, um plano, um começo pequeno.',
@@ -322,6 +330,9 @@ export const I18N = {
   en: {
     langName: 'English',
     title: 'Dailton & Felipe — written in the stars',
+    metaDescription: 'A living synastry page for Dailton & Felipe — real ephemerides, updated with the sky every day.',
+    skipLink: 'Skip to content',
+    wheelAria: 'Synastry wheel of Dailton and Felipe',
     heroKicker: 'astrolua presents',
     heroNames: 'Dailton & Felipe',
     heroTagline: 'A two-person sky map — sweet, but honest.',
@@ -333,13 +344,17 @@ export const I18N = {
     pages: {
       dailton: {
         title: 'Dailton — astrolua',
+        metaDescription: "Dailton's sky — full natal chart, today's transits, and the weekly horoscope.",
         tagline: "Dailton's sky, in full.",
         chartTitle: 'The natal chart',
+        wheelAria: "Dailton's natal chart wheel",
       },
       felipe: {
         title: 'Felipe — astrolua',
+        metaDescription: "Felipe's sky — full natal chart, today's transits, and the weekly horoscope.",
         tagline: "Felipe's sky, in full.",
         chartTitle: 'The natal chart',
+        wheelAria: "Felipe's natal chart wheel",
       },
     },
 
@@ -568,6 +583,7 @@ export const I18N = {
     moons: {
       title: 'The coming moons',
       intro: "Fourteen days of moon, drawn the way the sky will show it — plus the next two moons ahead, new and full, each with the sign it lands in.",
+      stripAria: 'Strip of moon phases for the next 14 days',
       nextNew: 'Next New Moon',
       nextFull: 'Next Full Moon',
       newLine: 'A good moon to plant a seed together — an intention, a plan, a small beginning.',
