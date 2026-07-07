@@ -19,10 +19,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Force the Pages source to "GitHub Actions". Without this, the legacy
-      # deploy-from-branch mode Jekyll-builds the raw source on every push
-      # (including the bot's data refreshes) and overwrites this workflow's
-      # artifact with an unbuilt site — a white page.
+      # Force the Pages source to "GitHub Actions". configure-pages only sets
+      # this when it CREATES the site; for an existing site in legacy
+      # deploy-from-branch mode it leaves the mode untouched, so the Jekyll
+      # build of the raw source kept racing this workflow's artifact and
+      # winning by seconds — serving an unbuilt index.html (a white page).
+      - name: Ensure Pages build type is workflow
+        run: |
+          curl -sS -X PUT \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages" \
+            -d '{"build_type":"workflow"}' \
+            -w 'pages config update: HTTP %{http_code}\n'
       - uses: actions/configure-pages@v5
         with:
           enablement: true
