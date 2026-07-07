@@ -21,6 +21,10 @@ html {
   overflow-x: clip;
 }
 
+/* Cross-fade between the three pages in browsers that support MPA view
+   transitions; ignored elsewhere. */
+@view-transition { navigation: auto; }
+
 /* The gradient lives directly on body so it spans the full document —
    fixed-position background layers get clipped/unpainted by iOS Safari. */
 body {
