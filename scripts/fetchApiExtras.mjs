@@ -227,22 +227,40 @@ function extractChapters(payload) {
 }
 
 function extractPlaces(payload) {
-  const listRaw = deepFind(payload, [
-    'power_zones', 'powerZones', 'zones', 'locations', 'cities', 'results', 'top_locations', 'topLocations',
-  ]);
-  const list = Array.isArray(listRaw) ? listRaw : [];
+  // The astrocartography payload carries both nameless power *zones* and a
+  // named *cities* list. Only named entries are renderable, so gather
+  // candidates from every plausible list, keep the named ones, and rank by
+  // strength.
+  const candidates = [];
+  for (const listKey of [
+    'top_cities', 'topCities', 'cities', 'top_locations', 'topLocations', 'locations',
+    'power_zones', 'powerZones', 'zones', 'results',
+  ]) {
+    const listRaw = deepFind(payload, [listKey]);
+    if (!Array.isArray(listRaw)) continue;
+    for (const item of listRaw) {
+      if (!item || typeof item !== 'object') continue;
+      const name = deepFind(item, ['city', 'city_name', 'cityName', 'nearest_city', 'nearestCity', 'name', 'location', 'place', 'title']);
+      if (typeof name !== 'string' || !name.trim()) continue;
+      const label = deepFind(item, ['label', 'theme', 'category', 'planets', 'planet_pair', 'planetPair', 'line', 'lines', 'line_type', 'lineType', 'summary', 'description']);
+      const strength = toNum(deepFind(item, ['strength', 'score', 'power', 'rating']));
+      const entry = { name: truncate(name.trim(), 80) };
+      if (typeof label === 'string' && label.trim()) entry.label = truncate(label.trim(), 200);
+      else if (Array.isArray(label)) entry.label = truncate(label.filter(x => typeof x === 'string').join(' + '), 200);
+      if (strength !== null) entry.strength = strength;
+      candidates.push(entry);
+    }
+    if (candidates.length >= 5) break;
+  }
+  const seen = new Set();
   const places = [];
-  for (const item of list) {
+  candidates.sort((a, b) => (b.strength ?? 0) - (a.strength ?? 0));
+  for (const c of candidates) {
+    const key = c.name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    places.push(c);
     if (places.length >= 5) break;
-    if (!item || typeof item !== 'object') continue;
-    const name = deepFind(item, ['city', 'name', 'location']);
-    const label = deepFind(item, ['label', 'theme', 'line_type', 'lineType', 'summary', 'description']);
-    const strength = toNum(deepFind(item, ['strength', 'score', 'power', 'rating']));
-    const entry = {};
-    if (typeof name === 'string') entry.name = name;
-    if (typeof label === 'string') entry.label = truncate(label, 200);
-    if (strength !== null) entry.strength = strength;
-    if (Object.keys(entry).length) places.push(entry);
   }
   return places;
 }
