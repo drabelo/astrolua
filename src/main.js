@@ -61,7 +61,7 @@ async function loadApiExtras() {
     if (ageDays >= 12) delete data.weekly;
     if (ageDays >= 45) delete data.monthly;
     apiExtras = data;
-    render();
+    fillApiSlots();
   } catch { /* no extras — section stays hidden */ }
 }
 
@@ -755,6 +755,46 @@ function showShareCopied(btn) {
   }, 2200);
 }
 
+function personWeeklySectionHTML(T, who) {
+  const weeklyText = apiExtras?.weekly?.[who]?.[lang] || apiExtras?.weekly?.[who]?.pt;
+  if (!weeklyText) return '';
+  const updated = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' })
+    .format(new Date(apiExtras.generatedAt));
+  return `
+      <section class="weekly">
+        <h2 class="reveal">${T.weeklyTitle}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">☄</div>
+        <div class="today-sky reveal"><div class="today-cols"><div class="today-col"><p>${weeklyText}</p></div></div>
+        <div class="updated-at">${T.weeklyUpdated} ${updated} · astrology-api.io</div></div>
+      </section>`;
+}
+
+// API-driven sections render inside slots so late-arriving data fills them
+// in place instead of re-rendering the whole page (which replayed every
+// entrance animation and looked like a second page load).
+const API_SLOTS = {
+  destiny: T => destinySectionHTML(T),
+  weekly: T => weeklySectionHTML(T),
+  pweekly: T => personWeeklySectionHTML(T, VIEW),
+  insights: T => insightsSectionHTML(T, VIEW),
+  monthly: T => monthlySectionHTML(T, VIEW),
+  chapters: T => chaptersSectionHTML(T, VIEW),
+  places: T => placesSectionHTML(T, VIEW),
+};
+
+function fillApiSlots() {
+  const T = t9();
+  document.querySelectorAll('.api-slot').forEach(slot => {
+    const fn = API_SLOTS[slot.dataset.slot];
+    if (!fn) return;
+    const html = fn(T) || '';
+    if (slot.innerHTML.trim() !== html.trim()) {
+      slot.innerHTML = html;
+      observeReveals(slot);
+    }
+  });
+}
+
 function personPageHTML(T, sky) {
   const who = VIEW; // 'dailton' | 'felipe'
   const card = who === 'dailton' ? T.dailtonCard : T.felipeCard;
@@ -764,7 +804,6 @@ function personPageHTML(T, sky) {
   const dateFmt = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', {
     dateStyle: 'full', timeStyle: 'short',
   }).format(sky.now);
-  const weeklyText = apiExtras?.weekly?.[who]?.[lang] || apiExtras?.weekly?.[who]?.pt;
   return `
     <main id="content" tabindex="-1">
       <header class="hero person-hero">
@@ -790,7 +829,7 @@ function personPageHTML(T, sky) {
         </div>
       </section>
 ${personNumerologySectionHTML(T, who)}
-${insightsSectionHTML(T, who)}
+<div class="api-slot" data-slot="insights">${insightsSectionHTML(T, who)}</div>
       <section class="today">
         <h2 class="reveal">${T.todayTitle}</h2>
         <div class="sec-divider reveal" aria-hidden="true">✧</div>
@@ -811,16 +850,10 @@ ${insightsSectionHTML(T, who)}
           <div class="updated-at">${T.updatedAt} ${dateFmt}</div>
         </div>
       </section>
-${weeklyText ? `
-      <section class="weekly">
-        <h2 class="reveal">${T.weeklyTitle}</h2>
-        <div class="sec-divider reveal" aria-hidden="true">☄</div>
-        <div class="today-sky reveal"><div class="today-cols"><div class="today-col"><p>${weeklyText}</p></div></div>
-        <div class="updated-at">${T.weeklyUpdated} ${new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' }).format(new Date(apiExtras.generatedAt))} · astrology-api.io</div></div>
-      </section>` : ''}
-${monthlySectionHTML(T, who)}
-${chaptersSectionHTML(T, who)}
-${placesSectionHTML(T, who)}
+<div class="api-slot" data-slot="pweekly">${personWeeklySectionHTML(T, who)}</div>
+<div class="api-slot" data-slot="monthly">${monthlySectionHTML(T, who)}</div>
+<div class="api-slot" data-slot="chapters">${chaptersSectionHTML(T, who)}</div>
+<div class="api-slot" data-slot="places">${placesSectionHTML(T, who)}</div>
       <p class="disclaimer">${T.disclaimer}</p>
       <footer>${T.footer} <span class="heart" role="button" tabindex="0" aria-label="${T.heartAria}">♥</span></footer>
     </main>
@@ -896,7 +929,7 @@ ${numerologySectionHTML(T)}
         <p class="intro reveal">${T.synastryIntro}</p>
         ${Object.values(T.aspects).map(aspectCardHTML).join('')}
       </section>
-${destinySectionHTML(T)}
+<div class="api-slot" data-slot="destiny">${destinySectionHTML(T)}</div>
       <section class="real">
         <h2 class="reveal">${T.realTalkTitle}</h2>
         <div class="sec-divider reveal" aria-hidden="true">☾</div>
@@ -939,13 +972,25 @@ ${overlaysSectionHTML(T)}
         </div>
       </section>
 ${comingMoonsSectionHTML(T)}
-${weeklySectionHTML(T)}
+<div class="api-slot" data-slot="weekly">${weeklySectionHTML(T)}</div>
       <p class="disclaimer">${T.disclaimer}</p>
       <footer>${T.footer} <span class="heart" role="button" tabindex="0" aria-label="${T.heartAria}">♥</span></footer>
     </main>
   `;
 
   wireUp();
+}
+
+function observeReveals(root) {
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    }
+  }, { threshold: 0.12 });
+  root.querySelectorAll('.reveal').forEach(el => io.observe(el));
 }
 
 function wireUp() {
@@ -957,15 +1002,7 @@ function wireUp() {
     });
   });
 
-  const io = new IntersectionObserver(entries => {
-    for (const e of entries) {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        io.unobserve(e.target);
-      }
-    }
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  observeReveals(document);
 
   const shareBtn = document.getElementById('share-btn');
   if (shareBtn) {
@@ -1045,6 +1082,16 @@ function heartBurst(x, y) {
     // Safety net in case animationend doesn't fire (e.g. tab backgrounded).
     setTimeout(cleanup, (duration + delay) * 1000 + 400);
   }
+}
+
+// Prefetch the sibling pages so tab switches feel instant.
+for (const [key, href] of Object.entries(PAGE_HREFS)) {
+  if (key === VIEW) continue;
+  const l = document.createElement('link');
+  l.rel = 'prefetch';
+  l.as = 'document';
+  l.href = href;
+  document.head.appendChild(l);
 }
 
 initStarfield();
