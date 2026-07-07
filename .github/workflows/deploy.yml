@@ -19,6 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Force the Pages source to "GitHub Actions". Without this, the legacy
+      # deploy-from-branch mode Jekyll-builds the raw source on every push
+      # (including the bot's data refreshes) and overwrites this workflow's
+      # artifact with an unbuilt site — a white page.
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22
