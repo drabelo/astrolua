@@ -1,0 +1,30 @@
+name: Probe live site
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch live pages and asset statuses
+        run: |
+          set -x
+          BASE="https://drabelo.github.io/astrolua"
+          echo "== headers =="
+          curl -sS -D- -o /tmp/index.html "$BASE/?probe=1"
+          echo "== first 30 lines of served index =="
+          head -30 /tmp/index.html
+          echo "== asset references =="
+          grep -oE '(src|href)="[^"]+"' /tmp/index.html | head -20
+          echo "== asset statuses =="
+          for path in $(grep -oE '"\./assets/[^"]+"' /tmp/index.html | tr -d '"'); do
+            url="$BASE/${path#./}"
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$url")
+            echo "$code $url"
+          done
+          echo "== subpages =="
+          for p in dailton felipe; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/$p/?probe=1")
+            echo "$code $BASE/$p/"
+          done
