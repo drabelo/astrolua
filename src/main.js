@@ -55,11 +55,13 @@ async function loadApiExtras() {
     const res = await fetch(ROOT + 'api-extras.json', { cache: 'no-cache' });
     if (!res.ok) return;
     const data = await res.json();
+    // Staleness only matters for the time-sensitive sections; evergreen data
+    // (score, places, chapters, insights) stays useful indefinitely.
     const ageDays = (Date.now() - new Date(data.generatedAt)) / 86400000;
-    if (data.weekly && ageDays < 12) {
-      apiExtras = data;
-      render();
-    }
+    if (ageDays >= 12) delete data.weekly;
+    if (ageDays >= 45) delete data.monthly;
+    apiExtras = data;
+    render();
   } catch { /* no extras — section stays hidden */ }
 }
 

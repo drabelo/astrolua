@@ -13,7 +13,7 @@
 // v2 schema, plausible PT/EN copy) so the site can be built/previewed without
 // API access or a key. Delete the file again before committing.
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
 
 const MOCK = process.argv.includes('--mock');
 
@@ -397,6 +397,26 @@ async function attempt(label, fn) {
   }
 }
 
+// Previous run's data is the baseline: a failed call must never erase a
+// section that an earlier run fetched successfully (quota 429s were doing
+// exactly that). Evergreen sections younger than EVERGREEN_MAX_AGE_DAYS are
+// not refetched at all, to spare the monthly API quota.
+const EVERGREEN_MAX_AGE_DAYS = 30;
+let previous = {};
+try {
+  if (existsSync('public/api-extras.json')) {
+    previous = JSON.parse(readFileSync('public/api-extras.json', 'utf8'));
+  }
+} catch { /* corrupt or absent — start clean */ }
+const prevAgeDays = previous.generatedAt
+  ? (Date.now() - new Date(previous.generatedAt)) / 86400000
+  : Infinity;
+const evergreenFresh = (
+  prevAgeDays < EVERGREEN_MAX_AGE_DAYS &&
+  previous.couple && previous.person &&
+  Object.keys(previous.person).length === 2
+);
+
 const out = {
   generatedAt: new Date().toISOString(),
   source: 'astrology-api.io',
@@ -433,14 +453,16 @@ for (const [who, subject] of Object.entries(SUBJECTS)) {
 }
 
 // -- Couple: compatibility score + synastry report --------------------------
-const score = await attempt('couple compatibility-score', async () => {
+// Skipped entirely when the previous data is complete and fresh — these
+// numbers don't change; refetching them just burns quota.
+const score = evergreenFresh ? null : await attempt('couple compatibility-score', async () => {
   const payload = await post('/analysis/compatibility-score', {
     subject1: SUBJECTS.dailton, subject2: SUBJECTS.felipe,
   });
   return extractScore(payload);
 });
 
-const synastry = await attempt('couple synastry-report', async () => {
+const synastry = evergreenFresh ? null : await attempt('couple synastry-report', async () => {
   const payload = await post('/analysis/synastry-report', {
     subject1: SUBJECTS.dailton, subject2: SUBJECTS.felipe,
     report_options: { language: 'pt' },
@@ -457,6 +479,7 @@ if (score || synastry) {
 
 // -- Per-person insights: love languages, red flags, timing, places --------
 for (const [who, subject] of Object.entries(SUBJECTS)) {
+  if (evergreenFresh) { console.log(`skip: evergreen person data fresh for ${who}`); continue; }
   const personOut = {};
 
   const loveLanguages = {};
@@ -498,13 +521,27 @@ for (const [who, subject] of Object.entries(SUBJECTS)) {
   if (Object.keys(personOut).length) out.person[who] = personOut;
 }
 
-if (Object.keys(out.weekly).length === 0) delete out.weekly;
-if (Object.keys(out.monthly).length === 0) delete out.monthly;
-if (Object.keys(out.couple).length === 0) delete out.couple;
-if (Object.keys(out.person).length === 0) delete out.person;
+// Merge: anything this run failed to fetch keeps the previous run's value.
+function mergeSection(section) {
+  const prev = previous[section] || {};
+  const fresh = out[section] || {};
+  const merged = {};
+  for (const key of new Set([...Object.keys(prev), ...Object.keys(fresh)])) {
+    if (prev[key] && typeof prev[key] === 'object' && !Array.isArray(prev[key])) {
+      merged[key] = { ...prev[key], ...(fresh[key] || {}) };
+    } else {
+      merged[key] = fresh[key] ?? prev[key];
+    }
+  }
+  return merged;
+}
+for (const section of ['weekly', 'monthly', 'couple', 'person']) {
+  out[section] = mergeSection(section);
+  if (Object.keys(out[section]).length === 0) delete out[section];
+}
 
 if (successes === 0) {
-  console.error('All API calls failed; not writing api-extras.json');
+  console.error('All API calls failed; keeping previous api-extras.json untouched');
   process.exit(1);
 }
 
