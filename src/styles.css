@@ -1156,3 +1156,88 @@ footer .heart:focus-visible {
   .share-btn { transition: none; }
   .share-toast { transition: none; }
 }
+
+
+/* ---- reading progress bar ---- */
+#progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  z-index: 20;
+  background: linear-gradient(90deg, var(--gold), var(--rose));
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+/* ---- time-of-day sky tint (subtle) ---- */
+html[data-daypart="dawn"] body { background-color: #1a1440; }
+html[data-daypart="dawn"] body::selection { background: var(--gold); }
+html[data-daypart="dusk"] body { background-color: #2b1745; }
+
+/* ---- section numbering (editorial eyebrows) ---- */
+main { counter-reset: sec; }
+main section > h2::before {
+  counter-increment: sec;
+  content: counter(sec, decimal-leading-zero);
+  display: block;
+  font: 600 0.68rem/1 var(--sans);
+  letter-spacing: 0.4em;
+  color: var(--gold-soft);
+  margin-bottom: 0.7rem;
+}
+
+/* ---- wheel draw-in ---- */
+.wheel-wrap svg {
+  opacity: 0;
+  transform: rotate(-10deg) scale(0.94);
+  transition: opacity 1s ease 0.1s, transform 1.3s cubic-bezier(0.22, 0.9, 0.3, 1) 0.1s;
+}
+.wheel-wrap.visible svg {
+  opacity: 1;
+  transform: none;
+}
+.wheel-pt {
+  opacity: 0;
+  transition: opacity 0.5s ease calc(0.55s + var(--d, 0ms));
+  cursor: pointer;
+  outline: none;
+}
+.wheel-wrap.visible .wheel-pt { opacity: 1; }
+
+/* ---- wheel interactivity ---- */
+.wheel-line { transition: opacity 0.35s ease; }
+.wheel-wrap.visible .wheel-frame.focus .wheel-line { opacity: 0.07; }
+.wheel-wrap.visible .wheel-frame.focus .wheel-line.lit { opacity: 1; }
+.wheel-wrap.visible .wheel-frame.focus .wheel-pt {
+  opacity: 0.25;
+  transition: opacity 0.3s ease;
+}
+.wheel-wrap.visible .wheel-frame.focus .wheel-pt.lit { opacity: 1; }
+.wheel-pt:focus-visible circle { stroke: var(--gold); stroke-width: 1.5; }
+.wheel-tip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: rgba(11, 10, 30, 0.94);
+  border: 1px solid var(--card-line);
+  border-radius: 10px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 5;
+}
+.wheel-tip.show { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel-wrap svg { opacity: 1; transform: none; transition: none; }
+  .wheel-pt { opacity: 1; transition: none; }
+  #progress { display: none; }
+}

@@ -130,7 +130,7 @@ function elementBarsHTML(counts, T) {
     return `<div class="element-bar">
       <span class="element-label">${T.elements.labels[el]}</span>
       <div class="element-track"><div class="element-fill ${el}" style="--fill-w:${pct}%"></div></div>
-      <span class="element-count">${count}</span>
+      <span class="element-count" data-countup="${count}">0</span>
     </div>`;
   }).join('');
 }
@@ -355,10 +355,11 @@ function wheelSVG(persons = ['dailton', 'felipe'], ariaLabel = 'Synastry wheel')
     const style = kind === 'soft'
       ? 'stroke="rgba(232,196,118,0.5)" stroke-width="1.1"'
       : 'stroke="rgba(242,166,200,0.45)" stroke-width="1" stroke-dasharray="4 4"';
-    s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${style}/>`;
+    s += `<line class="wheel-line" data-a="${pa}.${ka}" data-b="${pb}.${kb}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${style}/>`;
   }
   // plot points with a marker tick on the inner circle + glyph on the ring;
   // nudge stacked glyphs apart when they share a ring and sit close together
+  let ptIndex = 0;
   const plot = (person, radius, color) => {
     const entries = Object.entries(PEOPLE[person].points).sort((a, b) => a[1] - b[1]);
     let prevLon = -999, stack = 0;
@@ -370,8 +371,10 @@ function wheelSVG(persons = ['dailton', 'felipe'], ariaLabel = 'Synastry wheel')
       const [tx1, ty1] = polar(cx, cy, rInner, lon);
       const [tx2, ty2] = polar(cx, cy, rInner + 7, lon);
       s += `<line x1="${tx1}" y1="${ty1}" x2="${tx2}" y2="${ty2}" stroke="${color}" stroke-width="1.4" opacity="0.8"/>`;
-      s += `<circle cx="${x}" cy="${y}" r="11.5" fill="rgba(11,10,30,0.72)"/>`;
-      s += `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${key.length > 2 ? 11 : 19}" font-weight="700" fill="${color}">${PLANET_GLYPHS[key]}</text>`;
+      s += `<g class="wheel-pt" data-person="${person}" data-key="${key}" data-x="${x.toFixed(1)}" data-y="${y.toFixed(1)}" tabindex="0" role="button" style="--d:${(ptIndex++ * 45)}ms">
+        <circle cx="${x}" cy="${y}" r="13.5" fill="rgba(11,10,30,0.72)"/>
+        <text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${key.length > 2 ? 11 : 19}" font-weight="700" fill="${color}">${PLANET_GLYPHS[key]}</text>
+      </g>`;
     }
   };
   if (persons.includes('felipe')) plot('felipe', persons.length === 1 ? rDailton : rFelipe, '#f2a6c8');
@@ -429,7 +432,7 @@ function destinyScoreDialHTML(T, score) {
         ${ringSVG}
       </svg>
       <div class="score-center">
-        ${value !== null ? `<div class="score-value">${value}</div>` : ''}
+        ${value !== null ? `<div class="score-value" data-countup="${value}">0</div>` : ''}
         ${overall ? `<div class="score-overall">${overall}</div>` : ''}
       </div>
     </div>
@@ -451,8 +454,8 @@ function destinyHarmonyHTML(T, synastry) {
       <div class="harmony-seg harmony-rose" style="--w:${tensionPct}%"></div>
     </div>
     <div class="harmony-legend">
-      <span><span class="dot gold"></span>${T.destiny.harmonyLabel} · ${harmonyPct}%</span>
-      <span><span class="dot rose"></span>${T.destiny.tensionLabel} · ${tensionPct}%</span>
+      <span><span class="dot gold"></span>${T.destiny.harmonyLabel} · <span data-countup="${harmonyPct}" data-suffix="%">0%</span></span>
+      <span><span class="dot rose"></span>${T.destiny.tensionLabel} · <span data-countup="${tensionPct}" data-suffix="%">0%</span></span>
     </div>` : ''}
     ${dynamicType ? `<p class="destiny-dynamic">${dynamicType}</p>` : ''}
   </div>`;
@@ -791,6 +794,7 @@ function fillApiSlots() {
     if (slot.innerHTML.trim() !== html.trim()) {
       slot.innerHTML = html;
       observeReveals(slot);
+      wireWheels();
     }
   });
 }
@@ -981,11 +985,104 @@ ${comingMoonsSectionHTML(T)}
   wireUp();
 }
 
+function pointLabel(person, key) {
+  const T = t9();
+  const lon = PEOPLE[person].points[key];
+  const s = signOf(lon);
+  const deg = Math.floor(s.degree);
+  const min = Math.round((s.degree - deg) * 60);
+  const name = T.points[key].replace(/^(o|a)\s/i, '');
+  const personName = person === 'dailton' ? 'Dailton' : 'Felipe';
+  return `${personName} · ${name.charAt(0).toUpperCase() + name.slice(1)} · ${T.signs[s.key]} ${deg}°${String(min).padStart(2, '0')}'`;
+}
+
+function wireWheels() {
+  document.querySelectorAll('.wheel-frame').forEach(frame => {
+    if (frame.querySelector('.wheel-tip')) return;
+    const tip = document.createElement('div');
+    tip.className = 'wheel-tip';
+    frame.appendChild(tip);
+    const svg = frame.querySelector('svg');
+    if (!svg) return;
+    const lines = [...frame.querySelectorAll('.wheel-line')];
+    const pts = [...frame.querySelectorAll('.wheel-pt')];
+    let active = null;
+    const clear = () => {
+      active = null;
+      frame.classList.remove('focus');
+      tip.classList.remove('show');
+      lines.forEach(l => l.classList.remove('lit'));
+      pts.forEach(p => p.classList.remove('lit'));
+    };
+    const activate = (pt) => {
+      const id = pt.dataset.person + '.' + pt.dataset.key;
+      if (active === id) { clear(); return; }
+      active = id;
+      frame.classList.add('focus');
+      pts.forEach(p => p.classList.toggle('lit', p === pt));
+      lines.forEach(l => {
+        const lit = l.dataset.a === id || l.dataset.b === id;
+        l.classList.toggle('lit', lit);
+        if (lit) {
+          const other = l.dataset.a === id ? l.dataset.b : l.dataset.a;
+          const [op, ok] = other.split('.');
+          document.querySelectorAll(`.wheel-pt[data-person="${op}"][data-key="${ok}"]`).forEach(p => {
+            if (frame.contains(p)) p.classList.add('lit');
+          });
+        }
+      });
+      tip.textContent = pointLabel(pt.dataset.person, pt.dataset.key);
+      const vb = svg.viewBox.baseVal;
+      const rect = svg.getBoundingClientRect();
+      const px = (Number(pt.dataset.x) / vb.width) * rect.width;
+      const py = (Number(pt.dataset.y) / vb.height) * rect.height;
+      tip.style.left = `${px}px`;
+      tip.style.top = `${py - 30}px`;
+      tip.classList.add('show');
+    };
+    pts.forEach(pt => {
+      pt.addEventListener('pointerenter', () => activate(pt));
+      pt.addEventListener('focus', () => activate(pt));
+      pt.addEventListener('click', (e) => { e.stopPropagation(); activate(pt); });
+      pt.addEventListener('blur', clear);
+    });
+    svg.addEventListener('pointerleave', clear);
+    document.addEventListener('click', (e) => { if (!frame.contains(e.target)) clear(); });
+  });
+}
+
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function runCountUps(root) {
+  root.querySelectorAll('[data-countup]').forEach(el => {
+    if (el.dataset.counted) return;
+    el.dataset.counted = '1';
+    const target = Number(el.dataset.countup);
+    const suffix = el.dataset.suffix || '';
+    const decimals = (el.dataset.countup.split('.')[1] || '').length;
+    if (!isFinite(target) || REDUCED_MOTION) {
+      el.textContent = el.dataset.countup + suffix;
+      return;
+    }
+    const dur = 1100;
+    const t0 = performance.now();
+    const tick = (t) => {
+      const p = Math.min(1, (t - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * eased).toFixed(decimals) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = el.dataset.countup + suffix;
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
 function observeReveals(root) {
   const io = new IntersectionObserver(entries => {
     for (const e of entries) {
       if (e.isIntersecting) {
         e.target.classList.add('visible');
+        runCountUps(e.target);
         io.unobserve(e.target);
       }
     }
@@ -1003,6 +1100,7 @@ function wireUp() {
   });
 
   observeReveals(document);
+  wireWheels();
 
   const shareBtn = document.getElementById('share-btn');
   if (shareBtn) {
@@ -1093,6 +1191,27 @@ for (const [key, href] of Object.entries(PAGE_HREFS)) {
   l.href = href;
   document.head.appendChild(l);
 }
+
+// Subtle sky tint by local time of day.
+const hour = new Date().getHours();
+document.documentElement.dataset.daypart =
+  hour >= 5 && hour < 10 ? 'dawn' : hour >= 10 && hour < 17 ? 'day' : hour >= 17 && hour < 20 ? 'dusk' : 'night';
+
+// Reading-progress bar.
+const progress = document.createElement('div');
+progress.id = 'progress';
+progress.setAttribute('aria-hidden', 'true');
+document.body.appendChild(progress);
+let progressTick = false;
+addEventListener('scroll', () => {
+  if (progressTick) return;
+  progressTick = true;
+  requestAnimationFrame(() => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? Math.min(1, scrollY / max) : 0})`;
+    progressTick = false;
+  });
+}, { passive: true });
 
 initStarfield();
 render();
