@@ -207,6 +207,56 @@ export const I18N = {
       scoreCaption: 'Um número sem teto fixo — o que importa é o quanto ele foge da média.',
     },
 
+    placements: {
+      title: 'O mapa completo',
+      intro: 'Cada ponto do céu no instante do nascimento: signo, grau exato, elemento e casa (signos inteiros). ℞ marca planeta retrógrado no nascimento.',
+      colPoint: 'Ponto', colSign: 'Signo', colPos: 'Grau', colElement: 'Elemento', colHouse: 'Casa',
+      retro: 'retrógrado',
+    },
+    dominants: {
+      title: 'Dominâncias do mapa',
+      signLabel: 'Signo dominante',
+      rulerLabel: 'Regente do mapa',
+      rulerIn: 'em',
+      modalities: { cardinal: 'Cardinal', fixed: 'Fixo', mutable: 'Mutável' },
+      modalityHint: {
+        cardinal: 'inicia', fixed: 'sustenta', mutable: 'adapta',
+      },
+    },
+    natalAspects: {
+      title: 'Conversas internas do mapa',
+      intro: 'Os aspectos mais apertados dentro do próprio mapa — os diálogos que essa pessoa carrega consigo.',
+    },
+    planetVibes: {
+      sun: 'a vontade', moon: 'a emoção', mercury: 'a mente', venus: 'o afeto', mars: 'a ação',
+      jupiter: 'a expansão', saturn: 'a estrutura', uranus: 'a mudança', neptune: 'o sonho', pluto: 'a profundidade',
+    },
+    aspectTones: {
+      harmonious: 'fluem juntas com naturalidade',
+      tense: 'se tensionam — atrito que, trabalhado, vira força',
+      blend: 'se fundem numa coisa só',
+    },
+    skyNow: {
+      title: 'O céu neste instante',
+      retro: '℞',
+    },
+    forecast: {
+      title: 'Próximos encontros do céu',
+      intro: 'Momentos exatos, nas próximas duas semanas, em que o céu toca os pontos principais de cada mapa — calculados ao dia.',
+      empty: 'Duas semanas tranquilas pela frente.',
+    },
+    meters: {
+      title: 'A química por área',
+      intro: 'Contando os contatos reais entre os planetas pessoais de vocês, área por área: quanto flui e quanto pede conversa.',
+      cats: { love: 'Amor & Carinho', mind: 'Conversa & Ideias', spark: 'Energia & Desejo', growth: 'Planos & Crescimento' },
+      flows: 'flui', works: 'pede trabalho',
+    },
+    signMeta: {
+      modalities: { cardinal: 'Cardinal', fixed: 'Fixo', mutable: 'Mutável' },
+      rulerPrefix: 'regido por',
+    },
+    birthdayChip: (name, days) => days === 0 ? `🎂 Hoje é o retorno solar de ${name}!` : `🎂 Faltam ${days} dia${days === 1 ? '' : 's'} para o retorno solar de ${name}`,
+    footerMoon: (sign, phase) => `sob a Lua em ${sign} · ${phase.toLowerCase()}`,
     weeklyTitle: 'A semana de vocês',
     weeklyIntro: 'Horóscopo semanal personalizado, calculado sobre os mapas natais completos — renovado toda segunda-feira.',
     weeklyFor: { dailton: 'Para Dailton', felipe: 'Para Felipe' },
@@ -283,7 +333,8 @@ export const I18N = {
     },
     points: {
       sun: 'o Sol', moon: 'a Lua', mercury: 'o Mercúrio', venus: 'a Vênus', mars: 'o Marte',
-      jupiter: 'o Júpiter', saturn: 'o Saturno', ascendant: 'o Ascendente', midheaven: 'o Meio-do-Céu',
+      jupiter: 'o Júpiter', saturn: 'o Saturno', uranus: 'o Urano', neptune: 'o Netuno', pluto: 'o Plutão',
+      ascendant: 'o Ascendente', midheaven: 'o Meio-do-Céu',
     },
     aspectNames: { conjunction: 'conjunção com', sextile: 'sextil com', square: 'quadratura com', trine: 'trígono com', opposition: 'oposição com' },
     transitTemplate: (planet, aspect, point) => `${cap(planet)} em ${aspect} ${point} natal.`,
@@ -530,6 +581,56 @@ export const I18N = {
       scoreCaption: 'A number with no fixed ceiling — what matters is how far it strays from average.',
     },
 
+    placements: {
+      title: 'The complete chart',
+      intro: 'Every point of the sky at the moment of birth: sign, exact degree, element, and whole-sign house. ℞ marks a planet retrograde at birth.',
+      colPoint: 'Point', colSign: 'Sign', colPos: 'Degree', colElement: 'Element', colHouse: 'House',
+      retro: 'retrograde',
+    },
+    dominants: {
+      title: 'Chart dominants',
+      signLabel: 'Dominant sign',
+      rulerLabel: 'Chart ruler',
+      rulerIn: 'in',
+      modalities: { cardinal: 'Cardinal', fixed: 'Fixed', mutable: 'Mutable' },
+      modalityHint: {
+        cardinal: 'initiates', fixed: 'sustains', mutable: 'adapts',
+      },
+    },
+    natalAspects: {
+      title: 'The chart’s inner conversations',
+      intro: 'The tightest aspects within the chart itself — the dialogues this person carries inside.',
+    },
+    planetVibes: {
+      sun: 'the will', moon: 'the emotions', mercury: 'the mind', venus: 'the affections', mars: 'the drive',
+      jupiter: 'the expansion', saturn: 'the structure', uranus: 'the change', neptune: 'the dream', pluto: 'the depths',
+    },
+    aspectTones: {
+      harmonious: 'flow together naturally',
+      tense: 'pull against each other — friction that, worked with, becomes strength',
+      blend: 'merge into one thing',
+    },
+    skyNow: {
+      title: 'The sky right now',
+      retro: '℞',
+    },
+    forecast: {
+      title: 'The sky’s next visits',
+      intro: 'Exact moments over the next two weeks when the sky touches each chart’s key points — computed to the day.',
+      empty: 'A quiet two weeks ahead.',
+    },
+    meters: {
+      title: 'Chemistry by life area',
+      intro: 'Counting the real contacts between your personal planets, area by area: how much flows and how much asks for conversation.',
+      cats: { love: 'Love & Care', mind: 'Talk & Ideas', spark: 'Energy & Desire', growth: 'Plans & Growth' },
+      flows: 'flows', works: 'takes work',
+    },
+    signMeta: {
+      modalities: { cardinal: 'Cardinal', fixed: 'Fixed', mutable: 'Mutable' },
+      rulerPrefix: 'ruled by',
+    },
+    birthdayChip: (name, days) => days === 0 ? `🎂 Today is ${name}'s solar return!` : `🎂 ${days} day${days === 1 ? '' : 's'} until ${name}'s solar return`,
+    footerMoon: (sign, phase) => `under the Moon in ${sign} · ${phase.toLowerCase()}`,
     weeklyTitle: 'Your week ahead',
     weeklyIntro: 'A personalized weekly horoscope computed on the full natal charts — refreshed every Monday.',
     weeklyFor: { dailton: 'For Dailton', felipe: 'For Felipe' },
@@ -606,7 +707,8 @@ export const I18N = {
     },
     points: {
       sun: 'Sun', moon: 'Moon', mercury: 'Mercury', venus: 'Venus', mars: 'Mars',
-      jupiter: 'Jupiter', saturn: 'Saturn', ascendant: 'Ascendant', midheaven: 'Midheaven',
+      jupiter: 'Jupiter', saturn: 'Saturn', uranus: 'Uranus', neptune: 'Neptune', pluto: 'Pluto',
+      ascendant: 'Ascendant', midheaven: 'Midheaven',
     },
     aspectNames: { conjunction: 'conjunct', sextile: 'sextile', square: 'square', trine: 'trine', opposition: 'opposite' },
     transitTemplate: (planet, aspect, point) => `${cap(planet)} ${aspect} natal ${point}.`,

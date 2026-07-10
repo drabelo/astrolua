@@ -1,5 +1,5 @@
 import './styles.css';
-import { signOf, planetLongitudes, aspectBetween, moonPhaseInfo, nextMoonPhaseSign, wholeSignHouse } from './astro.js';
+import { signOf, planetLongitudes, aspectBetween, moonPhaseInfo, nextMoonPhaseSign, wholeSignHouse, retrogradesAt, upcomingTransits } from './astro.js';
 import { PEOPLE } from './chartData.js';
 import { I18N } from './i18n.js';
 import { initStarfield } from './starfield.js';
@@ -29,6 +29,15 @@ const DAILY_ORBS = [
   { name: 'trine', angle: 120, orb: 3 },
   { name: 'opposition', angle: 180, orb: 4 },
 ];
+// element = index % 4, modality = index % 3, modern rulers
+const SIGN_INFO = ['aries','taurus','gemini','cancer','leo','virgo','libra','scorpio','sagittarius','capricorn','aquarius','pisces']
+  .map((key, i) => ({
+    key,
+    element: ['fire','earth','air','water'][i % 4],
+    modality: ['cardinal','fixed','mutable'][i % 3],
+    ruler: ['mars','venus','mercury','moon','sun','mercury','venus','pluto','jupiter','saturn','uranus','neptune'][i],
+  }));
+
 const TONE_OF = {
   trine: 'harmonious', sextile: 'harmonious',
   square: 'tense', opposition: 'tense',
@@ -335,7 +344,18 @@ function wheelSVG(persons = ['dailton', 'felipe'], ariaLabel = 'Synastry wheel')
     const [x2, y2] = polar(cx, cy, rOuter, i * 30);
     s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(232,196,118,0.2)" stroke-width="1"/>`;
     const [gx, gy] = polar(cx, cy, (rOuter + rZodiacIn) / 2, i * 30 + 15);
-    s += `<text x="${gx}" y="${gy}" text-anchor="middle" dominant-baseline="central" font-size="17" fill="rgba(232,196,118,0.85)" style="font-family:serif">${SIGN_GLYPHS[i]}</text>`;
+    s += `<g class="zodiac-glyph" data-sign="${i}" tabindex="0" role="button" data-x="${gx.toFixed(1)}" data-y="${gy.toFixed(1)}">
+      <circle cx="${gx}" cy="${gy}" r="16" fill="transparent"/>
+      <text x="${gx}" y="${gy}" text-anchor="middle" dominant-baseline="central" font-size="17" fill="rgba(232,196,118,0.85)" style="font-family:serif">${SIGN_GLYPHS[i]}</text>
+    </g>`;
+  }
+  // whole-sign house numbers, counted from the base person's Ascendant
+  const basePerson = persons.includes('dailton') ? 'dailton' : persons[0];
+  const ascSignIdx = Math.floor(((PEOPLE[basePerson].points.ascendant % 360) + 360) % 360 / 30);
+  for (let h = 1; h <= 12; h++) {
+    const lonMid = ((ascSignIdx + h - 1) % 12) * 30 + 15;
+    const [hx, hy] = polar(cx, cy, rInner - 14, lonMid);
+    s += `<text class="house-num" x="${hx}" y="${hy}" text-anchor="middle" dominant-baseline="central" font-size="10.5" fill="rgba(183,171,221,0.55)" font-weight="600">${h}</text>`;
   }
   // featured aspect lines: gold = flowing, rose dashed = frictional
   const pairs = [
@@ -372,6 +392,7 @@ function wheelSVG(persons = ['dailton', 'felipe'], ariaLabel = 'Synastry wheel')
       const [tx2, ty2] = polar(cx, cy, rInner + 7, lon);
       s += `<line x1="${tx1}" y1="${ty1}" x2="${tx2}" y2="${ty2}" stroke="${color}" stroke-width="1.4" opacity="0.8"/>`;
       s += `<g class="wheel-pt" data-person="${person}" data-key="${key}" data-x="${x.toFixed(1)}" data-y="${y.toFixed(1)}" tabindex="0" role="button" style="--d:${(ptIndex++ * 45)}ms">
+        <circle cx="${x}" cy="${y}" r="19" fill="transparent"/>
         <circle cx="${x}" cy="${y}" r="13.5" fill="rgba(11,10,30,0.72)"/>
         <text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${key.length > 2 ? 11 : 19}" font-weight="700" fill="${color}">${PLANET_GLYPHS[key]}</text>
       </g>`;
@@ -815,6 +836,7 @@ function personPageHTML(T, sky) {
         <h1>${PEOPLE[who].name}</h1>
         <p class="tagline">${page.tagline}</p>
         <div class="births"><div>${who === 'dailton' ? '☀️' : '🌙'} <span>${birthLine}</span></div></div>
+        ${birthdayChipHTML(T, who)}
         <div class="scroll-hint">${T.scrollHint}</div>
       </header>
 
@@ -832,6 +854,9 @@ function personPageHTML(T, sky) {
           <div class="wheel-frame">${wheelSVG([who], T.pages[who].wheelAria)}</div>
         </div>
       </section>
+${dominantsSectionHTML(T, who)}
+${placementsSectionHTML(T, [who])}
+${natalAspectsSectionHTML(T, who)}
 ${personNumerologySectionHTML(T, who)}
 <div class="api-slot" data-slot="insights">${insightsSectionHTML(T, who)}</div>
       <section class="today">
@@ -851,15 +876,17 @@ ${personNumerologySectionHTML(T, who)}
               ${transitBlock(sky[who])}
             </div>
           </div>
+          ${skyNowHTML(T)}
           <div class="updated-at">${T.updatedAt} ${dateFmt}</div>
         </div>
       </section>
+${forecastSectionHTML(T, [who])}
 <div class="api-slot" data-slot="pweekly">${personWeeklySectionHTML(T, who)}</div>
 <div class="api-slot" data-slot="monthly">${monthlySectionHTML(T, who)}</div>
 <div class="api-slot" data-slot="chapters">${chaptersSectionHTML(T, who)}</div>
 <div class="api-slot" data-slot="places">${placesSectionHTML(T, who)}</div>
       <p class="disclaimer">${T.disclaimer}</p>
-      <footer>${T.footer} <span class="heart" role="button" tabindex="0" aria-label="${T.heartAria}">♥</span></footer>
+      <footer>${T.footer} <span class="heart" role="button" tabindex="0" aria-label="${T.heartAria}">♥</span><div class="footer-moon">${MOON_EMOJI[sky.moonPhase.phase]} ${T.footerMoon(T.signs[sky.moonSign.key], T.phases[sky.moonPhase.phase])}</div></footer>
     </main>
   `;
 }
@@ -926,6 +953,7 @@ function render() {
         </div>
       </section>
 ${elementsSectionHTML(T)}
+${placementsSectionHTML(T, ['dailton', 'felipe'])}
 ${numerologySectionHTML(T)}
       <section class="synastry">
         <h2 class="reveal">${T.synastryTitle}</h2>
@@ -934,6 +962,7 @@ ${numerologySectionHTML(T)}
         ${Object.values(T.aspects).map(aspectCardHTML).join('')}
       </section>
 <div class="api-slot" data-slot="destiny">${destinySectionHTML(T)}</div>
+${metersSectionHTML(T)}
       <section class="real">
         <h2 class="reveal">${T.realTalkTitle}</h2>
         <div class="sec-divider reveal" aria-hidden="true">☾</div>
@@ -972,17 +1001,238 @@ ${overlaysSectionHTML(T)}
             <div class="mission-label">${T.mission.label}</div>
             <p class="mission-line">${mission}</p>
           </div>
+          ${skyNowHTML(T)}
           <div class="updated-at">${T.updatedAt} ${dateFmt}</div>
         </div>
       </section>
 ${comingMoonsSectionHTML(T)}
+${forecastSectionHTML(T, ['dailton', 'felipe'])}
 <div class="api-slot" data-slot="weekly">${weeklySectionHTML(T)}</div>
       <p class="disclaimer">${T.disclaimer}</p>
-      <footer>${T.footer} <span class="heart" role="button" tabindex="0" aria-label="${T.heartAria}">♥</span></footer>
+      <footer>${T.footer} <span class="heart" role="button" tabindex="0" aria-label="${T.heartAria}">♥</span><div class="footer-moon">${MOON_EMOJI[sky.moonPhase.phase]} ${T.footerMoon(T.signs[sky.moonSign.key], T.phases[sky.moonPhase.phase])}</div></footer>
     </main>
   `;
 
   wireUp();
+}
+
+const ASPECT_SYMBOLS = { conjunction: '☌', sextile: '✶', square: '□', trine: '△', opposition: '☍' };
+const ELEMENT_DOT = { fire: '#ff9e7d', earth: '#e8c476', air: '#a8c6f0', water: '#8fd0d9' };
+const POINT_ORDER = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'ascendant', 'midheaven'];
+const natalRetroCache = {};
+function natalRetro(who) {
+  if (!natalRetroCache[who]) natalRetroCache[who] = retrogradesAt(new Date(PEOPLE[who].birth.iso));
+  return natalRetroCache[who];
+}
+function degMin(degree) {
+  const d = Math.floor(degree);
+  const m = Math.round((degree - d) * 60);
+  return `${d}°${String(m).padStart(2, '0')}'`;
+}
+function stripArticle(name) {
+  const n = name.replace(/^(o|a|the)\s/i, '');
+  return n.charAt(0).toUpperCase() + n.slice(1);
+}
+
+// --- complete placements table ---
+function placementsTableHTML(T, who) {
+  const points = PEOPLE[who].points;
+  const retro = natalRetro(who);
+  const rows = POINT_ORDER.map(key => {
+    const s = signOf(points[key]);
+    const info = SIGN_INFO[s.index];
+    const isAngle = key === 'ascendant' || key === 'midheaven';
+    const house = key === 'ascendant' ? 1 : wholeSignHouse(points[key], points.ascendant);
+    return `<tr>
+      <td><span class="pl-glyph">${PLANET_GLYPHS[key]}</span> ${stripArticle(T.points[key])}${!isAngle && retro[key] ? ` <span class="retro-badge" title="${T.placements.retro}">℞</span>` : ''}</td>
+      <td>${SIGN_GLYPHS[s.index]} ${T.signs[s.key]}</td>
+      <td class="pl-deg">${degMin(s.degree)}</td>
+      <td><span class="el-dot" style="background:${ELEMENT_DOT[info.element]}"></span>${T.elements.labels[info.element]}</td>
+      <td class="pl-house">${house}</td>
+    </tr>`;
+  }).join('');
+  return `<div class="placements-card reveal">
+    <h3>${who === 'dailton' ? 'Dailton' : 'Felipe'}</h3>
+    <div class="table-scroll"><table class="placements">
+      <thead><tr><th>${T.placements.colPoint}</th><th>${T.placements.colSign}</th><th>${T.placements.colPos}</th><th>${T.placements.colElement}</th><th>${T.placements.colHouse}</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </div>`;
+}
+function placementsSectionHTML(T, persons) {
+  return `
+      <section class="placements-sec">
+        <h2 class="reveal">${T.placements.title}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">✴</div>
+        <p class="intro reveal">${T.placements.intro}</p>
+        <div class="${persons.length === 2 ? 'placements-grid' : ''}">
+          ${persons.map(w => placementsTableHTML(T, w)).join('')}
+        </div>
+      </section>`;
+}
+
+// --- chart dominants ---
+function dominantsSectionHTML(T, who) {
+  const points = PEOPLE[who].points;
+  const signCounts = {};
+  const modCounts = { cardinal: 0, fixed: 0, mutable: 0 };
+  for (const key of ELEMENT_POINTS) {
+    const s = signOf(points[key]);
+    signCounts[s.index] = (signCounts[s.index] || 0) + 1;
+    modCounts[SIGN_INFO[s.index].modality]++;
+  }
+  const domIdx = Number(Object.entries(signCounts).sort((a, b) => b[1] - a[1])[0][0]);
+  const ascInfo = SIGN_INFO[signOf(points.ascendant).index];
+  const rulerKey = ascInfo.ruler;
+  const rulerSign = signOf(points[rulerKey]);
+  const rulerHouse = wholeSignHouse(points[rulerKey], points.ascendant);
+  const modBars = ['cardinal', 'fixed', 'mutable'].map(m => `
+    <div class="element-bar">
+      <span class="element-label">${T.dominants.modalities[m]} <em class="mod-hint">· ${T.dominants.modalityHint[m]}</em></span>
+      <div class="element-track"><div class="element-fill earth" style="--fill-w:${(modCounts[m] / ELEMENT_POINTS.length * 100).toFixed(1)}%"></div></div>
+      <span class="element-count" data-countup="${modCounts[m]}">0</span>
+    </div>`).join('');
+  return `
+      <section class="dominants">
+        <h2 class="reveal">${T.dominants.title}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">♛</div>
+        <div class="today-sky reveal">
+          <div class="dominant-chips">
+            <div class="dom-chip"><span class="dom-label">${T.dominants.signLabel}</span><span class="dom-value">${SIGN_GLYPHS[domIdx]} ${T.signs[SIGN_INFO[domIdx].key]}</span></div>
+            <div class="dom-chip"><span class="dom-label">${T.dominants.rulerLabel}</span><span class="dom-value">${PLANET_GLYPHS[rulerKey]} ${stripArticle(T.points[rulerKey])} ${T.dominants.rulerIn} ${T.signs[rulerSign.key]} · ${T.placements.colHouse.toLowerCase()} ${rulerHouse}</span></div>
+          </div>
+          <div class="mod-bars">${modBars}</div>
+        </div>
+      </section>`;
+}
+
+// --- personal natal aspects ---
+const NATAL_ASPECT_ORBS = [
+  { name: 'conjunction', angle: 0, orb: 6 },
+  { name: 'sextile', angle: 60, orb: 3 },
+  { name: 'square', angle: 90, orb: 5 },
+  { name: 'trine', angle: 120, orb: 5 },
+  { name: 'opposition', angle: 180, orb: 6 },
+];
+function natalAspectsSectionHTML(T, who) {
+  const points = PEOPLE[who].points;
+  const keys = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn'];
+  const found = [];
+  for (let i = 0; i < keys.length; i++) {
+    for (let j = i + 1; j < keys.length; j++) {
+      const asp = aspectBetween(points[keys[i]], points[keys[j]], NATAL_ASPECT_ORBS);
+      if (asp) found.push({ a: keys[i], b: keys[j], ...asp });
+    }
+  }
+  found.sort((x, y) => x.orb - y.orb);
+  const top = found.slice(0, 6);
+  if (!top.length) return '';
+  const rows = top.map(f => {
+    const tone = TONE_OF[f.name];
+    return `<div class="naspect reveal">
+      <span class="naspect-formula">${PLANET_GLYPHS[f.a]} ${ASPECT_SYMBOLS[f.name]} ${PLANET_GLYPHS[f.b]}</span>
+      <span class="naspect-text"><strong>${stripArticle(T.points[f.a])} ${ASPECT_SYMBOLS[f.name]} ${stripArticle(T.points[f.b])}</strong> · ${degMin(f.orb)} — ${T.planetVibes[f.a]} ${lang === 'pt' ? 'e' : 'and'} ${T.planetVibes[f.b]} ${T.aspectTones[tone]}.</span>
+    </div>`;
+  }).join('');
+  return `
+      <section class="natal-aspects">
+        <h2 class="reveal">${T.natalAspects.title}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">☍</div>
+        <p class="intro reveal">${T.natalAspects.intro}</p>
+        <div class="today-sky reveal">${rows}</div>
+      </section>`;
+}
+
+// --- the sky right now (live strip) ---
+function skyNowHTML(T) {
+  const now = new Date();
+  const lons = planetLongitudes(now);
+  const retro = retrogradesAt(now);
+  const chips = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'].map(key => {
+    const s = signOf(lons[key]);
+    return `<div class="skynow-chip" title="${stripArticle(T.points[key])}">
+      <span class="skynow-glyph">${PLANET_GLYPHS[key]}</span>
+      <span class="skynow-sign">${SIGN_GLYPHS[s.index]} ${Math.floor(s.degree)}°${retro[key] ? '<span class="retro-badge">℞</span>' : ''}</span>
+    </div>`;
+  }).join('');
+  return `<div class="skynow"><h4>${T.skyNow.title}</h4><div class="skynow-row">${chips}</div></div>`;
+}
+
+// --- upcoming exact transits ---
+function forecastListHTML(T, who, limit) {
+  const p = PEOPLE[who].points;
+  const events = upcomingTransits({ sun: p.sun, moon: p.moon, venus: p.venus, ascendant: p.ascendant }, new Date(), 16)
+    .slice(0, limit);
+  if (!events.length) return `<p>${T.forecast.empty}</p>`;
+  const fmt = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { day: 'numeric', month: 'long' });
+  return `<div class="forecast-list">` + events.map(e => `
+    <div class="forecast-row">
+      <span class="forecast-date">${fmt.format(e.date)}</span>
+      <span class="forecast-what">${PLANET_GLYPHS[e.body]} ${stripArticle(T.points[e.body])} ${ASPECT_SYMBOLS[e.aspect]} ${T.points[e.point]}</span>
+    </div>`).join('') + `</div>`;
+}
+function forecastSectionHTML(T, persons) {
+  const cols = persons.map(w => `<div class="today-col"><h4>${w === 'dailton' ? T.forDailton : T.forFelipe}</h4>${forecastListHTML(T, w, persons.length === 2 ? 4 : 6)}</div>`).join('');
+  return `
+      <section class="forecast">
+        <h2 class="reveal">${T.forecast.title}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">☄</div>
+        <p class="intro reveal">${T.forecast.intro}</p>
+        <div class="today-sky reveal"><div class="today-cols">${cols}</div></div>
+      </section>`;
+}
+
+// --- chemistry meters by life area ---
+function metersSectionHTML(T) {
+  const keys = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn'];
+  const cats = {
+    love: k => k === 'venus' || k === 'moon',
+    mind: k => k === 'mercury',
+    spark: k => k === 'sun' || k === 'mars',
+    growth: k => k === 'jupiter' || k === 'saturn',
+  };
+  const tallies = { love: { h: 0, t: 0 }, mind: { h: 0, t: 0 }, spark: { h: 0, t: 0 }, growth: { h: 0, t: 0 } };
+  for (const ka of keys) {
+    for (const kb of keys) {
+      const asp = aspectBetween(PEOPLE.dailton.points[ka], PEOPLE.felipe.points[kb]);
+      if (!asp) continue;
+      const tone = TONE_OF[asp.name];
+      const w = tone === 'harmonious' ? { h: 1, t: 0 } : tone === 'tense' ? { h: 0, t: 1 } : { h: 0.5, t: 0.5 };
+      for (const [cat, test] of Object.entries(cats)) {
+        if (test(ka) || test(kb)) { tallies[cat].h += w.h; tallies[cat].t += w.t; }
+      }
+    }
+  }
+  const rows = Object.entries(tallies).map(([cat, v]) => {
+    const total = v.h + v.t;
+    const pct = total ? Math.round((v.h / total) * 100) : 50;
+    return `<div class="meter-row">
+      <span class="meter-label">${T.meters.cats[cat]}</span>
+      <div class="meter-track"><div class="meter-fill" style="--fill-w:${pct}%"></div></div>
+      <span class="meter-pct"><span data-countup="${pct}" data-suffix="%">0%</span></span>
+    </div>`;
+  }).join('');
+  return `
+      <section class="meters">
+        <h2 class="reveal">${T.meters.title}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">⚗</div>
+        <p class="intro reveal">${T.meters.intro}</p>
+        <div class="today-sky reveal">
+          ${rows}
+          <div class="meter-legend"><span>← ${T.meters.works}</span><span>${T.meters.flows} →</span></div>
+        </div>
+      </section>`;
+}
+
+// --- birthday countdown chip ---
+function birthdayChipHTML(T, who) {
+  const birth = new Date(PEOPLE[who].birth.iso);
+  const now = new Date();
+  let next = new Date(now.getFullYear(), birth.getUTCMonth(), birth.getUTCDate());
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (next < today) next = new Date(now.getFullYear() + 1, birth.getUTCMonth(), birth.getUTCDate());
+  const days = Math.round((next - today) / 86400000);
+  return `<div class="birthday-chip">${T.birthdayChip(who === 'dailton' ? 'Dailton' : 'Felipe', days)}</div>`;
 }
 
 function pointLabel(person, key) {
@@ -1040,13 +1290,44 @@ function wireWheels() {
       tip.style.top = `${py - 30}px`;
       tip.classList.add('show');
     };
+    // On touch screens the browser fires pointerenter and then click for the
+    // same tap; without the timestamp guard the click would immediately toggle
+    // the highlight back off.
+    let lastActivate = 0;
+    const guardedActivate = (el, toggle) => {
+      const id = el.dataset.sign !== undefined ? 'sign.' + el.dataset.sign : el.dataset.person + '.' + el.dataset.key;
+      if (toggle && active === id && performance.now() - lastActivate < 400) return;
+      lastActivate = performance.now();
+      if (el.dataset.sign !== undefined) activateSign(el); else activate(el);
+    };
+    const activateSign = (g) => {
+      const idx = Number(g.dataset.sign);
+      const id = 'sign.' + idx;
+      if (active === id) { clear(); return; }
+      clear();
+      active = id;
+      const T = t9();
+      const info = SIGN_INFO[idx];
+      tip.textContent = `${T.signs[info.key]} · ${T.elements.labels[info.element]} · ${T.signMeta.modalities[info.modality]} · ${T.signMeta.rulerPrefix} ${stripArticle(T.points[info.ruler])}`;
+      const vb = svg.viewBox.baseVal;
+      const rect = svg.getBoundingClientRect();
+      tip.style.left = `${(Number(g.dataset.x) / vb.width) * rect.width}px`;
+      tip.style.top = `${(Number(g.dataset.y) / vb.height) * rect.height - 30}px`;
+      tip.classList.add('show');
+    };
     pts.forEach(pt => {
-      pt.addEventListener('pointerenter', () => activate(pt));
-      pt.addEventListener('focus', () => activate(pt));
-      pt.addEventListener('click', (e) => { e.stopPropagation(); activate(pt); });
+      pt.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') guardedActivate(pt, false); });
+      pt.addEventListener('focus', () => guardedActivate(pt, false));
+      pt.addEventListener('click', (e) => { e.stopPropagation(); guardedActivate(pt, true); });
       pt.addEventListener('blur', clear);
     });
-    svg.addEventListener('pointerleave', clear);
+    frame.querySelectorAll('.zodiac-glyph').forEach(g => {
+      g.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') guardedActivate(g, false); });
+      g.addEventListener('focus', () => guardedActivate(g, false));
+      g.addEventListener('click', (e) => { e.stopPropagation(); guardedActivate(g, true); });
+      g.addEventListener('blur', clear);
+    });
+    svg.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') clear(); });
     document.addEventListener('click', (e) => { if (!frame.contains(e.target)) clear(); });
   });
 }

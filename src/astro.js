@@ -152,3 +152,60 @@ export function moonPhaseInfo(date) {
   else phase = 'waning-crescent';
   return { angle, illumination: illum, phase };
 }
+
+// Retrograde test: a body is retrograde when its geocentric longitude is
+// decreasing. Sampled ±12h around the moment.
+const GEO_BODIES = ['mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
+export function retrogradesAt(date) {
+  const t = date instanceof Date ? date : new Date(date);
+  const before = planetLongitudes(new Date(t.getTime() - 43200000));
+  const after = planetLongitudes(new Date(t.getTime() + 43200000));
+  const out = {};
+  for (const b of GEO_BODIES) {
+    let d = after[b] - before[b];
+    if (d > 180) d -= 360;
+    if (d < -180) d += 360;
+    out[b] = d < 0;
+  }
+  return out;
+}
+
+// Finds upcoming exact aspect hits from fast transiting bodies to a set of
+// natal points, within `days` from `fromDate`. Daily sampling + bisection to
+// roughly the hour. Returns [{body, point, aspect, date}] sorted by date.
+const FORECAST_ASPECTS = [
+  { name: 'conjunction', angle: 0 },
+  { name: 'sextile', angle: 60 },
+  { name: 'square', angle: 90 },
+  { name: 'trine', angle: 120 },
+  { name: 'opposition', angle: 180 },
+];
+export function upcomingTransits(natalPoints, fromDate, days = 16, bodies = ['sun', 'venus', 'mars']) {
+  const from = fromDate.getTime();
+  const samples = [];
+  for (let d = 0; d <= days; d++) {
+    samples.push(planetLongitudes(new Date(from + d * 86400000)));
+  }
+  const events = [];
+  for (const body of bodies) {
+    for (const [point, natalLon] of Object.entries(natalPoints)) {
+      for (const asp of FORECAST_ASPECTS) {
+        for (let d = 0; d < days; d++) {
+          const f0 = angleDiff(samples[d][body], natalLon) - asp.angle;
+          const f1 = angleDiff(samples[d + 1][body], natalLon) - asp.angle;
+          if (f0 === 0 || (f0 < 0) === (f1 < 0)) continue;
+          let lo = from + d * 86400000, hi = lo + 86400000;
+          let flo = f0;
+          for (let i = 0; i < 20; i++) {
+            const mid = (lo + hi) / 2;
+            const fmid = angleDiff(planetLongitudes(new Date(mid))[body], natalLon) - asp.angle;
+            if ((fmid < 0) === (flo < 0)) { lo = mid; flo = fmid; } else { hi = mid; }
+          }
+          events.push({ body, point, aspect: asp.name, date: new Date((lo + hi) / 2) });
+        }
+      }
+    }
+  }
+  events.sort((a, b) => a.date - b.date);
+  return events;
+}
