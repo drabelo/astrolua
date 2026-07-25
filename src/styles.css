@@ -1990,3 +1990,66 @@ p, li { text-wrap: pretty; }
   .index-card { padding: 1.6rem 1.2rem 1.2rem; }
   .index-row a { gap: 0.8rem; }
 }
+
+
+/* =====================================================================
+   PERFORMANCE
+   Measured on a 4x-throttled iPhone 13 profile against the live page.
+   ===================================================================== */
+
+/* The couple page is ~23,000px tall on a phone. Letting the browser skip
+   layout and paint for off-screen sections was worth +14fps. The intrinsic
+   size keeps the scrollbar and anchor offsets stable. */
+main > section,
+main > .api-slot > section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+/* Chapter openers stay always-rendered: they are short, and they are the
+   anchor targets for the index. */
+.chapter-open { content-visibility: visible; }
+
+@media (hover: none), (max-width: 700px) {
+  /* Grain and per-card spotlights are pointer-driven flourishes that cost
+     paint time on touch devices for no benefit. */
+  .grain { display: none; }
+  .card::before, .aspect-card::before,
+  .placements-card::before, .today-sky::before { display: none; }
+
+  /* Scroll-linked animation runs work every frame for every element it is
+     attached to; on touch we use the one-shot IntersectionObserver path
+     instead (+8fps). */
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: none;
+      opacity: 0;
+      transform: translateY(26px);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .wheel-wrap svg { animation: none; }
+  }
+
+  /* Fewer translucent layers to composite while scrolling. */
+  .card, .aspect-card, .placements-card, .today-sky, .index-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: rgba(17, 14, 44, 0.55);
+  }
+}
+
+/* Anchor targets clear the fixed navigation. */
+.chapter-open, main > section { scroll-margin-top: 72px; }
+
+/* If the safety sweep reveals an element, it must win over the scroll-driven
+   animation — otherwise an element that never passes through the animation
+   range (possible once content-visibility shifts the page under it) stays at
+   opacity 0 forever. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal.visible {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

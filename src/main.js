@@ -866,6 +866,7 @@ function fillApiSlots() {
     if (slot.innerHTML.trim() !== html.trim()) {
       slot.innerHTML = html;
       numberSections();
+      wireAnchors(slot);
       observeReveals(slot);
       wireWheels();
       wireSpotlights(slot);
@@ -1460,6 +1461,54 @@ function numberSections() {
   }
 }
 
+// Jumping to a target while later sections are still un-rendered lands short,
+// because their heights are only estimates until they paint. Scroll, let the
+// layout settle, then correct.
+const SCROLL_MARGIN = 72; // clears the fixed top nav
+function scrollToTarget(el) {
+  if (!el) return;
+  const behavior = REDUCED_MOTION ? 'auto' : 'smooth';
+  el.scrollIntoView({ behavior, block: 'start' });
+
+  // Correcting while the smooth scroll is still running just fights it, so
+  // wait for the scroll to go idle, then snap to the settled position.
+  let idleTimer = null;
+  let tries = 0;
+  const finish = () => {
+    removeEventListener('scroll', onScroll);
+    const correct = () => {
+      const top = el.getBoundingClientRect().top - SCROLL_MARGIN;
+      if (Math.abs(top) > 4 && tries++ < 8) {
+        scrollBy({ top, behavior: 'auto' });
+        requestAnimationFrame(correct);
+      }
+    };
+    requestAnimationFrame(correct);
+  };
+  const onScroll = () => {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(finish, 120);
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  idleTimer = setTimeout(finish, 700); // in case no scroll event ever fires
+}
+
+function wireAnchors(root) {
+  root.querySelectorAll('a[href^="#"]').forEach(a => {
+    if (a.dataset.anchored) return;
+    a.dataset.anchored = '1';
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      if (id.length < 2) return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      history.replaceState(null, '', id);
+      scrollToTarget(target);
+    });
+  });
+}
+
 function buildJumpRail() {
   document.querySelector('.jump-rail')?.remove();
   const sections = [...document.querySelectorAll('main section')].filter(s => s.querySelector('h2'));
@@ -1474,9 +1523,7 @@ function buildJumpRail() {
     const label = sec.querySelector('h2').textContent.trim();
     b.dataset.label = label;
     b.setAttribute('aria-label', label);
-    b.addEventListener('click', () => {
-      sec.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'start' });
-    });
+    b.addEventListener('click', () => scrollToTarget(sec));
     rail.appendChild(b);
   });
   document.body.appendChild(rail);
@@ -1508,17 +1555,47 @@ function wireTableScroll(root) {
   });
 }
 
+// content-visibility means section heights firm up only as they render, so a
+// fast scroll can move elements out from under the observer before it fires.
+// This sweep is the safety net: anything at or above the fold that is still
+// hidden gets revealed. It only ever walks the shrinking set of stragglers.
+let pendingReveals = new Set();
+let sweepQueued = false;
+function sweepReveals() {
+  sweepQueued = false;
+  if (!pendingReveals.size) return;
+  const limit = window.innerHeight * 1.15;
+  for (const el of [...pendingReveals]) {
+    if (!el.isConnected) { pendingReveals.delete(el); continue; }
+    if (el.getBoundingClientRect().top < limit) {
+      el.classList.add('visible');
+      runCountUps(el);
+      pendingReveals.delete(el);
+    }
+  }
+}
+addEventListener('scroll', () => {
+  if (sweepQueued || !pendingReveals.size) return;
+  sweepQueued = true;
+  requestAnimationFrame(sweepReveals);
+}, { passive: true });
+
 function observeReveals(root) {
   const io = new IntersectionObserver(entries => {
     for (const e of entries) {
       if (e.isIntersecting) {
         e.target.classList.add('visible');
         runCountUps(e.target);
+        pendingReveals.delete(e.target);
         io.unobserve(e.target);
       }
     }
-  }, { threshold: 0.12 });
-  root.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  }, { threshold: 0.08 });
+  root.querySelectorAll('.reveal').forEach(el => {
+    if (!el.classList.contains('visible')) pendingReveals.add(el);
+    io.observe(el);
+  });
+  sweepReveals();
 }
 
 // Wrap each headline word so it can rise, unblur and settle on its own beat.
@@ -1566,7 +1643,9 @@ function splitHeadline() {
 }
 
 // A soft light that tracks the pointer across each card.
+const HAS_HOVER = window.matchMedia('(hover: hover)').matches;
 function wireSpotlights(root) {
+  if (!HAS_HOVER) return; // no pointer to follow — skip the listeners entirely
   const cards = root.querySelectorAll('.card, .aspect-card, .placements-card, .today-sky');
   cards.forEach(card => {
     if (card.dataset.spot) return;
@@ -1590,6 +1669,7 @@ function wireUp() {
 
   splitHeadline();
   numberSections();
+  wireAnchors(document);
   observeReveals(document);
   wireWheels();
   wireSpotlights(document);

@@ -6,8 +6,15 @@
 // painting/animating — it stays in the markup untouched as the no-JS
 // fallback for anyone whose script never runs.
 
-const STAR_COUNT = 170;
-const MAX_DPR = 2;
+// Star budget and pixel density scale down on phones: at DPR 3 a full-screen
+// canvas of 170 twinkling stars was measured costing ~14fps on a throttled
+// mobile profile.
+const COARSE = window.matchMedia && window.matchMedia('(hover: none)').matches;
+const SMALL = window.innerWidth < 700;
+const LOW_POWER = COARSE || SMALL;
+const STAR_COUNT = LOW_POWER ? 70 : 170;
+const FRAME_MS = LOW_POWER ? 33 : 0; // cap to ~30fps on phones
+const MAX_DPR = LOW_POWER ? 1.5 : 2;
 const PARALLAX_PX = 10; // max pointer-driven drift, scaled by depth
 const SCROLL_FACTOR = 0.02; // scroll-driven drift, scaled by depth
 const LERP = 0.05;
@@ -121,8 +128,14 @@ export function initStarfield() {
   let running = true;
   let rafId = null;
 
+  let lastFrame = 0;
   function frame(t) {
     if (!running) return;
+    if (FRAME_MS && t - lastFrame < FRAME_MS) {
+      rafId = requestAnimationFrame(frame);
+      return;
+    }
+    lastFrame = t;
     px += (targetPX - px) * LERP;
     py += (targetPY - py) * LERP;
     scroll += (targetScroll - scroll) * LERP;
