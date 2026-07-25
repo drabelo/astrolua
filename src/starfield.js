@@ -6,11 +6,14 @@
 // painting/animating — it stays in the markup untouched as the no-JS
 // fallback for anyone whose script never runs.
 
-const STAR_COUNT = 140;
+const STAR_COUNT = 170;
 const MAX_DPR = 2;
 const PARALLAX_PX = 10; // max pointer-driven drift, scaled by depth
 const SCROLL_FACTOR = 0.02; // scroll-driven drift, scaled by depth
 const LERP = 0.05;
+const LINK_RADIUS = 132;   // px: stars closer than this can be linked
+const CURSOR_REACH = 260;  // px: constellations only form near the pointer
+const MAX_LINKS = 3;       // per star, keeps the figure sparse and elegant
 
 const TINTS = ['#ffffff', '#ffffff', '#ffffff', '#ffe9c9', '#fdd9ec'];
 
@@ -79,10 +82,16 @@ export function initStarfield() {
   let px = 0, py = 0;
   let targetScroll = 0, scroll = 0;
 
+  let cursorX = null, cursorY = null;
+
   function onPointerMove(e) {
     // Drift opposite the pointer, normalized to viewport center.
     targetPX = (e.clientX / width - 0.5) * -2;
     targetPY = (e.clientY / height - 0.5) * -2;
+    // Touch shouldn't leave a constellation stranded under a lifted finger.
+    if (e.pointerType === 'touch') { cursorX = null; cursorY = null; return; }
+    cursorX = e.clientX;
+    cursorY = e.clientY;
   }
 
   function onScroll() {
@@ -121,15 +130,52 @@ export function initStarfield() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
 
+    // Resolve every star's drawn position once, then reuse for links.
     for (const s of stars) {
-      const twinkle = Math.sin(t * 0.001 * s.speed + s.phase) * 0.18;
-      const alpha = Math.min(1, Math.max(0, s.baseAlpha + twinkle));
       const dx = px * PARALLAX_PX * s.depth;
       const dy = py * PARALLAX_PX * s.depth + scroll * SCROLL_FACTOR * s.depth;
+      s.dx = s.x + dx;
+      s.dy = s.y + dy;
+    }
+
+    // Constellations: faint lines between neighbouring stars, drawn only
+    // near the pointer and fading with both distances, so figures form and
+    // dissolve as the cursor wanders the sky.
+    if (cursorX !== null) {
+      ctx.lineWidth = 0.6;
+      for (let i = 0; i < stars.length; i++) {
+        const a = stars[i];
+        const ca = Math.hypot(a.dx - cursorX, a.dy - cursorY);
+        if (ca > CURSOR_REACH) continue;
+        const nearness = 1 - ca / CURSOR_REACH;
+        let links = 0;
+        for (let j = i + 1; j < stars.length && links < MAX_LINKS; j++) {
+          const b = stars[j];
+          const d = Math.hypot(a.dx - b.dx, a.dy - b.dy);
+          if (d > LINK_RADIUS) continue;
+          links++;
+          ctx.globalAlpha = nearness * (1 - d / LINK_RADIUS) * 0.5;
+          ctx.strokeStyle = 'rgba(232, 196, 118, 0.9)';
+          ctx.beginPath();
+          ctx.moveTo(a.dx, a.dy);
+          ctx.lineTo(b.dx, b.dy);
+          ctx.stroke();
+        }
+      }
+    }
+
+    for (const s of stars) {
+      const twinkle = Math.sin(t * 0.001 * s.speed + s.phase) * 0.18;
+      let alpha = Math.min(1, Math.max(0, s.baseAlpha + twinkle));
+      // Stars brighten as the pointer approaches.
+      if (cursorX !== null) {
+        const cd = Math.hypot(s.dx - cursorX, s.dy - cursorY);
+        if (cd < CURSOR_REACH) alpha = Math.min(1, alpha + (1 - cd / CURSOR_REACH) * 0.5);
+      }
       ctx.globalAlpha = alpha;
       ctx.fillStyle = s.tint;
       ctx.beginPath();
-      ctx.arc(s.x + dx, s.y + dy, s.radius, 0, Math.PI * 2);
+      ctx.arc(s.dx, s.dy, s.radius, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
@@ -154,6 +200,7 @@ export function initStarfield() {
 
   layout();
   window.addEventListener('resize', layout);
+  document.addEventListener('pointerleave', () => { cursorX = null; cursorY = null; });
   window.addEventListener('pointermove', onPointerMove, { passive: true });
   window.addEventListener('scroll', onScroll, { passive: true });
   document.addEventListener('visibilitychange', () => {

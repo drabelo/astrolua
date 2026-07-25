@@ -867,6 +867,7 @@ function fillApiSlots() {
       slot.innerHTML = html;
       observeReveals(slot);
       wireWheels();
+      wireSpotlights(slot);
       wireTableScroll(slot);
       buildJumpRail();
     }
@@ -885,6 +886,7 @@ function personPageHTML(T, sky) {
   return `
     <main id="content" tabindex="-1">
       <header class="hero person-hero">
+        <div class="hero-orbits" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
         <div class="kicker">${T.heroKicker}</div>
         <h1>${PEOPLE[who].name}</h1>
         <p class="tagline">${page.tagline}</p>
@@ -980,6 +982,7 @@ function render() {
   document.getElementById('app').innerHTML = skipLinkHTML(T) + chrome + `
     <main id="content" tabindex="-1">
       <header class="hero">
+        <div class="hero-orbits" aria-hidden="true"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
         <div class="kicker">${T.heroKicker}</div>
         <h1>${T.heroNames}</h1>
         <p class="tagline">${T.heroTagline}</p>
@@ -1475,6 +1478,31 @@ function observeReveals(root) {
   root.querySelectorAll('.reveal').forEach(el => io.observe(el));
 }
 
+// Wrap each headline word so it can rise, unblur and settle on its own beat.
+function splitHeadline() {
+  const h1 = document.querySelector('.hero h1');
+  if (!h1 || h1.dataset.split) return;
+  const words = h1.textContent.trim().split(/\s+/);
+  h1.dataset.split = '1';
+  h1.innerHTML = words
+    .map((w, i) => `<span class="w" style="--i:${i}">${w}</span>`)
+    .join(' ');
+}
+
+// A soft light that tracks the pointer across each card.
+function wireSpotlights(root) {
+  const cards = root.querySelectorAll('.card, .aspect-card, .placements-card, .today-sky');
+  cards.forEach(card => {
+    if (card.dataset.spot) return;
+    card.dataset.spot = '1';
+    card.addEventListener('pointermove', e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    }, { passive: true });
+  });
+}
+
 function wireUp() {
   document.querySelectorAll('.lang-toggle button').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1484,8 +1512,10 @@ function wireUp() {
     });
   });
 
+  splitHeadline();
   observeReveals(document);
   wireWheels();
+  wireSpotlights(document);
   wireTableScroll(document);
   buildJumpRail();
 
@@ -1578,6 +1608,20 @@ for (const [key, href] of Object.entries(PAGE_HREFS)) {
   l.href = href;
   document.head.appendChild(l);
 }
+
+// Atmosphere: drifting aurora field + film grain. Purely decorative, so it
+// lives outside #app and is never touched by render().
+(function mountAtmosphere() {
+  const atmo = document.createElement('div');
+  atmo.className = 'atmosphere';
+  atmo.setAttribute('aria-hidden', 'true');
+  atmo.innerHTML = '<div class="aurora aurora-1"></div><div class="aurora aurora-2"></div><div class="aurora aurora-3"></div>';
+  document.body.appendChild(atmo);
+  const grain = document.createElement('div');
+  grain.className = 'grain';
+  grain.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(grain);
+})();
 
 // Subtle sky tint by local time of day.
 const hour = new Date().getHours();

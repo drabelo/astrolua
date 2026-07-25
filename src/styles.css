@@ -1579,3 +1579,309 @@ main section > h2::before { letter-spacing: 0.22em; }
   }
   .intro, .updated-at, .small, .scroll-hint-inline { color: #ded7f5; }
 }
+
+/* =====================================================================
+   ATMOSPHERE — aurora, grain, depth
+   Soft radial gradients animated by transform only (no blur filters), so
+   the whole layer stays on the compositor and costs almost nothing.
+   ===================================================================== */
+.atmosphere {
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+}
+.aurora {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+  opacity: 0.7;
+  backface-visibility: hidden;
+}
+.aurora-1 {
+  width: 46vmax; height: 46vmax;
+  top: -12%; left: -10%;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(124, 92, 232, 0.30) 0%,
+    rgba(124, 92, 232, 0.14) 32%,
+    rgba(124, 92, 232, 0) 68%);
+  animation: drift1 34s ease-in-out infinite alternate;
+}
+.aurora-2 {
+  width: 42vmax; height: 42vmax;
+  top: 14%; right: -12%;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(242, 166, 200, 0.26) 0%,
+    rgba(242, 166, 200, 0.11) 34%,
+    rgba(242, 166, 200, 0) 70%);
+  animation: drift2 42s ease-in-out infinite alternate;
+}
+.aurora-3 {
+  width: 50vmax; height: 50vmax;
+  bottom: -18%; left: 20%;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(232, 196, 118, 0.20) 0%,
+    rgba(232, 196, 118, 0.08) 36%,
+    rgba(232, 196, 118, 0) 72%);
+  animation: drift3 50s ease-in-out infinite alternate;
+}
+@keyframes drift1 {
+  from { transform: translate3d(-4vw, -3vh, 0); }
+  to   { transform: translate3d(8vw, 6vh, 0); }
+}
+@keyframes drift2 {
+  from { transform: translate3d(5vw, -4vh, 0); }
+  to   { transform: translate3d(-10vw, 9vh, 0); }
+}
+@keyframes drift3 {
+  from { transform: translate3d(-6vw, 5vh, 0); }
+  to   { transform: translate3d(7vw, -8vh, 0); }
+}
+
+/* Film grain — kills gradient banding and adds a printed, tactile feel. */
+/* Static and un-blended on purpose: an animated, mix-blend-mode grain layer
+   forces a full-screen composite every frame and measured a ~30fps drop. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* =====================================================================
+   HERO — orbital rings + word-by-word reveal
+   ===================================================================== */
+.hero-orbits {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(76vmin, 660px);
+  height: min(76vmin, 660px);
+  transform: translate(-50%, -58%);
+  pointer-events: none;
+  z-index: -1;
+}
+.hero-orbits .ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(232, 196, 118, 0.13);
+  animation: spin 90s linear infinite;
+}
+.hero-orbits .ring:nth-child(2) { inset: 12%; border-color: rgba(242, 166, 200, 0.11); animation-duration: 130s; animation-direction: reverse; }
+.hero-orbits .ring:nth-child(3) { inset: 26%; border-color: rgba(232, 196, 118, 0.09); animation-duration: 170s; }
+.hero-orbits .ring::after {
+  content: '';
+  position: absolute;
+  top: -3px; left: 50%;
+  width: 5px; height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 12px 2px rgba(232, 196, 118, 0.55);
+}
+.hero-orbits .ring:nth-child(2)::after { background: var(--rose); box-shadow: 0 0 12px 2px rgba(242, 166, 200, 0.5); }
+.hero-orbits .ring:nth-child(3)::after { width: 3px; height: 3px; opacity: 0.7; }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Per-word headline reveal — blurred, lifted, then settling into place. */
+/* The gradient + background-clip:text must live on the WORD spans, not the
+   h1: animating filter/transform on a child creates a stacking context, which
+   detaches it from the parent's clipped background and renders it invisible. */
+.hero h1 { background: none; -webkit-text-fill-color: currentColor; animation: rise 0.9s cubic-bezier(0.22, 0.9, 0.3, 1) 0.25s forwards; }
+.hero h1 .w {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(14px);
+  transform: translateY(0.42em) scale(0.94);
+  background: linear-gradient(115deg, #fff 8%, var(--gold) 38%, var(--rose) 66%, #fff 96%);
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation:
+    wordIn 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    shimmerPan 9s ease-in-out infinite alternate;
+  animation-delay: calc(0.28s + var(--i) * 0.13s), calc(1.6s + var(--i) * 0.13s);
+}
+@keyframes wordIn {
+  to { opacity: 1; filter: blur(0); transform: none; }
+}
+
+/* =====================================================================
+   SPOTLIGHT CARDS — a soft light follows the cursor across each card
+   ===================================================================== */
+.card, .aspect-card, .placements-card, .today-sky {
+  position: relative;
+  isolation: isolate;
+}
+.card::before, .aspect-card::before, .placements-card::before, .today-sky::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(232, 196, 118, 0.13),
+    transparent 62%);
+}
+@media (hover: hover) {
+  .card:hover::before, .aspect-card:hover::before,
+  .placements-card:hover::before, .today-sky:hover::before { opacity: 1; }
+}
+
+/* Gradient hairline that brightens where the cursor is. */
+.card, .aspect-card, .placements-card {
+  transition: transform 0.45s cubic-bezier(0.22, 0.9, 0.3, 1),
+              box-shadow 0.45s ease,
+              border-color 0.45s ease;
+}
+@media (hover: hover) {
+  .card:hover, .placements-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 26px 60px -26px rgba(0, 0, 0, 0.75),
+                0 0 0 1px rgba(232, 196, 118, 0.16) inset;
+  }
+}
+
+/* =====================================================================
+   SCROLL-DRIVEN REVEALS — native where supported, IO fallback elsewhere
+   ===================================================================== */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      animation: revealIn linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 26%;
+    }
+    @keyframes revealIn {
+      from { opacity: 0; transform: translateY(28px) scale(0.985); }
+      to   { opacity: 1; transform: none; }
+    }
+
+  }
+}
+
+/* =====================================================================
+   SECTION HEADINGS — a drawn rule that grows in
+   ===================================================================== */
+main section > h2 {
+  position: relative;
+}
+.sec-divider::before, .sec-divider::after {
+  transition: width 1.1s cubic-bezier(0.22, 0.9, 0.3, 1);
+}
+.sec-divider.visible::before, .sec-divider.visible::after { width: 64px; }
+
+/* =====================================================================
+   ANIMATED GRADIENT BORDER — for the signature cards
+   ===================================================================== */
+.today-sky {
+  background:
+    linear-gradient(140deg, rgba(232, 196, 118, 0.10), rgba(120, 90, 220, 0.10) 50%, rgba(242, 166, 200, 0.12)) padding-box,
+    linear-gradient(120deg,
+      rgba(232, 196, 118, 0.45),
+      rgba(242, 166, 200, 0.32) 35%,
+      rgba(124, 92, 232, 0.30) 65%,
+      rgba(232, 196, 118, 0.45)) border-box;
+  border: 1px solid transparent;
+  background-size: 100% 100%, 260% 260%;
+  animation: borderPan 16s ease-in-out infinite alternate;
+}
+@keyframes borderPan {
+  from { background-position: 0% 0%, 0% 50%; }
+  to   { background-position: 0% 0%, 100% 50%; }
+}
+
+/* =====================================================================
+   TYPOGRAPHY — fluid scale + variable-font optical sizing
+   ===================================================================== */
+.hero h1 { font-variation-settings: 'opsz' 120, 'SOFT' 40; letter-spacing: -0.022em; }
+section > h2 {
+  font-variation-settings: 'opsz' 60;
+  letter-spacing: -0.014em;
+  font-size: clamp(1.95rem, 1.3rem + 2.2vw, 2.8rem);
+}
+.card h3, .aspect-card h3, .placements-card h3 { font-variation-settings: 'opsz' 30; }
+p, li { text-wrap: pretty; }
+
+/* =====================================================================
+   WHEEL — scroll-linked rotation + richer glow
+   ===================================================================== */
+.wheel-frame::before {
+  background: radial-gradient(circle,
+    rgba(232, 196, 118, 0.18),
+    rgba(124, 92, 232, 0.10) 45%,
+    transparent 72%);
+  filter: blur(26px);
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .wheel-wrap svg {
+      animation: wheelTurn linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+    @keyframes wheelTurn {
+      from { transform: rotate(-9deg); }
+      to   { transform: rotate(9deg); }
+    }
+  }
+}
+
+/* =====================================================================
+   MAGNETIC / TACTILE CONTROLS
+   ===================================================================== */
+.site-nav a, .lang-toggle button, #share-btn {
+  transition: transform 0.3s cubic-bezier(0.22, 0.9, 0.3, 1),
+              color 0.25s, background 0.25s, box-shadow 0.3s;
+}
+.site-nav a.active, .lang-toggle button.active {
+  box-shadow: 0 6px 18px -8px rgba(232, 196, 118, 0.85);
+}
+@media (hover: hover) {
+  .site-nav a:hover, .lang-toggle button:hover { transform: translateY(-1.5px); }
+  #share-btn:hover { transform: translateY(-3px) scale(1.06); }
+}
+
+/* Element / meter bars: sheen sweep once they fill. */
+.element-fill, .meter-fill { position: relative; overflow: hidden; }
+.element-fill::after, .meter-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+  transform: translateX(-100%);
+}
+.visible .element-fill::after, .visible .meter-fill::after {
+  animation: sheen 1.5s ease-out 0.7s;
+}
+@keyframes sheen { to { transform: translateX(200%); } }
+
+/* =====================================================================
+   REDUCED MOTION / LOW POWER
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .aurora, .grain, .hero-orbits .ring, .today-sky { animation: none !important; }
+  .hero h1 .w { opacity: 1; filter: none; transform: none; animation: none; }
+  .element-fill::after, .meter-fill::after { animation: none !important; }
+}
+@media (max-width: 560px) {
+  /* Fewer moving layers on phones. */
+  .aurora-3 { display: none; }
+  .grain { opacity: 0.03; }
+}
