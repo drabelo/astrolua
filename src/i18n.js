@@ -18,6 +18,11 @@ export const I18N = {
     scrollHint: 'desça para ler o céu ✨',
 
     nav: { us: 'Nós', dailton: 'Dailton', felipe: 'Felipe' },
+    personChapters: {
+      one: { numeral: 'I', title: 'O mapa', epigraph: 'O céu exato do instante em que ele nasceu.' },
+      two: { numeral: 'II', title: 'Leituras', epigraph: 'O que esse desenho conta sobre amar e ser amado.' },
+      three: { numeral: 'III', title: 'O céu que corre', epigraph: 'Como o céu de hoje toca esse mapa.' },
+    },
     pages: {
       dailton: {
         title: 'Dailton — astrolua',
@@ -35,6 +40,31 @@ export const I18N = {
       },
     },
 
+    indexLabel: 'Índice',
+    indexIntro: 'Quatro atos — de quem cada um é, ao que vocês formam juntos, até o céu que corre hoje.',
+    chapterWord: 'Ato',
+    chapters: {
+      one: {
+        numeral: 'I',
+        title: 'Dois céus',
+        epigraph: 'Antes de qualquer encontro, cada um já era um mapa inteiro.',
+      },
+      two: {
+        numeral: 'II',
+        title: 'O encontro',
+        epigraph: 'Onde um mapa toca o outro — o que flui, e o que pede trabalho.',
+      },
+      three: {
+        numeral: 'III',
+        title: 'O que vocês formam',
+        epigraph: 'Todo casal cria uma terceira coisa, que não é nenhum dos dois.',
+      },
+      four: {
+        numeral: 'IV',
+        title: 'O céu que corre',
+        epigraph: 'E o céu segue girando — hoje, esta semana, e no que vem.',
+      },
+    },
     chartsTitle: 'Dois céus, um encontro',
     chartsIntro:
       'Antes da sinastria, cada um tem o seu próprio céu. Estes são os mapas natais calculados com efemérides reais — sem arredondar, sem inventar.',
@@ -419,6 +449,11 @@ export const I18N = {
     scrollHint: 'scroll to read the sky ✨',
 
     nav: { us: 'Us', dailton: 'Dailton', felipe: 'Felipe' },
+    personChapters: {
+      one: { numeral: 'I', title: 'The chart', epigraph: 'The exact sky of the moment he was born.' },
+      two: { numeral: 'II', title: 'Readings', epigraph: 'What this drawing says about loving and being loved.' },
+      three: { numeral: 'III', title: 'The turning sky', epigraph: 'How today’s sky touches this chart.' },
+    },
     pages: {
       dailton: {
         title: 'Dailton — astrolua',
@@ -436,6 +471,31 @@ export const I18N = {
       },
     },
 
+    indexLabel: 'Contents',
+    indexIntro: 'Four acts — from who each of you is, to what you make together, to the sky turning today.',
+    chapterWord: 'Act',
+    chapters: {
+      one: {
+        numeral: 'I',
+        title: 'Two skies',
+        epigraph: 'Before any meeting, each of you was already a whole chart.',
+      },
+      two: {
+        numeral: 'II',
+        title: 'The meeting',
+        epigraph: 'Where one chart touches the other — what flows, and what asks for work.',
+      },
+      three: {
+        numeral: 'III',
+        title: 'What you make together',
+        epigraph: 'Every couple creates a third thing, which is neither of them.',
+      },
+      four: {
+        numeral: 'IV',
+        title: 'The turning sky',
+        epigraph: 'And the sky keeps turning — today, this week, and what comes next.',
+      },
+    },
     chartsTitle: 'Two skies, one meeting',
     chartsIntro:
       'Before synastry, each of you has your own sky. These natal charts are computed from real ephemerides — no rounding, no making things up.',

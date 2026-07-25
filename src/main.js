@@ -865,6 +865,7 @@ function fillApiSlots() {
     const html = fn(T) || '';
     if (slot.innerHTML.trim() !== html.trim()) {
       slot.innerHTML = html;
+      numberSections();
       observeReveals(slot);
       wireWheels();
       wireSpotlights(slot);
@@ -895,6 +896,12 @@ function personPageHTML(T, sky) {
         <div class="scroll-hint">${T.scrollHint}</div>
       </header>
 
+      ${indexHTML(T, [
+        { id: 'ch-1', ch: T.personChapters.one, items: [page.chartTitle, T.dominants.title, T.placements.title, T.natalAspects.title] },
+        { id: 'ch-2', ch: T.personChapters.two, items: [T.numerology.personTitle, T.personApi.sectionTitle] },
+        { id: 'ch-3', ch: T.personChapters.three, items: [T.todayTitleSolo, T.forecast.title, T.weeklyTitle] },
+      ])}
+      ${chapterHTML(T.personChapters.one, 'ch-1')}
       <section class="charts">
         <h2 class="reveal">${page.chartTitle}</h2>
         <div class="sec-divider reveal" aria-hidden="true">✦</div>
@@ -912,8 +919,10 @@ function personPageHTML(T, sky) {
 ${dominantsSectionHTML(T, who)}
 ${placementsSectionHTML(T, [who])}
 ${natalAspectsSectionHTML(T, who)}
+      ${chapterHTML(T.personChapters.two, 'ch-2')}
 ${personNumerologySectionHTML(T, who)}
 <div class="api-slot" data-slot="insights">${insightsSectionHTML(T, who)}</div>
+      ${chapterHTML(T.personChapters.three, 'ch-3')}
       <section class="today">
         <h2 class="reveal">${T.todayTitleSolo}</h2>
         <div class="sec-divider reveal" aria-hidden="true">✧</div>
@@ -993,6 +1002,13 @@ function render() {
         <div class="scroll-hint">${T.scrollHint}</div>
       </header>
 
+      ${indexHTML(T, [
+        { id: 'ch-1', ch: T.chapters.one, items: [T.chartsTitle, T.elements.title, T.placements.title, T.numerology.title] },
+        { id: 'ch-2', ch: T.chapters.two, items: [T.synastryTitle, T.destiny.title, T.meters.title, T.realTalkTitle] },
+        { id: 'ch-3', ch: T.chapters.three, items: [T.composite.title, T.overlays.title] },
+        { id: 'ch-4', ch: T.chapters.four, items: [T.todayTitle, T.moons.title, T.forecast.title, T.weeklyTitle] },
+      ])}
+      ${chapterHTML(T.chapters.one, 'ch-1')}
       <section class="charts">
         <h2 class="reveal">${T.chartsTitle}</h2>
         <div class="sec-divider reveal" aria-hidden="true">✦</div>
@@ -1012,6 +1028,7 @@ function render() {
 ${elementsSectionHTML(T)}
 ${placementsSectionHTML(T, ['dailton', 'felipe'])}
 ${numerologySectionHTML(T)}
+      ${chapterHTML(T.chapters.two, 'ch-2')}
       <section class="synastry">
         <h2 class="reveal">${T.synastryTitle}</h2>
         <div class="sec-divider reveal" aria-hidden="true">❦</div>
@@ -1026,8 +1043,10 @@ ${metersSectionHTML(T)}
         <p class="intro reveal">${T.realTalkIntro}</p>
         ${Object.values(T.realAspects).map(aspectCardHTML).join('')}
       </section>
+      ${chapterHTML(T.chapters.three, 'ch-3')}
 ${compositeSectionHTML(T)}
 ${overlaysSectionHTML(T)}
+      ${chapterHTML(T.chapters.four, 'ch-4')}
       <section class="today">
         <h2 class="reveal">${T.todayTitle}</h2>
         <div class="sec-divider reveal" aria-hidden="true">✧</div>
@@ -1417,6 +1436,30 @@ function runCountUps(root) {
 }
 
 // ---- section jump rail: dots that map to each section, with live position ----
+// Number sections 01, 02… restarting at each chapter opener. Done here
+// rather than with CSS counters, whose sibling-scope rules proved
+// unreliable once chapter dividers sat between the sections.
+function numberSections() {
+  const main = document.querySelector('main');
+  if (!main) return;
+  let n = 0;
+  const number = section => {
+    const h2 = section.querySelector(':scope > h2');
+    if (!h2) return;
+    n += 1;
+    h2.setAttribute('data-num', String(n).padStart(2, '0'));
+  };
+  // API-driven sections sit inside .api-slot wrappers, so walk children and
+  // reach one level in rather than matching only direct <section> kids.
+  for (const el of main.children) {
+    if (el.classList.contains('chapter-open')) { n = 0; continue; }
+    if (el.tagName === 'SECTION') { number(el); continue; }
+    if (el.classList.contains('api-slot')) {
+      el.querySelectorAll(':scope > section').forEach(number);
+    }
+  }
+}
+
 function buildJumpRail() {
   document.querySelector('.jump-rail')?.remove();
   const sections = [...document.querySelectorAll('main section')].filter(s => s.querySelector('h2'));
@@ -1479,6 +1522,39 @@ function observeReveals(root) {
 }
 
 // Wrap each headline word so it can rise, unblur and settle on its own beat.
+// A chapter opener: numeral, title, epigraph. Purely editorial furniture —
+// it carries no data, so it is aria-hidden from the section outline and the
+// real <h2>s inside each chapter remain the document structure.
+function chapterHTML(ch, id) {
+  return `
+      <div class="chapter-open reveal" id="${id}">
+        <div class="chapter-rule" aria-hidden="true"></div>
+        <div class="chapter-numeral" aria-hidden="true">${ch.numeral}</div>
+        <h2 class="chapter-title">${ch.title}</h2>
+        <p class="chapter-epigraph">${ch.epigraph}</p>
+      </div>`;
+}
+
+// The opening index: every chapter with the sections it holds, each a link.
+function indexHTML(T, chapters) {
+  const rows = chapters.map(c => `
+    <li class="index-row">
+      <a href="#${c.id}">
+        <span class="index-numeral">${c.ch.numeral}</span>
+        <span class="index-body">
+          <span class="index-title">${c.ch.title}</span>
+          <span class="index-items">${c.items.join(' · ')}</span>
+        </span>
+      </a>
+    </li>`).join('');
+  return `
+      <nav class="index-card reveal" aria-label="${T.indexLabel}">
+        <div class="index-label">${T.indexLabel}</div>
+        <p class="index-intro">${T.indexIntro}</p>
+        <ol class="index-list">${rows}</ol>
+      </nav>`;
+}
+
 function splitHeadline() {
   const h1 = document.querySelector('.hero h1');
   if (!h1 || h1.dataset.split) return;
@@ -1513,6 +1589,7 @@ function wireUp() {
   });
 
   splitHeadline();
+  numberSections();
   observeReveals(document);
   wireWheels();
   wireSpotlights(document);
