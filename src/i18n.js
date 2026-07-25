@@ -8,6 +8,7 @@ export const I18N = {
     title: 'Dailton & Felipe — escrito nas estrelas',
     metaDescription: 'Uma sinastria viva para Dailton & Felipe — efemérides reais, atualizada com o céu todos os dias.',
     skipLink: 'Pular para o conteúdo',
+    jumpRailAria: 'Ir para seção',
     wheelAria: 'Roda de sinastria de Dailton e Felipe',
     heroKicker: 'astrolua apresenta',
     heroNames: 'Dailton & Felipe',
@@ -70,6 +71,8 @@ export const I18N = {
 
     numerology: {
       title: 'Os números de vocês',
+      personTitle: 'O número dele',
+      personIntro: 'O Caminho de Vida, tirado da data de nascimento.',
       intro:
         'Numerologia pitagórica: soma-se cada dígito da data de nascimento até sobrar um único número — a não ser que caia num número mestre (11, 22, 33), que fica do jeito que é.',
       coupleTitle: 'Número do casal',
@@ -211,10 +214,12 @@ export const I18N = {
       title: 'O mapa completo',
       intro: 'Cada ponto do céu no instante do nascimento: signo, grau exato, elemento e casa (signos inteiros). ℞ marca planeta retrógrado no nascimento.',
       colPoint: 'Ponto', colSign: 'Signo', colPos: 'Grau', colElement: 'Elemento', colHouse: 'Casa',
+      scrollHint: 'deslize para ver casa →',
       retro: 'retrógrado',
     },
     dominants: {
       title: 'Dominâncias do mapa',
+      intro: 'O peso de cada signo e modalidade no mapa, e o planeta que rege o Ascendente — a assinatura de fundo de quem é essa pessoa.',
       signLabel: 'Signo dominante',
       rulerLabel: 'Regente do mapa',
       rulerIn: 'em',
@@ -240,6 +245,23 @@ export const I18N = {
       title: 'O céu neste instante',
       retro: '℞',
     },
+    // API strings arrive in English only; these map the known values so the
+    // Portuguese page never shows untranslated text.
+    apiTerms: {
+      'harmonious-flow': 'Fluxo harmonioso',
+      'harmonious flow': 'Fluxo harmonioso',
+      'growth-oriented': 'Voltado ao crescimento',
+      'dynamic-tension': 'Tensão dinâmica',
+      'balanced': 'Equilibrado',
+      'good': 'Bom',
+      'high': 'Alto',
+      'moderate': 'Moderado',
+      'This connection balances ease and growth opportunities.':
+        'Esta conexão equilibra facilidade e oportunidades de crescimento.',
+      'High significance — strong destiny-level connection, balanced dynamic':
+        'Alta significância — conexão forte, de nível destino, com dinâmica equilibrada',
+    },
+    staleNote: (date) => `Estes textos são da última atualização bem-sucedida (${date}). O horóscopo semanal volta assim que a cota da API renovar.`,
     forecast: {
       title: 'Próximos encontros do céu',
       intro: 'Momentos exatos, nas próximas duas semanas, em que o céu toca os pontos principais de cada mapa — calculados ao dia.',
@@ -268,9 +290,13 @@ export const I18N = {
       flagsTitle: 'Sinais verdes e vermelhos',
       chaptersTitle: 'Capítulos de vida',
       chaptersIntro: 'Ciclos longos de tempo, calculados pela liberação zodiacal: cada capítulo dura anos e muda o tema principal da sua história.',
+      sectionTitle: 'Leituras pessoais',
+      sectionIntro: 'Interpretações personalizadas geradas a partir do mapa natal completo.',
       placesTitle: 'Seus lugares no mundo',
       placesIntro: 'A partir da astrocartografia: os lugares onde as linhas do seu mapa correm mais fortes.',
     },
+    todayTitleSolo: 'O céu de hoje',
+    todayIntroSolo: 'Os trânsitos de hoje sobre este mapa, recalculados a cada visita.',
     todayTitle: 'O céu de hoje para vocês',
     todayIntro: 'Esta parte se recalcula sozinha, todos os dias, com a posição real dos astros.',
     todayMoonIn: 'Lua em',
@@ -383,6 +409,7 @@ export const I18N = {
     title: 'Dailton & Felipe — written in the stars',
     metaDescription: 'A living synastry page for Dailton & Felipe — real ephemerides, updated with the sky every day.',
     skipLink: 'Skip to content',
+    jumpRailAria: 'Jump to section',
     wheelAria: 'Synastry wheel of Dailton and Felipe',
     heroKicker: 'astrolua presents',
     heroNames: 'Dailton & Felipe',
@@ -445,6 +472,8 @@ export const I18N = {
 
     numerology: {
       title: 'Your numbers',
+      personTitle: 'His number',
+      personIntro: 'The Life Path number, drawn from the birth date.',
       intro:
         "Pythagorean numerology: add up every digit of a birth date until one number is left — unless it lands on a master number (11, 22, 33), which stays exactly as it is.",
       coupleTitle: 'Couple number',
@@ -585,10 +614,12 @@ export const I18N = {
       title: 'The complete chart',
       intro: 'Every point of the sky at the moment of birth: sign, exact degree, element, and whole-sign house. ℞ marks a planet retrograde at birth.',
       colPoint: 'Point', colSign: 'Sign', colPos: 'Degree', colElement: 'Element', colHouse: 'House',
+      scrollHint: 'swipe to see house →',
       retro: 'retrograde',
     },
     dominants: {
       title: 'Chart dominants',
+      intro: 'The weight of each sign and modality in the chart, and the planet ruling the Ascendant — the underlying signature of who this person is.',
       signLabel: 'Dominant sign',
       rulerLabel: 'Chart ruler',
       rulerIn: 'in',
@@ -614,6 +645,8 @@ export const I18N = {
       title: 'The sky right now',
       retro: '℞',
     },
+    apiTerms: {},
+    staleNote: (date) => `These readings are from the last successful update (${date}). The weekly horoscope returns as soon as the API quota renews.`,
     forecast: {
       title: 'The sky’s next visits',
       intro: 'Exact moments over the next two weeks when the sky touches each chart’s key points — computed to the day.',
@@ -642,9 +675,13 @@ export const I18N = {
       flagsTitle: 'Green and red flags',
       chaptersTitle: 'Life chapters',
       chaptersIntro: 'Long-period timing from zodiacal releasing: each chapter runs for years and shifts the main theme of your story.',
+      sectionTitle: 'Personal readings',
+      sectionIntro: 'Personalized interpretations generated from the full natal chart.',
       placesTitle: 'Your places in the world',
       placesIntro: "From astrocartography: the places where this chart's lines run strong.",
     },
+    todayTitleSolo: 'Today’s sky',
+    todayIntroSolo: 'Today’s transits over this chart, recomputed on every visit.',
     todayTitle: 'Today’s sky for you two',
     todayIntro: 'This section recalculates itself every day from the real positions of the planets.',
     todayMoonIn: 'Moon in',

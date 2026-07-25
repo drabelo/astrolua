@@ -67,8 +67,10 @@ async function loadApiExtras() {
     // Staleness only matters for the time-sensitive sections; evergreen data
     // (score, places, chapters, insights) stays useful indefinitely.
     const ageDays = (Date.now() - new Date(data.generatedAt)) / 86400000;
-    if (ageDays >= 12) delete data.weekly;
-    if (ageDays >= 45) delete data.monthly;
+    // Stale content is labelled, not deleted: a section silently disappearing
+    // is worse than one that says how old it is.
+    data.staleWeekly = ageDays >= 12;
+    data.staleMonthly = ageDays >= 45;
     apiExtras = data;
     fillApiSlots();
   } catch { /* no extras — section stays hidden */ }
@@ -114,6 +116,21 @@ function t9() {
   return I18N[lang];
 }
 
+// API responses are English-only. Map known values into the active language;
+// if we have no translation, prefer showing nothing over showing English on
+// the Portuguese page.
+function apiText(raw, { allowUntranslated = false } = {}) {
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+  const T = t9();
+  const s = raw.trim();
+  const table = T.apiTerms || {};
+  if (table[s]) return table[s];
+  const lower = s.toLowerCase();
+  if (table[lower]) return table[lower];
+  if (lang === 'en' || allowUntranslated) return s;
+  return null;
+}
+
 // --- elemental chemistry ---
 // 10 planets + ascendant (midheaven excluded on purpose — it's about
 // placement/career, not temperament).
@@ -139,7 +156,7 @@ function elementBarsHTML(counts, T) {
     return `<div class="element-bar">
       <span class="element-label">${T.elements.labels[el]}</span>
       <div class="element-track"><div class="element-fill ${el}" style="--fill-w:${pct}%"></div></div>
-      <span class="element-count" data-countup="${count}">0</span>
+      <span class="element-count" data-countup="${count}">${count}</span>
     </div>`;
   }).join('');
 }
@@ -224,6 +241,9 @@ function personNumerologySectionHTML(T, who) {
   const meaning = T.numerology.meanings[String(num)];
   return `
       <section class="numerology person-numerology">
+        <h2 class="reveal">${T.numerology.personTitle}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">✧</div>
+        <p class="intro reveal">${T.numerology.personIntro}</p>
         <div class="card reveal number-card">
           <div class="number-big">${num}</div>
           <h3>${meaning.title}</h3>
@@ -369,7 +389,26 @@ function wheelSVG(persons = ['dailton', 'felipe'], ariaLabel = 'Synastry wheel')
     ['dailton', 'mercury', 'felipe', 'mars', 'hard'],
     ['dailton', 'pluto', 'felipe', 'ascendant', 'hard'],
   ];
-  for (const [pa, ka, pb, kb, kind] of persons.length === 2 ? pairs : []) {
+  // Solo wheels get that person's own tightest natal aspects, so the
+  // tap-to-highlight interaction has something to reveal on every page.
+  const soloPairs = [];
+  if (persons.length === 1) {
+    const who = persons[0];
+    const pts = PEOPLE[who].points;
+    const keys = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'ascendant', 'midheaven'];
+    const found = [];
+    for (let i = 0; i < keys.length; i++) {
+      for (let j = i + 1; j < keys.length; j++) {
+        const asp = aspectBetween(pts[keys[i]], pts[keys[j]], NATAL_ASPECT_ORBS);
+        if (asp) found.push({ a: keys[i], b: keys[j], ...asp });
+      }
+    }
+    found.sort((x, y) => x.orb - y.orb);
+    for (const f of found.slice(0, 8)) {
+      soloPairs.push([who, f.a, who, f.b, TONE_OF[f.name] === 'tense' ? 'hard' : 'soft']);
+    }
+  }
+  for (const [pa, ka, pb, kb, kind] of persons.length === 2 ? pairs : soloPairs) {
     const [x1, y1] = polar(cx, cy, rInner, PEOPLE[pa].points[ka]);
     const [x2, y2] = polar(cx, cy, rInner, PEOPLE[pb].points[kb]);
     const style = kind === 'soft'
@@ -426,8 +465,8 @@ function aspectCardHTML(a) {
 function destinyScoreDialHTML(T, score) {
   const value = typeof score.value === 'number' ? score.value : null;
   const normalized = typeof score.normalized === 'number' ? score.normalized : null;
-  const overall = typeof score.overall === 'string' ? score.overall.replace(/-/g, ' ') : null;
-  const description = typeof score.description === 'string' ? score.description : null;
+  const overall = apiText(typeof score.overall === 'string' ? score.overall.replace(/-/g, ' ') : null);
+  const description = apiText(typeof score.description === 'string' ? score.description : null);
   if (value === null && normalized === null && !overall && !description) return '';
 
   const size = 160, cx = size / 2, cy = size / 2, r = 64, strokeW = 13;
@@ -453,7 +492,7 @@ function destinyScoreDialHTML(T, score) {
         ${ringSVG}
       </svg>
       <div class="score-center">
-        ${value !== null ? `<div class="score-value" data-countup="${value}">0</div>` : ''}
+        ${value !== null ? `<div class="score-value" data-countup="${value}">${value}</div>` : ''}
         ${overall ? `<div class="score-overall">${overall}</div>` : ''}
       </div>
     </div>
@@ -465,7 +504,7 @@ function destinyScoreDialHTML(T, score) {
 function destinyHarmonyHTML(T, synastry) {
   const harmonyPct = typeof synastry.harmonyPct === 'number' ? synastry.harmonyPct : null;
   const tensionPct = typeof synastry.tensionPct === 'number' ? synastry.tensionPct : null;
-  const dynamicType = typeof synastry.dynamicType === 'string' ? synastry.dynamicType.replace(/-/g, ' ') : null;
+  const dynamicType = apiText(typeof synastry.dynamicType === 'string' ? synastry.dynamicType.replace(/-/g, ' ') : null);
   const hasBar = harmonyPct !== null && tensionPct !== null;
   if (!hasBar && !dynamicType) return '';
   return `<div class="harmony-block">
@@ -475,8 +514,8 @@ function destinyHarmonyHTML(T, synastry) {
       <div class="harmony-seg harmony-rose" style="--w:${tensionPct}%"></div>
     </div>
     <div class="harmony-legend">
-      <span><span class="dot gold"></span>${T.destiny.harmonyLabel} · <span data-countup="${harmonyPct}" data-suffix="%">0%</span></span>
-      <span><span class="dot rose"></span>${T.destiny.tensionLabel} · <span data-countup="${tensionPct}" data-suffix="%">0%</span></span>
+      <span><span class="dot gold"></span>${T.destiny.harmonyLabel} · <span data-countup="${harmonyPct}" data-suffix="%">${harmonyPct}%</span></span>
+      <span><span class="dot rose"></span>${T.destiny.tensionLabel} · <span data-countup="${tensionPct}" data-suffix="%">${tensionPct}%</span></span>
     </div>` : ''}
     ${dynamicType ? `<p class="destiny-dynamic">${dynamicType}</p>` : ''}
   </div>`;
@@ -560,6 +599,9 @@ function insightsSectionHTML(T, who) {
   </div>` : '';
   return `
       <section class="insights">
+        <h2 class="reveal">${T.personApi.sectionTitle}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">❋</div>
+        <p class="intro reveal">${T.personApi.sectionIntro}</p>
         ${loveCard}
         ${flagsCard}
       </section>`;
@@ -675,6 +717,13 @@ function placesSectionHTML(T, who) {
       </section>`;
 }
 
+function staleNoteHTML(T, isStale) {
+  if (!isStale || !apiExtras?.generatedAt) return '';
+  const d = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' })
+    .format(new Date(apiExtras.generatedAt));
+  return `<div class="stale-note">${T.staleNote(d)}</div>`;
+}
+
 function weeklySectionHTML(T) {
   if (!apiExtras) return '';
   const cols = ['dailton', 'felipe'].map(who => {
@@ -693,6 +742,7 @@ function weeklySectionHTML(T) {
         <div class="today-sky reveal">
           <div class="today-cols">${cols}</div>
           <div class="updated-at">${T.weeklyUpdated} ${updated} · astrology-api.io</div>
+          ${staleNoteHTML(T, apiExtras.staleWeekly)}
         </div>
       </section>`;
 }
@@ -789,7 +839,8 @@ function personWeeklySectionHTML(T, who) {
         <h2 class="reveal">${T.weeklyTitle}</h2>
         <div class="sec-divider reveal" aria-hidden="true">☄</div>
         <div class="today-sky reveal"><div class="today-cols"><div class="today-col"><p>${weeklyText}</p></div></div>
-        <div class="updated-at">${T.weeklyUpdated} ${updated} · astrology-api.io</div></div>
+        <div class="updated-at">${T.weeklyUpdated} ${updated} · astrology-api.io</div>
+        ${staleNoteHTML(T, apiExtras.staleWeekly)}</div>
       </section>`;
 }
 
@@ -816,6 +867,8 @@ function fillApiSlots() {
       slot.innerHTML = html;
       observeReveals(slot);
       wireWheels();
+      wireTableScroll(slot);
+      buildJumpRail();
     }
   });
 }
@@ -860,8 +913,9 @@ ${natalAspectsSectionHTML(T, who)}
 ${personNumerologySectionHTML(T, who)}
 <div class="api-slot" data-slot="insights">${insightsSectionHTML(T, who)}</div>
       <section class="today">
-        <h2 class="reveal">${T.todayTitle}</h2>
+        <h2 class="reveal">${T.todayTitleSolo}</h2>
         <div class="sec-divider reveal" aria-hidden="true">✧</div>
+        <p class="intro reveal">${T.todayIntroSolo}</p>
         <div class="today-sky reveal">
           <div class="today-head">
             <span class="moon-emoji">${MOON_EMOJI[sky.moonPhase.phase]}</span>
@@ -1053,10 +1107,11 @@ function placementsTableHTML(T, who) {
   }).join('');
   return `<div class="placements-card reveal">
     <h3>${who === 'dailton' ? 'Dailton' : 'Felipe'}</h3>
-    <div class="table-scroll"><table class="placements">
+    <div class="table-wrap"><div class="table-scroll"><table class="placements">
       <thead><tr><th>${T.placements.colPoint}</th><th>${T.placements.colSign}</th><th>${T.placements.colPos}</th><th>${T.placements.colElement}</th><th>${T.placements.colHouse}</th></tr></thead>
       <tbody>${rows}</tbody>
-    </table></div>
+    </table></div></div>
+    <div class="scroll-hint-inline">${T.placements.scrollHint}</div>
   </div>`;
 }
 function placementsSectionHTML(T, persons) {
@@ -1090,12 +1145,13 @@ function dominantsSectionHTML(T, who) {
     <div class="element-bar">
       <span class="element-label">${T.dominants.modalities[m]} <em class="mod-hint">· ${T.dominants.modalityHint[m]}</em></span>
       <div class="element-track"><div class="element-fill earth" style="--fill-w:${(modCounts[m] / ELEMENT_POINTS.length * 100).toFixed(1)}%"></div></div>
-      <span class="element-count" data-countup="${modCounts[m]}">0</span>
+      <span class="element-count" data-countup="${modCounts[m]}">${modCounts[m]}</span>
     </div>`).join('');
   return `
       <section class="dominants">
         <h2 class="reveal">${T.dominants.title}</h2>
         <div class="sec-divider reveal" aria-hidden="true">♛</div>
+        <p class="intro reveal">${T.dominants.intro}</p>
         <div class="today-sky reveal">
           <div class="dominant-chips">
             <div class="dom-chip"><span class="dom-label">${T.dominants.signLabel}</span><span class="dom-value">${SIGN_GLYPHS[domIdx]} ${T.signs[SIGN_INFO[domIdx].key]}</span></div>
@@ -1209,7 +1265,7 @@ function metersSectionHTML(T) {
     return `<div class="meter-row">
       <span class="meter-label">${T.meters.cats[cat]}</span>
       <div class="meter-track"><div class="meter-fill" style="--fill-w:${pct}%"></div></div>
-      <span class="meter-pct"><span data-countup="${pct}" data-suffix="%">0%</span></span>
+      <span class="meter-pct"><span data-countup="${pct}" data-suffix="%">${pct}%</span></span>
     </div>`;
   }).join('');
   return `
@@ -1341,10 +1397,9 @@ function runCountUps(root) {
     const target = Number(el.dataset.countup);
     const suffix = el.dataset.suffix || '';
     const decimals = (el.dataset.countup.split('.')[1] || '').length;
-    if (!isFinite(target) || REDUCED_MOTION) {
-      el.textContent = el.dataset.countup + suffix;
-      return;
-    }
+    // The true value is already in the DOM (server-truth first). Only animate
+    // when motion is welcome; otherwise leave the correct text untouched.
+    if (!isFinite(target) || REDUCED_MOTION) return;
     const dur = 1100;
     const t0 = performance.now();
     const tick = (t) => {
@@ -1355,6 +1410,55 @@ function runCountUps(root) {
       else el.textContent = el.dataset.countup + suffix;
     };
     requestAnimationFrame(tick);
+  });
+}
+
+// ---- section jump rail: dots that map to each section, with live position ----
+function buildJumpRail() {
+  document.querySelector('.jump-rail')?.remove();
+  const sections = [...document.querySelectorAll('main section')].filter(s => s.querySelector('h2'));
+  if (sections.length < 4) return;
+  const rail = document.createElement('nav');
+  rail.className = 'jump-rail';
+  rail.setAttribute('aria-label', t9().jumpRailAria);
+  sections.forEach((sec, i) => {
+    if (!sec.id) sec.id = 'sec-' + (i + 1);
+    const b = document.createElement('button');
+    b.type = 'button';
+    const label = sec.querySelector('h2').textContent.trim();
+    b.dataset.label = label;
+    b.setAttribute('aria-label', label);
+    b.addEventListener('click', () => {
+      sec.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'start' });
+    });
+    rail.appendChild(b);
+  });
+  document.body.appendChild(rail);
+  const dots = [...rail.children];
+  const spy = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const idx = sections.indexOf(e.target);
+      dots.forEach((d, i) => d.classList.toggle('current', i === idx));
+    }
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  sections.forEach(s => spy.observe(s));
+}
+
+// ---- fade the table's right edge away once it's scrolled to the end ----
+function wireTableScroll(root) {
+  root.querySelectorAll('.table-wrap').forEach(wrap => {
+    const scroller = wrap.querySelector('.table-scroll');
+    if (!scroller || scroller.dataset.wired) return;
+    scroller.dataset.wired = '1';
+    const update = () => {
+      const atEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 2;
+      const noOverflow = scroller.scrollWidth <= scroller.clientWidth + 1;
+      wrap.classList.toggle('scrolled-end', atEnd || noOverflow);
+    };
+    scroller.addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update, { passive: true });
+    update();
   });
 }
 
@@ -1382,6 +1486,8 @@ function wireUp() {
 
   observeReveals(document);
   wireWheels();
+  wireTableScroll(document);
+  buildJumpRail();
 
   const shareBtn = document.getElementById('share-btn');
   if (shareBtn) {

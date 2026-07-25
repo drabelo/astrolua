@@ -11,7 +11,7 @@
   --card: rgba(255, 255, 255, 0.045);
   --card-line: rgba(232, 196, 118, 0.22);
   --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
-  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1448,3 +1448,134 @@ main section > h2::before {
 .zodiac-glyph { cursor: pointer; outline: none; }
 .zodiac-glyph:focus-visible circle { stroke: var(--gold); stroke-width: 1.2; fill: rgba(232,196,118,0.08); }
 .house-num { pointer-events: none; }
+
+
+/* ---- pre-rendered shell ----
+   Static hero baked into the HTML so something meaningful paints before the
+   JS (and the font CDN) arrive. render() replaces it wholesale. */
+.prerender {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* ---- tap targets: 44px minimum on pointer-coarse devices ---- */
+@media (pointer: coarse) {
+  .site-nav a,
+  .lang-toggle button {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .skip-link { min-height: 44px; display: inline-flex; align-items: center; }
+}
+
+/* ---- horizontal scroll affordance on wide tables ---- */
+.table-scroll {
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-soft) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.table-wrap { position: relative; }
+.table-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 42px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(11, 10, 30, 0.85));
+  opacity: 1;
+  transition: opacity 0.25s ease;
+  border-radius: 0 12px 12px 0;
+}
+.table-wrap.scrolled-end::after { opacity: 0; }
+.scroll-hint-inline {
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+  text-align: right;
+  margin-top: 0.35rem;
+  letter-spacing: 0.04em;
+}
+@media (min-width: 700px) { .scroll-hint-inline { display: none; } }
+
+/* ---- section jump rail ---- */
+.jump-rail {
+  position: fixed;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.6rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(11, 10, 30, 0.5);
+  border: 1px solid rgba(232, 196, 118, 0.14);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.jump-rail button {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(183, 171, 221, 0.35);
+  cursor: pointer;
+  transition: background 0.25s, transform 0.25s;
+  position: relative;
+}
+.jump-rail button:hover,
+.jump-rail button:focus-visible { background: var(--gold); transform: scale(1.35); }
+.jump-rail button.current { background: var(--gold); transform: scale(1.3); }
+.jump-rail button::after {
+  content: attr(data-label);
+  position: absolute;
+  right: 150%;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font: 600 0.72rem/1 var(--sans);
+  color: var(--ink);
+  background: rgba(11, 10, 30, 0.94);
+  border: 1px solid var(--card-line);
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.jump-rail button:hover::after,
+.jump-rail button:focus-visible::after { opacity: 1; }
+@media (max-width: 900px), (pointer: coarse) { .jump-rail { display: none; } }
+
+/* ---- stale data notice ---- */
+.stale-note {
+  font-size: 0.76rem;
+  color: var(--ink-dim);
+  text-align: center;
+  margin-top: 0.9rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ---- wheel breathing room ---- */
+.wheel-wrap svg { width: min(88vw, 560px); }
+
+/* ---- section counter: keep the leading zero visually joined ---- */
+main section > h2::before { letter-spacing: 0.22em; }
+
+/* ---- contrast preferences ---- */
+@media (prefers-contrast: more) {
+  :root {
+    --ink-dim: #d9d1f2;
+    --card-line: rgba(232, 196, 118, 0.45);
+    --card: rgba(255, 255, 255, 0.08);
+  }
+  .intro, .updated-at, .small, .scroll-hint-inline { color: #ded7f5; }
+}

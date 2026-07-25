@@ -22,11 +22,22 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☀️</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Loaded non-blocking: a hanging font CDN must never keep the page blank.
+       The system fallback stack in styles.css renders immediately. -->
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all';this.onload=null" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
 </head>
 <body data-view="dailton">
   <div id="stars" aria-hidden="true"></div>
-  <div id="app"></div>
+  <div id="app"><div class="prerender">
+    <header class="hero person-hero">
+      <div class="kicker">astrolua</div>
+      <h1>Dailton</h1>
+      <p class="tagline">O céu de Dailton, por inteiro.</p>
+      <div class="births"><div>☀️ <span>Dailton · 29 de abril de 1994, 07:20 · Jussara, GO</span></div></div>
+    </header>
+  </div></div>
   <noscript>
     <p>Este site precisa de JavaScript para calcular o céu.</p>
     <p>This site needs JavaScript to compute the sky.</p>
