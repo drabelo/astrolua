@@ -234,6 +234,58 @@ function extractChapters(payload) {
   return chapters;
 }
 
+// The Davison chart is a real chart for the midpoint in time and space
+// between two births, so the prize here is its date and coordinates.
+function extractDavison(payload) {
+  const out = {};
+  const dateRaw = deepFind(payload, ['datetime', 'date_time', 'date', 'davison_date', 'birth_date', 'utc_datetime']);
+  if (typeof dateRaw === 'string' && dateRaw.length >= 8) out.date = dateRaw;
+  const lat = toNum(deepFind(payload, ['latitude', 'lat', 'davison_latitude']));
+  const lon = toNum(deepFind(payload, ['longitude', 'lon', 'lng', 'davison_longitude']));
+  if (lat !== null) out.lat = lat;
+  if (lon !== null) out.lon = lon;
+  const sun = deepFind(payload, ['sun']);
+  const moon = deepFind(payload, ['moon']);
+  const signOfBody = (b) => {
+    if (typeof b === 'string') return b;
+    if (b && typeof b === 'object') {
+      const sg = b.sign || b.sign_name || b.zodiac_sign;
+      if (typeof sg === 'string') return sg;
+    }
+    return null;
+  };
+  if (signOfBody(sun)) out.sunSign = signOfBody(sun);
+  if (signOfBody(moon)) out.moonSign = signOfBody(moon);
+  const text = extractText(payload);
+  if (text) out.text = text;
+  return Object.keys(out).length ? out : null;
+}
+
+// Arabic Parts. Only the handful that mean something on a love site are kept.
+const WANTED_LOTS = ['fortune', 'spirit', 'eros', 'love', 'necessity', 'courage', 'victory', 'marriage'];
+function extractLots(payload) {
+  const listRaw = deepFind(payload, ['lots', 'parts', 'arabic_parts', 'results']);
+  const items = Array.isArray(listRaw)
+    ? listRaw
+    : (listRaw && typeof listRaw === 'object' ? Object.entries(listRaw).map(([k, v]) => ({ name: k, ...(v && typeof v === 'object' ? v : { value: v }) })) : []);
+  const lots = [];
+  for (const item of items) {
+    if (!item || typeof item !== 'object') continue;
+    const nameRaw = item.name || item.lot || item.title || item.key;
+    if (typeof nameRaw !== 'string') continue;
+    const key = normalizeKey(nameRaw).replace(/^lotof|^partof/, '');
+    if (!WANTED_LOTS.some((w) => key.includes(w))) continue;
+    const sign = item.sign || item.sign_name || item.zodiac_sign || deepFind(item, ['sign']);
+    const degree = toNum(item.degree ?? item.position ?? deepFind(item, ['degree', 'longitude']));
+    const entry = { key };
+    if (typeof sign === 'string') entry.sign = sign;
+    if (degree !== null) entry.degree = Math.round(degree * 100) / 100;
+    if (entry.sign || entry.degree !== undefined) lots.push(entry);
+    if (lots.length >= 6) break;
+  }
+  return lots.length ? lots : null;
+}
+
 function extractPlaces(payload) {
   // The astrocartography payload carries both nameless power *zones* and a
   // named *cities* list. Only named entries are renderable, so gather
@@ -303,6 +355,17 @@ function writeMock() {
       },
     },
     couple: {
+      davison: {
+        date: '1995-01-05T09:07:00Z',
+        lat: -16.27,
+        lon: -50.08,
+        sunSign: 'capricorn',
+        moonSign: 'libra',
+      },
+      compositeText: {
+        pt: 'A relacao em si tem carater de lar: um Sol composto em Cancer descreve um vinculo cuja razao de existir e criar um lugar seguro. A Lua em Peixes pede ternura e imaginacao; Venus em Leao quer que esse amor seja visto, celebrado, dito em voz alta.',
+        en: 'The relationship itself has the character of a home: a composite Sun in Cancer describes a bond whose reason for existing is to make a safe place. The Moon in Pisces asks for tenderness and imagination; Venus in Leo wants this love seen, celebrated, said out loud.',
+      },
       score: {
         value: 16,
         normalized: 0.625,
@@ -328,6 +391,12 @@ function writeMock() {
     },
     person: {
       dailton: {
+        lots: [
+          { key: 'fortune', sign: 'sagittarius', degree: 14.2 },
+          { key: 'spirit', sign: 'aquarius', degree: 3.51 },
+          { key: 'eros', sign: 'pisces', degree: 27.4 },
+        ],
+        profection: { house: 7, ruler: 'venus', age: 32 },
         loveLanguages: {
           pt: 'A linguagem do amor predominante de Dailton e atos de servico, com Venus em signo de terra reforcando o cuidado pratico. Palavras de afirmacao aparecem em segundo lugar, especialmente quando reconhecem esforco e consistencia.',
           en: 'Dailton\'s predominant love language is acts of service, with Venus in an earth sign reinforcing practical care. Words of affirmation come second, especially when they acknowledge effort and consistency.',
@@ -349,6 +418,12 @@ function writeMock() {
         ],
       },
       felipe: {
+        lots: [
+          { key: 'fortune', sign: 'aries', degree: 8.9 },
+          { key: 'spirit', sign: 'leo', degree: 21.7 },
+          { key: 'eros', sign: 'virgo', degree: 5.2 },
+        ],
+        profection: { house: 12, ruler: 'mars', age: 30 },
         loveLanguages: {
           pt: 'Felipe expressa e recebe afeto principalmente por tempo de qualidade, com a Lua em signo de ar valorizando trocas de ideias. Toque fisico aparece como segunda linguagem, reforcado por Marte em aspecto harmonico a Venus.',
           en: 'Felipe expresses and receives affection mainly through quality time, with the Moon in an air sign valuing the exchange of ideas. Physical touch shows up as a second language, reinforced by Mars in a harmonious aspect to Venus.',
@@ -446,6 +521,24 @@ if (previous.generatedAt && previous.subjectsFingerprint !== SUBJECTS_FINGERPRIN
   console.log('birth data changed since the last run — refetching everything');
 }
 
+// Two cheaper tiers on top of the 30-day evergreen one.
+//
+//   once   — derived purely from the birth details, so it is fetched a single
+//            time and then never again unless those details change.
+//   yearly — tied to the current year (profections, returns), so refetched
+//            when the stored copy is from a previous year.
+//
+// Both are the reason the extra sections below cost almost nothing per run.
+const birthDataUnchanged = previous.subjectsFingerprint === SUBJECTS_FINGERPRINT;
+function haveOnce(path) {
+  if (!birthDataUnchanged) return false;
+  return path.split('.').reduce((o, k) => (o == null ? o : o[k]), previous) != null;
+}
+function haveThisYear(path) {
+  if (!haveOnce(path)) return false;
+  return new Date(previous.generatedAt).getUTCFullYear() === new Date().getUTCFullYear();
+}
+
 const out = {
   generatedAt: new Date().toISOString(),
   source: 'astrology-api.io',
@@ -508,10 +601,39 @@ const synastry = evergreenFresh ? null : await attempt('couple synastry-report',
   return extractSynastry(payload);
 });
 
-if (score || synastry) {
+// -- Davison chart: one call, kept forever ---------------------------------
+// Unlike the composite (an abstract midpoint of two charts), the Davison is a
+// real chart for the midpoint in time AND space between two births — it has an
+// actual date and an actual place on the map. That never changes, so it is
+// fetched once.
+const davison = haveOnce('couple.davison') ? null : await attempt('couple davison', async () => {
+  const payload = await post('/insights/relationship/davison', {
+    subjects: [SUBJECTS.dailton, SUBJECTS.felipe],
+    options: { language: 'pt' },
+  });
+  return extractDavison(payload);
+});
+
+// -- Composite interpretation: prose, both languages, kept forever ---------
+const compositeText = {};
+for (const language of ['pt', 'en']) {
+  if (haveOnce(`couple.compositeText.${language}`)) continue;
+  const t = await attempt(`couple composite-report ${language}`, async () => {
+    const payload = await post('/analysis/composite-report', {
+      subject1: SUBJECTS.dailton, subject2: SUBJECTS.felipe,
+      report_options: { language },
+    });
+    return extractText(payload);
+  });
+  if (t) compositeText[language] = t;
+}
+
+if (score || synastry || davison || Object.keys(compositeText).length) {
   out.couple = {};
   if (score) out.couple.score = score;
   if (synastry) out.couple.synastry = synastry;
+  if (davison) out.couple.davison = davison;
+  if (Object.keys(compositeText).length) out.couple.compositeText = compositeText;
 }
 
 // -- Per-person insights: love languages, timing, places -------------------
@@ -520,11 +642,13 @@ if (score || synastry) {
 // usable content, so it was costing ~18% of the quota for nothing. The
 // renderer still displays a `flags` section if the data ever reappears.
 for (const [who, subject] of Object.entries(SUBJECTS)) {
-  if (evergreenFresh) { console.log(`skip: evergreen person data fresh for ${who}`); continue; }
   const personOut = {};
+  const skipEvergreen = evergreenFresh;
+  if (skipEvergreen) console.log(`skip: evergreen person data fresh for ${who}`);
 
   const loveLanguages = {};
   for (const language of ['pt', 'en']) {
+    if (skipEvergreen) continue;
     const ll = await attempt(`love-languages ${who} ${language}`, async () => {
       const payload = await post('/insights/relationship/love-languages', {
         subject, options: { language },
@@ -536,14 +660,44 @@ for (const [who, subject] of Object.entries(SUBJECTS)) {
   }
   if (Object.keys(loveLanguages).length) personOut.loveLanguages = loveLanguages;
 
-  const chapters = await attempt(`zodiacal-releasing ${who}`, async () => {
+  const chapters = skipEvergreen ? null : await attempt(`zodiacal-releasing ${who}`, async () => {
     const payload = await post('/timing/zodiacal-releasing/current', { subject });
     const result = extractChapters(payload);
     return result.length ? result : null;
   });
   if (chapters) personOut.chapters = chapters;
 
-  const places = await attempt(`astrocartography ${who}`, async () => {
+  // Arabic Parts — classical calculated points, including the Lot of Eros.
+  // Birth-derived, so fetched once and then never again.
+  const lots = haveOnce(`person.${who}.lots`) ? null : await attempt(`lots ${who}`, async () => {
+    const payload = await post('/traditional/lots', { subject, options: { language: 'pt' } });
+    return extractLots(payload);
+  });
+  if (lots) personOut.lots = lots;
+
+  // Annual profection — which house rules this year of life. Changes on the
+  // birthday, so a yearly refresh is enough.
+  const profection = haveThisYear(`person.${who}.profection`) ? null : await attempt(`annual-profection ${who}`, async () => {
+    const payload = await post('/traditional/analysis/annual-profection', {
+      subject,
+      current_date: new Date().toISOString().slice(0, 10),
+    });
+    const house = toNum(deepFind(payload, ['profected_house', 'profectedHouse', 'house', 'house_number']));
+    const rulerRaw = deepFind(payload, ['time_lord', 'timeLord', 'lord_of_year', 'ruler', 'year_ruler']);
+    const ruler = typeof rulerRaw === 'string' ? rulerRaw : (rulerRaw && typeof rulerRaw === 'object' ? (rulerRaw.name || rulerRaw.planet || null) : null);
+    const age = toNum(deepFind(payload, ['age', 'current_age']));
+    if (house === null && !ruler) return null;
+    const o = {};
+    if (house !== null) o.house = house;
+    if (ruler) o.ruler = String(ruler).toLowerCase();
+    if (age !== null) o.age = age;
+    const txt = extractText(payload);
+    if (txt) o.text = txt;
+    return o;
+  });
+  if (profection) personOut.profection = profection;
+
+  const places = skipEvergreen ? null : await attempt(`astrocartography ${who}`, async () => {
     const payload = await post('/astrocartography/power-zones', { subject, language: 'pt' });
     const result = extractPlaces(payload);
     return result.length ? result : null;

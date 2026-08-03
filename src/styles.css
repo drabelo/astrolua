@@ -2053,3 +2053,15 @@ main > .api-slot > section {
     }
   }
 }
+
+/* Davison — the relationship's own birth moment */
+.davison-poetic {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.02rem;
+  color: var(--ink-dim);
+  text-align: center;
+  max-width: 44ch;
+  margin: 1.1rem auto 0;
+  text-wrap: balance;
+}
