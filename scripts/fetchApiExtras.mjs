@@ -35,7 +35,7 @@ const SUBJECTS = {
   felipe: {
     name: 'Felipe',
     birth_data: {
-      year: 1995, month: 9, day: 13, hour: 9, minute: 54,
+      year: 1995, month: 9, day: 13, hour: 10, minute: 54,
       latitude: -16.6869, longitude: -49.2648, timezone: 'America/Sao_Paulo',
     },
   },
@@ -402,6 +402,13 @@ async function attempt(label, fn) {
 // exactly that). Evergreen sections younger than EVERGREEN_MAX_AGE_DAYS are
 // not refetched at all, to spare the monthly API quota.
 const EVERGREEN_MAX_AGE_DAYS = 30;
+// Evergreen data (score, synastry, insights, places) is derived from the birth
+// details, so a change to SUBJECTS must invalidate the cache no matter how
+// fresh it is — otherwise the site would keep serving readings computed for
+// the old chart.
+const SUBJECTS_FINGERPRINT = JSON.stringify(
+  Object.entries(SUBJECTS).sort().map(([k, v]) => [k, v.birth_data])
+);
 let previous = {};
 try {
   if (existsSync('public/api-extras.json')) {
@@ -413,14 +420,19 @@ const prevAgeDays = previous.generatedAt
   : Infinity;
 const evergreenFresh = (
   prevAgeDays < EVERGREEN_MAX_AGE_DAYS &&
+  previous.subjectsFingerprint === SUBJECTS_FINGERPRINT &&
   previous.couple && previous.person &&
   Object.keys(previous.person).length === 2
 );
+if (previous.generatedAt && previous.subjectsFingerprint !== SUBJECTS_FINGERPRINT) {
+  console.log('birth data changed since the last run — refetching everything');
+}
 
 const out = {
   generatedAt: new Date().toISOString(),
   source: 'astrology-api.io',
   version: 2,
+  subjectsFingerprint: SUBJECTS_FINGERPRINT,
   weekly: {},
   monthly: {},
   couple: {},

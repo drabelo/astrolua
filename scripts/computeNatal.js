@@ -4,7 +4,7 @@ import { natalChart, signOf, aspectBetween, SIGNS } from '../src/astro.js';
 
 const BIRTHS = {
   dailton: { iso: '1994-04-29T10:20:00Z', lat: -15.8433, lon: -50.8867 },
-  felipe: { iso: '1995-09-13T12:54:00Z', lat: -16.6869, lon: -49.2648 },
+  felipe: { iso: '1995-09-13T13:54:00Z', lat: -16.6869, lon: -49.2648 },
 };
 
 const charts = {};

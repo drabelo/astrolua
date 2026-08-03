@@ -387,7 +387,8 @@ function wheelSVG(persons = ['dailton', 'felipe'], ariaLabel = 'Synastry wheel')
     ['dailton', 'moon', 'felipe', 'venus', 'hard'],
     ['dailton', 'saturn', 'felipe', 'jupiter', 'hard'],
     ['dailton', 'mercury', 'felipe', 'mars', 'hard'],
-    ['dailton', 'pluto', 'felipe', 'ascendant', 'hard'],
+    ['dailton', 'saturn', 'felipe', 'ascendant', 'hard'],
+    ['dailton', 'moon', 'felipe', 'midheaven', 'soft'],
   ];
   // Solo wheels get that person's own tightest natal aspects, so the
   // tap-to-highlight interaction has something to reveal on every page.

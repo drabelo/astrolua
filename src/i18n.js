@@ -14,7 +14,7 @@ export const I18N = {
     heroNames: 'Dailton & Felipe',
     heroTagline: 'Um mapa do céu a dois — carinhoso, mas de verdade.',
     heroBirthDailton: 'Dailton · 29 de abril de 1994, 07:20 · Jussara, GO',
-    heroBirthFelipe: 'Felipe · 13 de setembro de 1995, 09:54 · Goiânia, GO',
+    heroBirthFelipe: 'Felipe · 13 de setembro de 1995, 10:54 · Goiânia, GO',
     scrollHint: 'desça para ler o céu ✨',
 
     nav: { us: 'Nós', dailton: 'Dailton', felipe: 'Felipe' },
@@ -82,11 +82,11 @@ export const I18N = {
     felipeCard: {
       title: 'O céu de Felipe',
       lines: [
-        { label: 'Sol em Virgem · 20°16\'', text: 'Amor em forma de gesto útil: reparar, melhorar, resolver. Perfeccionista com o mundo — e consigo mesmo.' },
-        { label: 'Lua em Touro · 13°18\'', text: 'O coração pede constância: toque, conforto, rotina boa. Quando se sente seguro, é porto.' },
-        { label: 'Ascendente em Escorpião · 25°13\'', text: 'Primeira impressão: olhar profundo, presença magnética, mistério. Não se entrega de cara — mas quando entrega, é inteiro.' },
-        { label: 'Vênus em Virgem · 26°41\'', text: 'Ama em forma de cuidado prático: consertar, lembrar, facilitar a sua vida. O gesto pequeno e certeiro é a declaração dele.' },
-        { label: 'Marte em Escorpião · 4°09\'', text: 'No signo do próprio Ascendente: vontade silenciosa e profunda. Quando quer algo, quer inteiro.' },
+        { label: 'Sol em Virgem · 20°19\'', text: 'Amor em forma de gesto útil: reparar, melhorar, resolver. Perfeccionista com o mundo — e consigo mesmo.' },
+        { label: 'Lua em Touro · 13°49\'', text: 'O coração pede constância: toque, conforto, rotina boa. Quando se sente seguro, é porto.' },
+        { label: 'Ascendente em Sagitário · 10°32\'', text: 'Primeira impressão: bom humor, franqueza e uma curiosidade que contagia. Chega leve, com fé no que vem — e com fome de entender, viajar, esticar o horizonte.' },
+        { label: 'Vênus em Virgem · 26°44\'', text: 'Ama em forma de cuidado prático: consertar, lembrar, facilitar a sua vida. O gesto pequeno e certeiro é a declaração dele.' },
+        { label: 'Marte em Escorpião · 4°11\'', text: 'Vontade silenciosa e funda: não anuncia, não faz alarde — e não desiste. Quando quer algo, quer inteiro.' },
       ],
     },
 
@@ -134,12 +134,12 @@ export const I18N = {
       },
       ascSun: {
         title: 'Terra com terra',
-        badge: 'Ascendente de Dailton △ Sol de Felipe · orbe 1°04\'',
+        badge: 'Ascendente de Dailton △ Sol de Felipe · orbe 1°06\'',
         text: 'O Ascendente taurino de Dailton forma um trígono exato com o Sol virginiano de Felipe. Fluidez rara no cotidiano: o jeito de viver de um apoia — em vez de atrapalhar — o essencial do outro. Convivência que simplesmente rende.',
       },
       uranusVenus: {
         title: 'A faísca que não envelhece',
-        badge: 'Urano de Dailton △ Vênus de Felipe · orbe 0°20\' — quase exato',
+        badge: 'Urano de Dailton △ Vênus de Felipe · orbe 0°24\' — quase exato',
         text: 'O contato mais preciso da sinastria de vocês (e o mais forte do relatório): Urano de Dailton eletriza a Vênus de Felipe, com Plutão dando profundidade no mesmo ponto. Tradução: pra Felipe, amar Dailton nunca vira rotina — tem sempre uma surpresa, um frio na barriga que renova. É o antídoto natural contra a mesmice.',
       },
       venusJupiter: {
@@ -149,8 +149,13 @@ export const I18N = {
       },
       jupiterMoon: {
         title: 'Expansão do coração',
-        badge: 'Júpiter de Dailton ☍ Lua de Felipe · orbe 3°24\'',
+        badge: 'Júpiter de Dailton ☍ Lua de Felipe · orbe 3°55\'',
         text: 'Dailton amplia o que Felipe sente — mais riso, mais fé, mais apetite de vida. O único cuidado: generosidade demais às vezes promete além do combinado. Mas como defeito, é dos bons.',
+      },
+      moonMC: {
+        title: 'Vento a favor',
+        badge: 'Lua de Dailton △ Meio-do-Céu de Felipe · orbe 0°14\' — o contato mais exato dos dois mapas',
+        text: 'O aspecto mais preciso que existe entre vocês. A Lua sagitariana de Dailton faz trígono quase perfeito com o Meio-do-Céu de Felipe — o ponto do mapa que fala de caminho, vocação, o que se constrói aos olhos do mundo. Tradução: o jeito como Dailton sente e acolhe empurra Felipe exatamente na direção do que ele veio fazer. Não é só conforto em casa; é vento a favor lá fora.',
       },
     },
 
@@ -160,7 +165,7 @@ export const I18N = {
     realAspects: {
       moonVenus: {
         title: 'Coração livre, amor preciso',
-        badge: 'Lua de Dailton □ Vênus de Felipe · orbe 2°17\'',
+        badge: 'Lua de Dailton □ Vênus de Felipe · orbe 2°14\'',
         text: 'A Lua sagitariana de Dailton precisa de espaço, espontaneidade e verdade dita sem filtro. A Vênus virginiana de Felipe ama nos detalhes: o plano, o cuidado, o jeito certo. Às vezes o improviso de um soa como descuido, e o zelo do outro soa como cobrança. Nenhum dos dois é o vilão — é só tradução: liberdade não é desamor, e detalhe não é crítica.',
       },
       saturnJupiter: {
@@ -170,13 +175,13 @@ export const I18N = {
       },
       mercuryMars: {
         title: 'Palavras com pimenta',
-        badge: 'Mercúrio de Dailton ☍ Marte de Felipe · orbe 3°33\'',
+        badge: 'Mercúrio de Dailton ☍ Marte de Felipe · orbe 3°31\'',
         text: 'O jeito de falar de um acende o motor do outro — ótimo para debates, perigoso para discussões às onze da noite. Se o tom subir, façam uma pausa e voltem: a faísca que inflama conversa é a mesma que esquenta o resto. Usem a seu favor.',
       },
-      plutoAsc: {
-        title: 'Intensidade que transforma',
-        badge: 'Plutão de Dailton ☌ Ascendente de Felipe · orbe 1°59\'',
-        text: 'O Plutão de Dailton toca o Ascendente escorpiano de Felipe: essa relação mexe fundo em quem Felipe é — magnetismo forte, e às vezes a sensação de ser visto até demais. O acordo silencioso: profundidade sim, controle não. Transformar sem tentar possuir.',
+      saturnAsc: {
+        title: 'O limite que também sustenta',
+        badge: 'Saturno de Dailton □ Ascendente de Felipe · orbe 0°30\' — quase exato',
+        text: 'Saturno de Dailton faz quadratura quase exata com o Ascendente sagitariano de Felipe. Na prática: às vezes a seriedade de um pesa sobre a leveza do outro — soa como freio, cobrança, "seja mais realista". O outro lado da mesma moeda é o melhor que esse contato tem: é exatamente ele que dá chão ao otimismo de Felipe e faz plano virar coisa feita. Cuidem do tom, e guardem a firmeza para o que de fato importa.',
       },
     },
 
@@ -217,15 +222,15 @@ export const I18N = {
         },
         dailtonSunInFelipe: {
           label: 'Sol de Dailton',
-          text: 'A casa do casamento e da parceria, sem meio-termo: para Felipe, Dailton é simplesmente "o parceiro" — não existe outra leitura possível.',
+          text: 'A casa do dia a dia, da rotina e do cuidado prático: Dailton entra na vida de Felipe pelo cotidiano — quem divide a louça, a agenda e a saúde. Amor que se prova no ordinário.',
         },
         dailtonMoonInFelipe: {
           label: 'Lua de Dailton',
-          text: 'O coração de Dailton dá a Felipe uma sensação de segurança material e física — chão firme debaixo dos pés.',
+          text: 'O coração de Dailton pousa bem em cima de quem Felipe é: a casa da própria identidade. Felipe se sente enxergado — e o humor de Dailton vira parte do jeito dele estar no mundo.',
         },
         dailtonVenusInFelipe: {
           label: 'Vênus de Dailton',
-          text: 'Intimidade profunda, fusão, confiança — um afeto que vai bem além da superfície.',
+          text: 'A casa do casamento e da parceria, sem meio-termo: o afeto de Dailton cai exatamente no setor do "nós". Para Felipe, Dailton não é um afeto qualquer — é o parceiro.',
         },
       },
     },
@@ -445,7 +450,7 @@ export const I18N = {
     heroNames: 'Dailton & Felipe',
     heroTagline: 'A two-person sky map — sweet, but honest.',
     heroBirthDailton: 'Dailton · April 29 1994, 7:20 am · Jussara, GO, Brazil',
-    heroBirthFelipe: 'Felipe · September 13 1995, 9:54 am · Goiânia, GO, Brazil',
+    heroBirthFelipe: 'Felipe · September 13 1995, 10:54 am · Goiânia, GO, Brazil',
     scrollHint: 'scroll to read the sky ✨',
 
     nav: { us: 'Us', dailton: 'Dailton', felipe: 'Felipe' },
@@ -513,11 +518,11 @@ export const I18N = {
     felipeCard: {
       title: "Felipe's sky",
       lines: [
-        { label: "Sun in Virgo · 20°16'", text: 'Love in the shape of useful gestures: fixing, improving, solving. A perfectionist with the world — and with himself.' },
-        { label: "Moon in Taurus · 13°18'", text: 'His heart asks for constancy: touch, comfort, good routine. When he feels safe, he is a harbor.' },
-        { label: "Scorpio Ascendant · 25°13'", text: "First impression: deep gaze, magnetic presence, mystery. He doesn't hand himself over at once — but when he does, it's whole." },
-        { label: "Venus in Virgo · 26°41'", text: 'He loves through practical care: fixing things, remembering things, making your life easier. The small precise gesture is his declaration.' },
-        { label: "Mars in Scorpio · 4°09'", text: 'In the sign of his own Ascendant: a quiet, deep will. When he wants something, he wants it whole.' },
+        { label: "Sun in Virgo · 20°19'", text: 'Love in the shape of useful gestures: fixing, improving, solving. A perfectionist with the world — and with himself.' },
+        { label: "Moon in Taurus · 13°49'", text: 'His heart asks for constancy: touch, comfort, good routine. When he feels safe, he is a harbor.' },
+        { label: "Sagittarius Ascendant · 10°32'", text: "First impression: good humour, frankness, and a curiosity that catches. He arrives light, with faith in what's coming — and an appetite to understand, to travel, to stretch the horizon." },
+        { label: "Venus in Virgo · 26°44'", text: 'He loves through practical care: fixing things, remembering things, making your life easier. The small precise gesture is his declaration.' },
+        { label: "Mars in Scorpio · 4°11'", text: "A quiet, deep will: he doesn't announce it, doesn't make a show of it — and doesn't let go. When he wants something, he wants it whole." },
       ],
     },
 
@@ -565,12 +570,12 @@ export const I18N = {
       },
       ascSun: {
         title: 'Earth with earth',
-        badge: "Dailton's Ascendant △ Felipe's Sun · orb 1°04'",
+        badge: "Dailton's Ascendant △ Felipe's Sun · orb 1°06'",
         text: "Dailton's Taurus Ascendant makes an exact trine to Felipe's Virgo Sun. Rare ease in daily life: the way one lives supports — rather than obstructs — what is essential to the other. A shared life that simply works.",
       },
       uranusVenus: {
         title: 'The spark that never ages',
-        badge: "Dailton's Uranus △ Felipe's Venus · orb 0°20' — near exact",
+        badge: "Dailton's Uranus △ Felipe's Venus · orb 0°24' — near exact",
         text: "The most precise contact in your synastry (and the strongest in the report): Dailton's Uranus electrifies Felipe's Venus, with Pluto adding depth at the same point. Translation: for Felipe, loving Dailton never turns into routine — there is always a surprise, a flutter that renews itself. It is the natural antidote to sameness.",
       },
       venusJupiter: {
@@ -580,8 +585,13 @@ export const I18N = {
       },
       jupiterMoon: {
         title: 'The heart, expanded',
-        badge: "Dailton's Jupiter ☍ Felipe's Moon · orb 3°24'",
+        badge: "Dailton's Jupiter ☍ Felipe's Moon · orb 3°55'",
         text: 'Dailton amplifies what Felipe feels — more laughter, more faith, more appetite for life. One caution: too much generosity sometimes promises past the plan. But as flaws go, this is a good one.',
+      },
+      moonMC: {
+        title: 'A tailwind',
+        badge: "Dailton's Moon △ Felipe's Midheaven · orb 0°14' — the tightest contact between the two charts",
+        text: "The most exact aspect there is between you. Dailton's Sagittarius Moon trines Felipe's Midheaven almost perfectly — the point of the chart that speaks of path, vocation, what gets built in full view of the world. Translation: the way Dailton feels and holds space pushes Felipe precisely toward what he came here to do. It isn't only comfort at home; it's a tailwind out there.",
       },
     },
     realTalkTitle: 'Real talk (the sky is serious too)',
@@ -590,7 +600,7 @@ export const I18N = {
     realAspects: {
       moonVenus: {
         title: 'Free heart, precise love',
-        badge: "Dailton's Moon □ Felipe's Venus · orb 2°17'",
+        badge: "Dailton's Moon □ Felipe's Venus · orb 2°14'",
         text: "Dailton's Sagittarius Moon needs space, spontaneity, and truth said without a filter. Felipe's Virgo Venus loves in the details: the plan, the care, the right way. Sometimes one's improvising reads as carelessness, and the other's diligence reads as nitpicking. Neither is the villain — it just needs translating: freedom isn't unlove, and detail isn't criticism.",
       },
       saturnJupiter: {
@@ -600,13 +610,13 @@ export const I18N = {
       },
       mercuryMars: {
         title: 'Words with pepper',
-        badge: "Dailton's Mercury ☍ Felipe's Mars · orb 3°33'",
+        badge: "Dailton's Mercury ☍ Felipe's Mars · orb 3°31'",
         text: "The way one talks revs the other's engine — great for debates, dangerous for arguments at eleven p.m. If the tone climbs, pause and come back: the spark that heats an argument is the same one that heats everything else. Use it in your favor.",
       },
-      plutoAsc: {
-        title: 'Intensity that transforms',
-        badge: "Dailton's Pluto ☌ Felipe's Ascendant · orb 1°59'",
-        text: "Dailton's Pluto touches Felipe's Scorpio Ascendant: this relationship reaches deep into who Felipe is — strong magnetism, and sometimes the feeling of being seen almost too well. The quiet agreement: depth yes, control no. Transform without trying to possess.",
+      saturnAsc: {
+        title: 'The limit that also holds you up',
+        badge: "Dailton's Saturn □ Felipe's Ascendant · orb 0°30' — near exact",
+        text: "Dailton's Saturn squares Felipe's Sagittarius Ascendant almost exactly. In practice: sometimes one's seriousness sits heavy on the other's lightness — it lands as a brake, a demand, a \"be more realistic\". The flip side of that same coin is the best thing this contact offers: it is precisely what gives Felipe's optimism ground, and turns plans into finished things. Mind the tone, and save the firmness for what genuinely matters.",
       },
     },
 
