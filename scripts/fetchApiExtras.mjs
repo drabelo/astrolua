@@ -61,7 +61,15 @@ async function post(path, body) {
     signal: AbortSignal.timeout(60000),
   });
   if (!res.ok) {
-    throw new Error(`${path} -> HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    const body = (await res.text()).slice(0, 300);
+    // A spent quota fails every remaining call the same way, so treat it as
+    // terminal rather than grinding through the rest of the plan.
+    if (res.status === 429 && /RATE_LIMIT_EXCEEDED|Quota exceeded/i.test(body)) {
+      const err = new Error(`${path} -> quota exhausted`);
+      err.quotaExhausted = true;
+      throw err;
+    }
+    throw new Error(`${path} -> HTTP ${res.status}: ${body}`);
   }
   return res.json();
 }
@@ -381,7 +389,11 @@ if (MOCK) {
 let successes = 0;
 let failures = 0;
 
+let quotaExhausted = false;
+let skipped = 0;
+
 async function attempt(label, fn) {
+  if (quotaExhausted) { skipped++; return null; }
   try {
     const result = await fn();
     if (result === null || result === undefined) throw new Error('no usable data in response');
@@ -390,10 +402,16 @@ async function attempt(label, fn) {
     return result;
   } catch (err) {
     failures++;
-    console.error(`FAIL: ${label}:`, err.message);
+    if (err.quotaExhausted) {
+      quotaExhausted = true;
+      console.error(`FAIL: ${label}: quota exhausted — skipping every remaining call`);
+    } else {
+      console.error(`FAIL: ${label}:`, err.message);
+    }
     return null;
   } finally {
-    await sleep(300);
+    // No point pacing requests we are no longer going to make.
+    if (!quotaExhausted) await sleep(300);
   }
 }
 
@@ -440,10 +458,15 @@ const out = {
 };
 
 // -- Personalized weekly + monthly text, both partners, both languages -----
-for (const [who, subject] of Object.entries(SUBJECTS)) {
+// Portuguese is the site's default language, so every PT call is made before
+// any EN one: a partial quota then buys a complete Portuguese site rather
+// than half of each language.
+for (const who of Object.keys(SUBJECTS)) {
   out.weekly[who] = {};
   out.monthly[who] = {};
-  for (const language of ['pt', 'en']) {
+}
+for (const language of ['pt', 'en']) {
+  for (const [who, subject] of Object.entries(SUBJECTS)) {
     const weeklyText = await attempt(`weekly ${who} ${language}`, async () => {
       const payload = await post('/horoscope/personal/weekly/text', {
         subject, horoscope_type: 'weekly', language, format: 'paragraph', emoji: false,
@@ -460,6 +483,8 @@ for (const [who, subject] of Object.entries(SUBJECTS)) {
     });
     if (monthlyText) out.monthly[who][language] = monthlyText;
   }
+}
+for (const who of Object.keys(SUBJECTS)) {
   if (Object.keys(out.weekly[who]).length === 0) delete out.weekly[who];
   if (Object.keys(out.monthly[who]).length === 0) delete out.monthly[who];
 }
@@ -489,13 +514,16 @@ if (score || synastry) {
   if (synastry) out.couple.synastry = synastry;
 }
 
-// -- Per-person insights: love languages, red flags, timing, places --------
+// -- Per-person insights: love languages, timing, places -------------------
+// The /insights/relationship/red-flags endpoint used to be called here too,
+// four times a run (two people x two languages). It never once returned
+// usable content, so it was costing ~18% of the quota for nothing. The
+// renderer still displays a `flags` section if the data ever reappears.
 for (const [who, subject] of Object.entries(SUBJECTS)) {
   if (evergreenFresh) { console.log(`skip: evergreen person data fresh for ${who}`); continue; }
   const personOut = {};
 
   const loveLanguages = {};
-  const flags = {};
   for (const language of ['pt', 'en']) {
     const ll = await attempt(`love-languages ${who} ${language}`, async () => {
       const payload = await post('/insights/relationship/love-languages', {
@@ -505,16 +533,8 @@ for (const [who, subject] of Object.entries(SUBJECTS)) {
     });
     if (ll) loveLanguages[language] = ll;
 
-    const rf = await attempt(`red-flags ${who} ${language}`, async () => {
-      const payload = await post('/insights/relationship/red-flags', {
-        subject, options: { language },
-      });
-      return extractText(payload);
-    });
-    if (rf) flags[language] = rf;
   }
   if (Object.keys(loveLanguages).length) personOut.loveLanguages = loveLanguages;
-  if (Object.keys(flags).length) personOut.flags = flags;
 
   const chapters = await attempt(`zodiacal-releasing ${who}`, async () => {
     const payload = await post('/timing/zodiacal-releasing/current', { subject });
