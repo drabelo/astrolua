@@ -16,10 +16,17 @@
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
 
 const MOCK = process.argv.includes('--mock');
+// Every raw response is written to RAW_DIR. Extraction is written against a
+// published spec rather than observed payloads, so if a shape differs the fix
+// must never cost a second API call: re-run with --from-raw to re-extract
+// everything offline from the saved bodies.
+const RAW_DIR = process.env.RAW_DIR || '.api-raw';
+const SAVE_RAW = !process.argv.includes('--no-raw');
+const FROM_RAW = process.argv.includes('--from-raw');
 
 const API_BASE = process.env.ASTROLOGY_API_URL || 'https://api.astrology-api.io';
 const KEY = process.env.ASTROLOGY_API_KEY;
-if (!MOCK && !KEY) {
+if (!MOCK && !FROM_RAW && !KEY) {
   console.error('ASTROLOGY_API_KEY is not set');
   process.exit(1);
 }
@@ -49,7 +56,20 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function rawPathFor(path, body) {
+  const tag = JSON.stringify({ path, body });
+  let h = 0;
+  for (let i = 0; i < tag.length; i++) h = (Math.imul(31, h) + tag.charCodeAt(i)) | 0;
+  const slug = path.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
+  return `${RAW_DIR}/${slug}.${(h >>> 0).toString(36)}.json`;
+}
+
 async function post(path, body) {
+  const rawFile = rawPathFor(path, body);
+  if (FROM_RAW) {
+    if (!existsSync(rawFile)) throw new Error(`no saved response for ${path}`);
+    return JSON.parse(readFileSync(rawFile, 'utf8'));
+  }
   const res = await fetch(`${API_BASE}/api/v3${path}`, {
     method: 'POST',
     headers: {
@@ -71,7 +91,14 @@ async function post(path, body) {
     }
     throw new Error(`${path} -> HTTP ${res.status}: ${body}`);
   }
-  return res.json();
+  const json = await res.json();
+  if (SAVE_RAW) {
+    try {
+      mkdirSync(RAW_DIR, { recursive: true });
+      writeFileSync(rawFile, JSON.stringify(json, null, 2));
+    } catch (e) { console.error('  (could not save raw response:', e.message + ')'); }
+  }
+  return json;
 }
 
 function toNum(v) {
