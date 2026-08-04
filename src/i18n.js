@@ -104,6 +104,7 @@ export const I18N = {
       houseLabel: 'Casa ativada',
       rulerLabel: 'Senhor do ano',
       ageLabel: 'Idade',
+      signLabel: 'Signo do ano',
       houseThemes: {
         1: 'o corpo e o começo de tudo', 2: 'o dinheiro e o que se possui',
         3: 'os irmãos, a fala, os trajetos curtos', 4: 'a casa, a família, as raízes',
@@ -114,6 +115,14 @@ export const I18N = {
       },
     },
     compositeReport: { title: 'O que dizem do mapa do meio' },
+    lifeAreas: {
+      title: 'Compatibilidade, área por área',
+      intro: 'Doze áreas da vida pontuadas a partir do mapa composto de vocês — comunicação, afeto, dinheiro, rotina, e por aí. Passe o dedo (ou o mouse) sobre o nome de cada área para ver o que ela mede.',
+    },
+    personReadings: {
+      title: 'O mapa lido em voz alta',
+      intro: 'Leituras geradas a partir do mapa natal completo — planeta a planeta, casa a casa.',
+    },
     chartsTitle: 'Dois céus, um encontro',
     chartsIntro:
       'Antes da sinastria, cada um tem o seu próprio céu. Estes são os mapas natais calculados com efemérides reais — sem arredondar, sem inventar.',
@@ -589,6 +598,7 @@ export const I18N = {
       houseLabel: 'Activated house',
       rulerLabel: 'Lord of the year',
       ageLabel: 'Age',
+      signLabel: 'Sign of the year',
       houseThemes: {
         1: 'the body and the beginning of everything', 2: 'money and what you hold',
         3: 'siblings, speech, short journeys', 4: 'home, family, roots',
@@ -599,6 +609,14 @@ export const I18N = {
       },
     },
     compositeReport: { title: 'What they say about the chart in between' },
+    lifeAreas: {
+      title: 'Compatibility, area by area',
+      intro: 'Twelve areas of life scored from your composite chart — communication, affection, money, routine, and so on. Hover or tap an area name to see what it measures.',
+    },
+    personReadings: {
+      title: 'The chart read aloud',
+      intro: 'Readings generated from the full natal chart — planet by planet, house by house.',
+    },
     chartsTitle: 'Two skies, one meeting',
     chartsIntro:
       'Before synastry, each of you has your own sky. These natal charts are computed from real ephemerides — no rounding, no making things up.',

@@ -1,6 +1,6 @@
 import './styles.css';
 import { signOf, planetLongitudes, aspectBetween, moonPhaseInfo, nextMoonPhaseSign, wholeSignHouse, retrogradesAt, upcomingTransits } from './astro.js';
-import { PEOPLE } from './chartData.js';
+import { PEOPLE, DAVISON } from './chartData.js';
 import { I18N } from './i18n.js';
 import { initStarfield } from './starfield.js';
 
@@ -575,6 +575,13 @@ function textFor(obj) {
   return typeof t === 'string' && t ? t : null;
 }
 
+// Same language fallback, but for values that are not strings (the newer
+// endpoints return arrays of readings and scored areas).
+function pickLang(obj) {
+  if (!obj || typeof obj !== 'object') return null;
+  return obj[lang] ?? obj.pt ?? obj.en ?? null;
+}
+
 function splitParagraphs(text) {
   return text
     .split(/\n+/)
@@ -851,7 +858,9 @@ function personWeeklySectionHTML(T, who) {
 const API_SLOTS = {
   destiny: T => destinySectionHTML(T),
   davison: T => davisonSectionHTML(T),
-  compositeReport: T => compositeReportSectionHTML(T),
+  compositeReadings: T => compositeReadingsSectionHTML(T),
+  lifeAreas: T => lifeAreasSectionHTML(T),
+  personReadings: T => personReadingsSectionHTML(T, VIEW),
   lots: T => lotsSectionHTML(T, VIEW),
   profection: T => profectionSectionHTML(T, VIEW),
   weekly: T => weeklySectionHTML(T),
@@ -929,6 +938,7 @@ ${natalAspectsSectionHTML(T, who)}
       ${chapterHTML(T.personChapters.two, 'ch-2')}
 ${personNumerologySectionHTML(T, who)}
 <div class="api-slot" data-slot="insights">${insightsSectionHTML(T, who)}</div>
+<div class="api-slot" data-slot="personReadings">${personReadingsSectionHTML(T, who)}</div>
       ${chapterHTML(T.personChapters.three, 'ch-3')}
 <div class="api-slot" data-slot="profection">${profectionSectionHTML(T, who)}</div>
       <section class="today">
@@ -1045,6 +1055,7 @@ ${numerologySectionHTML(T)}
       </section>
 <div class="api-slot" data-slot="destiny">${destinySectionHTML(T)}</div>
 ${metersSectionHTML(T)}
+<div class="api-slot" data-slot="lifeAreas">${lifeAreasSectionHTML(T)}</div>
       <section class="real">
         <h2 class="reveal">${T.realTalkTitle}</h2>
         <div class="sec-divider reveal" aria-hidden="true">☾</div>
@@ -1053,8 +1064,8 @@ ${metersSectionHTML(T)}
       </section>
       ${chapterHTML(T.chapters.three, 'ch-3')}
 ${compositeSectionHTML(T)}
-<div class="api-slot" data-slot="compositeReport">${compositeReportSectionHTML(T)}</div>
-<div class="api-slot" data-slot="davison">${davisonSectionHTML(T)}</div>
+<div class="api-slot" data-slot="compositeReadings">${compositeReadingsSectionHTML(T)}</div>
+${davisonSectionHTML(T)}
 ${overlaysSectionHTML(T)}
       ${chapterHTML(T.chapters.four, 'ch-4')}
       <section class="today">
@@ -1248,29 +1259,27 @@ function skyNowHTML(T) {
 
 // --- upcoming exact transits ---
 // --- Davison: the relationship's own birth moment and place ---
+// Computed in chartData.js, so this section is always present.
 function davisonSectionHTML(T) {
-  const d = apiExtras?.couple?.davison;
-  if (!d) return '';
-  const bits = [];
-  if (d.date) {
-    const dt = new Date(d.date);
-    if (!isNaN(dt)) {
-      bits.push({ label: T.davison.whenLabel, value: new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'long' }).format(dt) });
-    }
-  }
-  if (typeof d.lat === 'number' && typeof d.lon === 'number') {
-    const ns = d.lat >= 0 ? 'N' : 'S', ew = d.lon >= 0 ? 'E' : 'W';
-    bits.push({ label: T.davison.whereLabel, value: `${Math.abs(d.lat).toFixed(2)}°${ns}, ${Math.abs(d.lon).toFixed(2)}°${ew}` });
-  }
-  const signName = (raw) => {
-    if (typeof raw !== 'string') return null;
-    const key = raw.toLowerCase().trim();
-    return T.signs[key] || raw;
-  };
-  if (signName(d.sunSign)) bits.push({ label: T.davison.sunLabel, value: `☉︎ ${signName(d.sunSign)}` });
-  if (signName(d.moonSign)) bits.push({ label: T.davison.moonLabel, value: `☽︎ ${signName(d.moonSign)}` });
-  if (!bits.length && !d.text) return '';
-  const chips = bits.map(b => `<div class="dom-chip"><span class="dom-label">${b.label}</span><span class="dom-value">${b.value}</span></div>`).join('');
+  const d = DAVISON;
+  const when = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', {
+    dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Sao_Paulo',
+  }).format(new Date(d.iso));
+  const ns = d.lat >= 0 ? 'N' : 'S', ew = d.lon >= 0 ? 'E' : 'W';
+  const where = `${Math.abs(d.lat).toFixed(2)}°${ns}, ${Math.abs(d.lon).toFixed(2)}°${ew}`;
+  const chips = [
+    { label: T.davison.whenLabel, value: when },
+    { label: T.davison.whereLabel, value: where },
+  ].map(b => `<div class="dom-chip"><span class="dom-label">${b.label}</span><span class="dom-value">${b.value}</span></div>`).join('');
+
+  const rows = ['sun', 'moon', 'venus', 'mars', 'ascendant'].map(k => {
+    const sg = signOf(d.points[k]);
+    return `<div class="naspect reveal">
+      <span class="naspect-formula">${PLANET_GLYPHS[k]}</span>
+      <span class="naspect-text"><strong>${stripArticle(T.points[k])}</strong> · ${T.signs[sg.key]} ${degMin(sg.degree)}</span>
+    </div>`;
+  }).join('');
+
   return `
       <section class="davison">
         <h2 class="reveal">${T.davison.title}</h2>
@@ -1279,23 +1288,62 @@ function davisonSectionHTML(T) {
         <div class="today-sky reveal">
           <div class="dominant-chips">${chips}</div>
           <p class="davison-poetic">${T.davison.poetic}</p>
-          ${d.text ? `<p>${d.text}</p>` : ''}
+          ${rows}
         </div>
       </section>`;
 }
 
-// --- Composite interpretation supplied by the API ---
-function compositeReportSectionHTML(T) {
-  const text = textFor(apiExtras?.couple?.compositeText);
-  if (!text) return '';
+// --- Real per-area compatibility scores from the composite report ---
+function lifeAreasSectionHTML(T) {
+  const areas = pickLang(apiExtras?.couple?.lifeAreas);
+  if (!Array.isArray(areas) || !areas.length) return '';
+  const rows = areas.map(a => {
+    const pct = Math.round(a.score * 100);
+    return `<div class="meter-row">
+      <span class="meter-label" ${a.description ? `title="${a.description.replace(/"/g, '&quot;')}"` : ''}>${a.area}</span>
+      <div class="meter-track"><div class="meter-fill" style="--fill-w:${pct}%"></div></div>
+      <span class="meter-pct"><span data-countup="${pct}" data-suffix="%">${pct}%</span></span>
+    </div>`;
+  }).join('');
   return `
-      <section class="composite-report">
-        <h2 class="reveal">${T.compositeReport.title}</h2>
-        <div class="sec-divider reveal" aria-hidden="true">☍</div>
-        <div class="today-sky reveal">${splitParagraphs(text)}</div>
+      <section class="life-areas">
+        <h2 class="reveal">${T.lifeAreas.title}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">⚖</div>
+        <p class="intro reveal">${T.lifeAreas.intro}</p>
+        <div class="today-sky reveal">${rows}</div>
       </section>`;
 }
 
+// --- Interpretation lists (composite + per person) ---
+function readingsHTML(list) {
+  return list.map(r => `<div class="aspect-card reveal">
+    <h3>${r.title}</h3>
+    <p>${r.text}</p>
+  </div>`).join('');
+}
+function compositeReadingsSectionHTML(T) {
+  const list = pickLang(apiExtras?.couple?.compositeReadings);
+  if (!Array.isArray(list) || !list.length) return '';
+  return `
+      <section class="composite-readings">
+        <h2 class="reveal">${T.compositeReport.title}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">☍</div>
+        ${readingsHTML(list)}
+      </section>`;
+}
+function personReadingsSectionHTML(T, who) {
+  const list = pickLang(apiExtras?.person?.[who]?.readings);
+  if (!Array.isArray(list) || !list.length) return '';
+  return `
+      <section class="person-readings">
+        <h2 class="reveal">${T.personReadings.title}</h2>
+        <div class="sec-divider reveal" aria-hidden="true">✵</div>
+        <p class="intro reveal">${T.personReadings.intro}</p>
+        ${readingsHTML(list)}
+      </section>`;
+}
+
+// --- Composite interpretation supplied by the API ---
 // --- Arabic Parts ---
 function lotsSectionHTML(T, who) {
   const lots = apiExtras?.person?.[who]?.lots;
@@ -1306,9 +1354,10 @@ function lotsSectionHTML(T, who) {
     const meaning = T.lots.meanings[l.key] || '';
     const sign = typeof l.sign === 'string' ? (T.signs[l.sign.toLowerCase()] || l.sign) : null;
     const deg = typeof l.degree === 'number' ? ` · ${Math.floor(l.degree)}°${String(Math.round((l.degree % 1) * 60)).padStart(2, '0')}'` : '';
+    const house = typeof l.house === 'number' ? ` · ${T.placements.colHouse.toLowerCase()} ${l.house}` : '';
     return `<div class="naspect reveal">
       <span class="naspect-formula">⊗︎</span>
-      <span class="naspect-text"><strong>${name}</strong>${sign ? ` · ${sign}${deg}` : ''} — ${meaning}.</span>
+      <span class="naspect-text"><strong>${name}</strong>${sign ? ` · ${sign}${deg}${house}` : ''} — ${meaning}.</span>
     </div>`;
   }).filter(Boolean).join('');
   if (!rows) return '';
@@ -1333,7 +1382,10 @@ function profectionSectionHTML(T, who) {
   if (p.ruler && T.points[p.ruler]) {
     chips.push({ label: T.profection.rulerLabel, value: `${PLANET_GLYPHS[p.ruler] || ''} ${stripArticle(T.points[p.ruler])}` });
   }
+  if (p.sign && T.signs[p.sign]) chips.push({ label: T.profection.signLabel, value: T.signs[p.sign] });
   if (typeof p.age === 'number') chips.push({ label: T.profection.ageLabel, value: String(p.age) });
+  const themes = Array.isArray(p.themes) && p.themes.length
+    ? `<p class="profection-themes">${p.themes.join(' · ')}</p>` : '';
   return `
       <section class="profection">
         <h2 class="reveal">${T.profection.title}</h2>
@@ -1341,6 +1393,7 @@ function profectionSectionHTML(T, who) {
         <p class="intro reveal">${T.profection.intro}</p>
         <div class="today-sky reveal">
           <div class="dominant-chips">${chips.map(c => `<div class="dom-chip"><span class="dom-label">${c.label}</span><span class="dom-value">${c.value}</span></div>`).join('')}</div>
+          ${themes}
           ${p.text ? `<p>${p.text}</p>` : ''}
         </div>
       </section>`;

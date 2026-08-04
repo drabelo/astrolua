@@ -44,3 +44,19 @@ export const FEATURED_ASPECTS = [
   { a: ['dailton', 'mercury'], b: ['felipe', 'mars'], type: 'opposition', orb: 3.52, id: 'mercuryMars' },
   { a: ['dailton', 'saturn'], b: ['felipe', 'ascendant'], type: 'square', orb: 0.49, id: 'saturnAsc' },
 ];
+
+// Davison relationship chart — the midpoint in time AND space between the two
+// births, i.e. a real chart with an actual moment and an actual place.
+// Cross-checked against the API's /insights/relationship/davison: identical
+// to the minute and to four decimal places, so it is computed rather than
+// fetched (see scripts/computeNatal.js).
+export const DAVISON = {
+  iso: '1995-01-05T12:07:00.000Z',
+  lat: -16.2651,
+  lon: -50.0757,
+  points: {
+    sun: 284.68, moon: 338.01, mercury: 297.72, venus: 238.07, mars: 152.63,
+    jupiter: 245.63, saturn: 338.38, uranus: 295.73, neptune: 292.74, pluto: 239.67,
+    ascendant: 328.32, midheaven: 238.53,
+  },
+};

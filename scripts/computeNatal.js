@@ -30,3 +30,19 @@ rows.sort((a, b) => a.orb - b.orb);
 for (const r of rows) {
   console.log(`  dailton ${r.ka.padEnd(10)} ${r.name.padEnd(12)} felipe ${r.kb.padEnd(10)} orb ${r.orb.toFixed(2)}°`);
 }
+
+// --- Davison relationship chart -------------------------------------------
+// Midpoint in time AND space between the two births. Verified against
+// /insights/relationship/davison: identical to the minute and to 4dp
+// (1995-01-05T12:07:00Z, -16.2651, -50.07575), so it is computed here for
+// free rather than fetched.
+const tMid = new Date((new Date(BIRTHS.dailton.iso).getTime() + new Date(BIRTHS.felipe.iso).getTime()) / 2);
+const latMid = (BIRTHS.dailton.lat + BIRTHS.felipe.lat) / 2;
+const lonMid = (BIRTHS.dailton.lon + BIRTHS.felipe.lon) / 2;
+const dav = natalChart(tMid, latMid, lonMid);
+console.log('\n=== davison ===');
+console.log('  moment', tMid.toISOString(), ' place', latMid.toFixed(4), lonMid.toFixed(4));
+for (const [k, v] of Object.entries(dav.points)) {
+  const sg = signOf(v);
+  console.log(`  ${k.padEnd(10)} ${v.toFixed(2).padStart(7)}  ${sg.key} ${sg.degree.toFixed(2)}°`);
+}
