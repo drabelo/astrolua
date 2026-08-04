@@ -1,0 +1,19 @@
+name: Probe API shapes
+
+# Manual only. Makes exactly six API calls and prints each response's shape to
+# the job log, so extractors can be corrected without spending more quota.
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Probe
+        env:
+          ASTROLOGY_API_KEY: ${{ secrets.ASTROLOGY_API_KEY }}
+        run: node scripts/probeApi.mjs
